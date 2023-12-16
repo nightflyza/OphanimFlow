@@ -1,2 +1,2 @@
-*/10 * * * *      /usr/bin/fetch -o /dev/null http://localhost/of/index.php?module=aggrtraff
-*/5 * * * *      /usr/bin/fetch -o /dev/null http://localhost/of/index.php?module=aggrgdata
+*/10 * * * *      /usr/bin/fetch -o /dev/null http://localhost/of/?module=aggrtraff
+*/5 * * * *      /usr/bin/fetch -o /dev/null http://localhost/of/?module=aggrgdata
