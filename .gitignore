@@ -1,0 +1,7 @@
+!.gitignore
+!.htaccess
+!/content/users/admin
+/content/users/
+DEMO_MODE
+test.png
+test2.png

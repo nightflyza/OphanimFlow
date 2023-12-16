@@ -1,0 +1,28 @@
+# ====== added by OphanimFlow ====
+
+gateway_enable="YES"
+
+#all needed services
+mysql_enable="YES"
+apache24_enable="YES"
+
+#NTP
+ntpdate_enable="YES"
+ntpdate_hosts="ntp.ubilling.net.ua"
+
+#Caching engines
+redis_enable="NO"
+memcached_enable="NO"
+memcached_flags="-l 127.0.0.1 -m 256 -I 16M"
+
+#FS check options
+fsck_y_enable="YES"
+background_fsck="NO"
+
+#supress sendmail
+sendmail_enable="NO"
+sendmail_submit_enable="NO"
+sendmail_outbound_enable="NO"
+sendmail_msp_queue_enable="NO"
+
+# ==========

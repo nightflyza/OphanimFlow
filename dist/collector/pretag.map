@@ -1,0 +1,3 @@
+id=1 filter='src net 172.30.0.0/17'
+
+id=20 filter='dst net 172.30.0.0/17'
