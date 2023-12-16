@@ -2,9 +2,13 @@
 
 function bytesToSpeed($bytes) {
     $result=0;
+    if (!is_numeric($bytes)) {
+        $bytes=trim($bytes);
+    }
     if ($bytes!=0) {
         $result=($bytes*8)/300/1048576; //per 5 minutes
     }
+
     return($result);
 }
 
@@ -111,7 +115,7 @@ $chartMancer->setDisplayPeakValue(true);
 
 
 $chartMancer->setChartTitle($ip.' Download');
-$downloadRaw=getChartData($ip,'R','2023-12-15 00:00:00',date("Y-m-d H:i:s"));
+$downloadRaw=getChartData($ip,'R','2023-12-16 00:00:00',date("Y-m-d H:i:s"));
 $speedDataR=parseSpeedData($downloadRaw,$dayAlloc);
 if (!empty($speedDataR)) {
 $chartMancer->renderChart($speedDataR,'test.png');
@@ -119,7 +123,7 @@ deb(wf_img('test.png'));
 }
 
 $chartMancer->setChartTitle($ip.' Upload');
-$uploadRaw=getChartData($ip,'S','2023-12-15 00:00:00',date("Y-m-d H:i:s"));
+$uploadRaw=getChartData($ip,'S','2023-12-16 00:00:00',date("Y-m-d H:i:s"));
 $speedDataS=parseSpeedData($uploadRaw,$dayAlloc);
 
 if (!empty($speedDataS)) {

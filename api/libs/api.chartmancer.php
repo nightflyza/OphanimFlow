@@ -606,7 +606,6 @@ class ChartMancer {
                     $y1 = (int) $y1;
                     $x2 = (int) $x2;
                     $y2 = (int) $y2;
-
                     $rValue = '_' . $subVal;
                     $zBuffer[$rValue] = array(
                         'value' => $subVal,
@@ -621,9 +620,7 @@ class ChartMancer {
                 }
 
                 if (!empty($zBuffer)) {
-		  //  debarr($zBuffer);
                     krsort($zBuffer);
-		 //   debarr($zBuffer);
                     foreach ($zBuffer as $subValue => $rParams) {
                         if ($rParams['value'] > 0) {
                             imagefilledrectangle($chart, $rParams['x1'], $rParams['y1'], $rParams['x2'], $rParams['y2'], $customColors[$rParams['colorIdx']]);
