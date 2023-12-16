@@ -2,6 +2,8 @@
 !.htaccess
 !/content/users/admin
 /content/users/
+exports/*
+gdata/*
 DEMO_MODE
 test.png
 test2.png
