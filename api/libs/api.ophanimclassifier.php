@@ -142,9 +142,6 @@ class OphanimClassifier {
                     if (!empty($eachTimeStamp)) {
                      foreach ($eachTimeStamp as $timeStamp=>$lineData) {
                         $line='';
-                        //$dateTime=date("Y-m-d H:i:s",$lineData['time']);
-                        //$line.=$dateTime.self::DELIMITER;
-                        //$line.=$eachIp.self::DELIMITER;
                         $line.=implode(self::DELIMITER,$lineData);
                         $line.=PHP_EOL;
                         file_put_contents($fileToSave,$line,FILE_APPEND);
