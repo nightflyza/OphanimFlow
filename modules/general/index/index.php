@@ -106,7 +106,19 @@ $classifier=new OphanimClassifier();
 $legend=$classifier->getBaseStruct();
 
 $chartMancer=new ChartMancer();
+//bandwidthd-like palette
+$colorOverrides=array(
+	1=>array('r'=>240,'g'=>0,'b'=>0),
+	2=>array('r'=>140,'g'=>0,'b'=>0),
+	3=>array('r'=>0,'g'=>220,'b'=>0),
+	5=>array('r'=>252,'g'=>93,'b'=>0),
+	6=>array('r'=>240,'g'=>240,'b'=>0),
+	7=>array('r'=>174,'g'=>174,'b'=>174),
+	8=>array('r'=>0,'g'=>0,'b'=>245),
+);
+
 $chartMancer->setPalette('OphanimFlow');
+$chartMancer->setOverrideColors($colorOverrides);
 $chartMancer->setDebug(true);
 $chartMancer->setChartLegend($legend);
 $chartMancer->setChartYaxisName('Mbit/s');
@@ -115,7 +127,7 @@ $chartMancer->setDisplayPeakValue(true);
 
 
 $chartMancer->setChartTitle($ip.' Download');
-$downloadRaw=getChartData($ip,'R',date("Y-m-d H:i:s",strtotime("-8 hour",time())),date("Y-m-d H:i:s"));
+$downloadRaw=getChartData($ip,'R',date("Y-m-d H:i:s",strtotime("-14 hour",time())),date("Y-m-d H:i:s"));
 $speedDataR=parseSpeedData($downloadRaw,$dayAlloc);
 if (!empty($speedDataR)) {
 $chartMancer->renderChart($speedDataR,'test.png');
@@ -123,7 +135,7 @@ deb(wf_img('test.png'));
 }
 
 $chartMancer->setChartTitle($ip.' Upload');
-$uploadRaw=getChartData($ip,'S',date("Y-m-d H:i:s",strtotime("-8 hour",time())),date("Y-m-d H:i:s"));
+$uploadRaw=getChartData($ip,'S',date("Y-m-d H:i:s",strtotime("-14 hour",time())),date("Y-m-d H:i:s"));
 $speedDataS=parseSpeedData($uploadRaw,$dayAlloc);
 
 if (!empty($speedDataS)) {
