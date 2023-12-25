@@ -27,9 +27,9 @@ if (!empty($ipsRaw)) {
     }
 }
 
-$availPeriods=array('day'=>'day','week'=>'week','monht'=>'month','year'=>'year');
+$availPeriods=array('day'=>'day','week'=>'week','month'=>'month','year'=>'year');
 $inputs=wf_SelectorSearchable('ip',$ipsAvail,'IP',$ip,false).' ';
-$inputs.=wf_Selector('period',$availPeriods,'Period').' ';
+$inputs.=wf_Selector('period',$availPeriods,'Period',$period).' ';
 $inputs.= wf_Submit('Search');
 show_window('',wf_Form('','POST',$inputs,'glamour'));
 

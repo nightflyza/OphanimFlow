@@ -91,8 +91,9 @@ class OphanimGraph {
              $result=allocDayTimeline();
         }
         if (!empty($rawData)) {
+            $dataSize=sizeof($rawData);
             foreach ($rawData as $io=>$eachLine) {
-                $xAxis=date("H:i",$eachLine[0]);
+                $xAxis=($dataSize<287) ? date("H:i",$eachLine[0]) : date("d/H:i",$eachLine[0]);
                 $tmpResult=array();
                 foreach ($eachLine as $lnIdx=>$lineData) {
                     if ($lnIdx>0) {
@@ -121,11 +122,14 @@ class OphanimGraph {
             
             $chartMancer->setPalette($this->palette);
             $chartMancer->setOverrideColors($this->colorOverrides);
-            $chartMancer->setDebug(true);
+            $chartMancer->setDebug($this->debug);
             $chartMancer->setChartLegend($legend);
             $chartMancer->setChartYaxisName(__('Mbit/s'));
             $chartMancer->setDisplayPeakValue(true);
             $chartMancer->setChartTitle($chartTitle);
+            
+            //$chartMancer->setImageWidth(1300);
+            //$chartMancer->setImageHeight(380);
             //$chartMancer->setBackgroundTransparent(true);
 
             $chartDataRaw=$this->getChartData($ip,$direction,$dateFrom,$dateTo);
