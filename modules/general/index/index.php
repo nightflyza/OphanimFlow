@@ -9,8 +9,6 @@ if (ubRouting::checkPost('ip')) {
     $ip=ubRouting::post('ip');
 }
 
-$dayAlloc= (ubRouting::checkPost('dayalloc')) ? true : false;
-
 $ipsAvail=array();
 $cache=new UbillingCache();
 $ipsRaw=$cache->get('IPLIST',600);
@@ -25,7 +23,6 @@ if (!empty($ipsRaw)) {
 }
 
 $inputs=wf_SelectorSearchable('ip',$ipsAvail,'IP',$ip,false).' ';
-$inputs.= wf_CheckInput('dayalloc','Allocate day timeline',false,$dayAlloc).' ';
 $inputs.= wf_Submit('Search');
 show_window('',wf_Form('','POST',$inputs,'glamour'));
 
