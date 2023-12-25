@@ -16,15 +16,15 @@ class OphanimClassifier {
         'dns'=>0,
         'vpn'=>0,
         'ftp'=>0,
-        'http'=>0,
+        'web'=>0,
         'rtsp'=>0,
         'quic'=>0,
     );
 
 
     protected $tcpProto=array(
-        80=>'http',
-        443=>'http',
+        80=>'web',
+        443=>'web',
         21=>'ftp',
         20=>'ftp',
         110=>'mail',
