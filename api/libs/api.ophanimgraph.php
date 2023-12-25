@@ -126,6 +126,7 @@ class OphanimGraph {
             $chartMancer->setChartYaxisName(__('Mbit/s'));
             $chartMancer->setDisplayPeakValue(true);
             $chartMancer->setChartTitle($chartTitle);
+            //$chartMancer->setBackgroundTransparent(true);
 
             $chartDataRaw=$this->getChartData($ip,$direction,$dateFrom,$dateTo);
             $speedData=$this->parseSpeedData($chartDataRaw,false);

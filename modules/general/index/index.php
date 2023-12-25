@@ -5,8 +5,13 @@
  */
 
 $ip='';
+$period='day';
 if (ubRouting::checkPost('ip')) {
     $ip=ubRouting::post('ip');
+}
+
+if (ubRouting::checkPost('period')) {
+    $period=ubRouting::post('period');
 }
 
 $ipsAvail=array();
@@ -22,7 +27,9 @@ if (!empty($ipsRaw)) {
     }
 }
 
+$availPeriods=array('day'=>'day','week'=>'week','monht'=>'month','year'=>'year');
 $inputs=wf_SelectorSearchable('ip',$ipsAvail,'IP',$ip,false).' ';
+$inputs.=wf_Selector('period',$availPeriods,'Period').' ';
 $inputs.= wf_Submit('Search');
 show_window('',wf_Form('','POST',$inputs,'glamour'));
 
@@ -38,7 +45,7 @@ if (!empty($traffData)) {
 
 if ($ip) {
     $result='';
-    $result.=wf_img('?module=graph&dir=R&period=day&ip='.$ip);
-    $result.=wf_img('?module=graph&dir=S&period=day&ip='.$ip);
+    $result.=wf_img('?module=graph&dir=R&period='.$period.'&ip='.$ip);
+    $result.=wf_img('?module=graph&dir=S&period='.$period.'&ip='.$ip);
     show_window('Charts',$result);
 }
