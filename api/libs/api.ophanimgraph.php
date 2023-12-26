@@ -37,7 +37,7 @@ class OphanimGraph {
      * 
      * @var bool
      */                        
-    protected $debug=true;
+    protected $debug=false;
 
     public function __construct() {
         

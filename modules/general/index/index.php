@@ -1,9 +1,5 @@
 <?php
 
-/**
- * testing controller here
- */
-
 $ip='';
 $period='day';
 if (ubRouting::checkPost('ip')) {
@@ -38,7 +34,7 @@ $traffStatDb=new NyanORM(OphanimHarvester::TABLE_TRAFFSTAT);
 $traffStatDb->where('ip','=',$ip);
 $traffData=$traffStatDb->getAll();
 if (!empty($traffData)) {
-    show_success($ip.' Traffic summary - Downloaded: '.$traffData[0]['dl'].' Mb Uploaded: '.$traffData[0]['ul'].' Mb');
+    show_success($ip.' Traffic summary - Downloaded: '.$traffData[0]['dl'].' bytes Uploaded: '.$traffData[0]['ul'].' bytes');
 } else {
     show_warning('Nothing to show');
 }

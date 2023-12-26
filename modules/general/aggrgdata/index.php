@@ -1,7 +1,10 @@
 <?php
 
-set_time_limit(0);
+$pid = new StarDust('AGGRGDATA');
 
+if ($pid->notRunning()) {
+set_time_limit(0);
+$pid->start();
 $classifier=new OphanimClassifier();
 $receivedData=$classifier->aggregateSource($classifier::TABLE_RAW_OUT,'ip_dst','port_src'); //dload
 $classifier->saveAggregatedData('R',$receivedData);
@@ -9,3 +12,9 @@ $classifier->saveAggregatedData('R',$receivedData);
 
 $sentData=$classifier->aggregateSource($classifier::TABLE_RAW_IN,'ip_src','port_dst'); //upload
 $classifier->saveAggregatedData('S',$sentData);
+$pid->stop();
+
+   die('AGGRGDATA:OK');
+} else {
+    die('AGGRGDATA:SKIP');
+}

@@ -128,7 +128,6 @@ class OphanimClassifier {
             }
         }
         $this->flushSource($dataSource);
-      //  debarr($result);
         return($result);
     }
 
