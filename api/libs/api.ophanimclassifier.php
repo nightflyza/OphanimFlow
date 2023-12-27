@@ -48,6 +48,7 @@ class OphanimClassifier {
      * some predefined stuff here
      */
     const DATA_PATH='gdata/';
+    const LR_PATH='exports/';
     const DELIMITER=';';
     const TABLE_RAW_IN='raw_in';
     const TABLE_RAW_OUT='raw_out';
@@ -147,6 +148,14 @@ class OphanimClassifier {
                      }
                     }
                 }
+        }
+    }
+
+    public function saveLastRunData($direction,$aggregatedData) {
+        if (!empty($aggregatedData)) {
+            $fname=self::LR_PATH.'LR_'.$direction;
+            $dataToSave=json_encode($aggregatedData);
+            file_put_contents($fname,$dataToSave);
         }
     }
 

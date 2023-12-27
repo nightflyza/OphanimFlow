@@ -94,7 +94,19 @@ if (!$ip) {
 </div>
         ';
 
-
+if (file_exists(OphanimClassifier::LR_PATH.'LR_R') AND file_exists(OphanimClassifier::LR_PATH.'LR_S')) {
+  $lrDown=file_get_contents(OphanimClassifier::LR_PATH.'LR_R');
+  $lrDown=json_decode($lrDown,true);
+  $classifier=new OphanimClassifier();
+  $baseStruct=$classifier->getBaseStruct();
+  if (!empty($lrDown)) {
+    foreach($lrDown as $eachIp=>$eachTs){ 
+        //TODO
+      //  debarr($eachTs);
+    }
+    
+  }
+}
 
     show_window(__('System info'), $result);
 }
