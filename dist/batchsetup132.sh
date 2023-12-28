@@ -110,6 +110,7 @@ cat ${PRESETS_PATH}loader.preconf >> /boot/loader.conf
 cat ${PRESETS_PATH}rc.preconf >> /etc/rc.conf
 cat ${PRESETS_PATH}sysctl.preconf >> /etc/sysctl.conf
 cat ${PRESETS_PATH}firewall.conf > /etc/firewall.conf
+chmod a+x /etc/firewall.conf
 
 #deploying database, webserver and php presets
 cp -R ${PRESETS_PATH}${MYSQL_CONFIG_PRESET} ${MYSQL_CONFIG_PATH}
@@ -129,14 +130,16 @@ chmod -R 777 /etc/of.conf /etc/pretag.map /gdata
 cp -R ${LANDING_PATH} ${APACHE_DATA_PATH}
 
 #loading default crontab preset
-crontab ./docs/crontab/crontab.preconf
+crontab ${CRONTAB_PRESET}
 
 # start services
 ${APACHE_INIT_SCRIPT} start
 ${MYSQL_INIT_SCRIPT} start
 
 #Setting MySQL root password
+TMP_PASS=`tail -n 1 /root/.mysql_secret`
 mysqladmin -u root password ${MYSQL_PASSWD}
+
 
 #restarting database and web server
 ${MYSQL_INIT_SCRIPT} restart
@@ -153,3 +156,5 @@ cat ${DUMP_PATH} | /usr/local/bin/mysql -u root --password=${MYSQL_PASSWD}
 perl -e "s/oph/root/g" -pi config/mysql.ini
 perl -e "s/newpassword/${MYSQL_PASSWD}/g" -pi config/mysql.ini
 perl -e "s/hamster/localhost/g" -pi config/mysql.ini
+
+echo "Installation finished!"
