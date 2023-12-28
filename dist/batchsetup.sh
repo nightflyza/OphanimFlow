@@ -1,7 +1,12 @@
 #!/bin/sh
 
+DISTRO_URL="https://codeload.github.com/nightflyza/OphanimFlow/zip/refs/heads/main"
+DISTRON_NAME="main.zip"
+DISTRO_DIR="OphanimFlow-main"
+
 FETCH="/usr/bin/fetch"
 APACHE_VERSION="apache24"
+PRESETS_PATH="dist/presets/freebsd/"
 APACHE_DATA_PATH="/usr/local/www/apache24/data/"
 APACHE_CONFIG_DIR="/usr/local/etc/apache24/"
 APACHE_INIT_SCRIPT="/usr/local/etc/rc.d/apache24"
@@ -10,8 +15,14 @@ APACHE_CONFIG_NAME="httpd.conf"
 PHP_CONFIG_PRESET="php8.ini"
 PHP_CONFIG_PATH="/usr/local/etc/php.ini"
 MYSQL_INIT_SCRIPT="/usr/local/etc/rc.d/mysql-server"
+MYSQL_CONFIG_PRESET="57_my.cnf"
+MYSQL_CONFIG_PATH="/usr/local/etc/mysql/my.cnf"
+WEB_DIR="of"
+DUMP_PATH="dist/dumps/ophanimflow.sql"
+LANDING_PATH="dist/landing/"
 
-CONFIGS_URL="https://raw.githubusercontent.com/nightflyza/UBinstaller/master/configs/"
+
+
 
 set PATH=/usr/local/bin:/usr/local/sbin:$PATH
 
@@ -95,23 +106,45 @@ ${MYSQL_INIT_SCRIPT} start
 #Setting MySQL root password
 mysqladmin -u root password ${MYSQL_PASSWD}
 
-#downloading and deploying webserver and php presets
-$FETCH ${CONFIGS_URL}${APACHE_CONFIG_PRESET_NAME}
-mv {APACHE_CONFIG_PRESET_NAME} ${APACHE_CONFIG_DIR}${APACHE_CONFIG_NAME}
+#downloading and unpacking app distro
+$FETCH -o ${DISTRON_NAME} ${DISTRO_URL}
+unzip ${DISTRO_NAME}
+mkdir ${APACHE_DATA_PATH}${WEB_DIR}
+mv ${DISTRO_DIR}/* ${APACHE_DATA_PATH}${WEB_DIR}/
+rm -fr ${DISTRO_DIR} ${DISTRO_NAME}
 
-$FETCH ${CONFIGS_URL}${PHP_CONFIG_PRESET}
-mv ${PHP_CONFIG_PRESET} ${PHP_CONFIG_PATH}
+#preconfiguring app
+cd ${APACHE_DATA_PATH}${WEB_DIR}/
+chmod -R 777 config content exports gdata
 
-#restarting web server
+#creating collector config and data storage placeholders
+mkdir /gdata
+touch /etc/of.conf
+touch /etc/pretag.map
+chmod -R 777 /etc/of.conf /etc/pretag.map /gdata
+
+
+#setting landing page
+cp -R ${LANDING_PATH} ${APACHE_DATA_PATH}
+
+
+#deploying database, webserver and php presets
+cp -R ${PRESETS_PATH}${MYSQL_CONFIG_PRESET} ${MYSQL_CONFIG_PATH}
+cp -R ${PRESETS_PATH}${APACHE_CONFIG_PRESET_NAME} ${APACHE_CONFIG_DIR}${APACHE_CONFIG_NAME}
+cp -R ${PRESETS_PATH}${PHP_CONFIG_PRESET} ${PHP_CONFIG_PATH}
+
+#restarting database and web server
+${MYSQL_INIT_SCRIPT} restart
 ${APACHE_INIT_SCRIPT} restart
 
-#editing sudoers
+#adding sudoers
 echo "User_Alias OPHANIM = www" >> /usr/local/etc/sudoers
 echo "OPHANIM         ALL = NOPASSWD: ALL" >> /usr/local/etc/sudoers
 
 echo "New MySQL password is ${MYSQL_PASSWD}"
 
-# to be continued
-#cat dist/dumps/ophanimflow.sql | /usr/local/bin/mysql -u root --password=${MYSQL_PASSWD}
-#perl -e "s/mylogin/root/g" -pi /etc/stargazer/config
-#perl -e "s/newpassword/${MYSQL_PASSWD}/g" -pi /etc/stargazer/config
+# configuring database
+cat ${DUMP_PATH} | /usr/local/bin/mysql -u root --password=${MYSQL_PASSWD}
+perl -e "s/oph/root/g" -pi config/mysql.ini
+perl -e "s/newpassword/${MYSQL_PASSWD}/g" -pi config/mysql.ini
+perl -e "s/hamster/localhost/g" -pi config/mysql.ini
