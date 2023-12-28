@@ -59,9 +59,9 @@ class OphanimMgr
     const URL_ME = '?module=settings';
     const PROUTE_NETW_CREATE = 'newnetwork';
     const ROUTE_NETW_DEL = 'deletenetwork';
-    const ROUTE_START='startcollector';
-    const ROUTE_STOP='stopcollector';
-    const ROUTE_RECONF='rebuildconfig';
+    const ROUTE_START = 'startcollector';
+    const ROUTE_STOP = 'stopcollector';
+    const ROUTE_RECONF = 'rebuildconfig';
 
     public function __construct()
     {
@@ -85,7 +85,8 @@ class OphanimMgr
     {
         global $ubillingConfig;
         $this->altCfg = $ubillingConfig->getAlter();
-        $this->port=$this->altCfg['COLLECTOR_PORT'];
+        $this->port = $this->altCfg['COLLECTOR_PORT'];
+        $this->samplingRate = $this->altCfg['SAMPLING_RATE'];
     }
 
 
@@ -104,7 +105,8 @@ class OphanimMgr
             $rows = wf_TableRow($cells, 'table-light');
             foreach ($this->allNetworks as $io => $each) {
                 $cells = wf_TableCell($each['network']);
-                $actLinks = wf_JSAlertStyled(self::URL_ME . '&' . self::ROUTE_NETW_DEL . '=' . $each['id'], __('Delete'), __('Are you serious') . '?', 'btn cur-p btn-danger btn-color');
+                $delUrl = self::URL_ME . '&' . self::ROUTE_NETW_DEL . '=' . $each['id'];
+                $actLinks = wf_JSAlertStyled($delUrl, __('Delete'), __('Are you serious') . '?', 'btn cur-p btn-danger btn-color');
                 $cells .= wf_TableCell($actLinks);
                 $rows .= wf_TableRow($cells, '');
             }
@@ -211,16 +213,82 @@ class OphanimMgr
         return ($result);
     }
 
+    public function isCollectorRunning()
+    {
+        $result = false;
+        if (file_exists(self::PID_PATH)) {
+            $result = true;
+        }
+        return ($result);
+    }
+
     public function renderCollectorControls()
     {
         $result = '';
-        if (file_exists(self::PID_PATH)) {
-            $result.=$this->messages->getStyledMessage(__('Netflow collector is running at port').' :'.$this->port,'success');
+        if ($this->isCollectorRunning()) {
+            $result .= $this->messages->getStyledMessage(__('Netflow collector is running at port') . ' :' . $this->port, 'success');
+            $result .= wf_delimiter();
+            $result .= wf_Link(self::URL_ME . '&' . self::ROUTE_STOP . '=true', __('Stop collector'), false, 'btn cur-p btn-danger btn-color');
         } else {
-            $result.=$this->messages->getStyledMessage(__('Netflow collector stopped'),'warning');
-            
+            $result .= $this->messages->getStyledMessage(__('Netflow collector is stopped'), 'warning');
+            $result .= wf_delimiter();
+            if (!empty($this->allNetworks)) {
+                $result .= wf_Link(self::URL_ME . '&' . self::ROUTE_RECONF . '=true', __('Rebuild configuration'), false, 'btn cur-p btn-dark btn-color') . ' ';
+                $result .= wf_Link(self::URL_ME . '&' . self::ROUTE_START . '=true', __('Start collector'), false, 'btn cur-p btn-success btn-color');
+            }
         }
-        $result.=wf_delimiter();
+        $result .= wf_delimiter();
         return ($result);
+    }
+
+
+    public function rebuildConfigs()
+    {
+        $result = '';
+        if (!$this->isCollectorRunning()) {
+            if (file_exists(self::CONF_PATH) and file_exists(self::PRETAG_PATH)) {
+                if (is_writable(self::CONF_PATH) and is_writable(self::PRETAG_PATH)) {
+                    if (!empty($this->allNetworks)) {
+                        $pretagMap = $this->generatePretagMap();
+                        $mainConf = $this->generateConfig();
+                        file_put_contents(self::PRETAG_PATH, $pretagMap);
+                        file_put_contents(self::CONF_PATH, $mainConf);
+                    } else {
+                        $result .= __('Networks list is empty');
+                    }
+                } else {
+                    $result .= self::CONF_PATH . ' ' . __('or') . ' ' . self::PRETAG_PATH . ' ' . __('is not writable');
+                }
+            } else {
+                $result .= self::CONF_PATH . ' ' . __('or') . ' ' . self::PRETAG_PATH . ' ' . __('config files not exists');
+            }
+        } else {
+            $result .= __('Collector is running now');
+        }
+        return ($result);
+    }
+
+
+    public function startCollector()
+    {
+        $result = '';
+        if (!$this->isCollectorRunning()) {
+            $command = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['COLLECTOR_PATH'] . ' -f ' . self::CONF_PATH;
+            shell_exec($command);
+            if (!$this->isCollectorRunning()) {
+                $result .= __('Collector startup failed by unknown reason');
+            }
+        } else {
+            $result .= __('Collector is running now');
+        }
+        return ($result);
+    }
+
+    public function stopCollector()
+    {
+        if ($this->isCollectorRunning()) {
+            $command = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['KILLALL_PATH'] . ' nfacctd';
+            shell_exec($command);
+        }
     }
 }
