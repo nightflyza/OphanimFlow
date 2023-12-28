@@ -99,22 +99,26 @@ MYSQL_PASSWD="mys"${GEN_MYS_PASS}
 # Preconfiguring software
 #
 
-# start services
-${APACHE_INIT_SCRIPT} start
-${MYSQL_INIT_SCRIPT} start
-
-#Setting MySQL root password
-mysqladmin -u root password ${MYSQL_PASSWD}
-
 #downloading and unpacking app distro
 $FETCH -o ${DISTRON_NAME} ${DISTRO_URL}
 unzip ${DISTRO_NAME}
 mkdir ${APACHE_DATA_PATH}${WEB_DIR}
 mv ${DISTRO_DIR}/* ${APACHE_DATA_PATH}${WEB_DIR}/
 rm -fr ${DISTRO_DIR} ${DISTRO_NAME}
+cd ${APACHE_DATA_PATH}${WEB_DIR}/
+
+# preconfiguring OS
+cat ${PRESETS_PATH}loader.preconf >> /boot/loader.conf
+cat ${PRESETS_PATH}rc.preconf >> /etc/rc.conf
+cat ${PRESETS_PATH}sysctl.preconf >> /etc/sysctl.conf
+cat ${PRESETS_PATH}firewall.conf > /etc/firewall.conf
+
+#deploying database, webserver and php presets
+cp -R ${PRESETS_PATH}${MYSQL_CONFIG_PRESET} ${MYSQL_CONFIG_PATH}
+cp -R ${PRESETS_PATH}${APACHE_CONFIG_PRESET_NAME} ${APACHE_CONFIG_DIR}${APACHE_CONFIG_NAME}
+cp -R ${PRESETS_PATH}${PHP_CONFIG_PRESET} ${PHP_CONFIG_PATH}
 
 #preconfiguring app
-cd ${APACHE_DATA_PATH}${WEB_DIR}/
 chmod -R 777 config content exports gdata
 
 #creating collector config and data storage placeholders
@@ -127,11 +131,12 @@ chmod -R 777 /etc/of.conf /etc/pretag.map /gdata
 #setting landing page
 cp -R ${LANDING_PATH} ${APACHE_DATA_PATH}
 
+# start services
+${APACHE_INIT_SCRIPT} start
+${MYSQL_INIT_SCRIPT} start
 
-#deploying database, webserver and php presets
-cp -R ${PRESETS_PATH}${MYSQL_CONFIG_PRESET} ${MYSQL_CONFIG_PATH}
-cp -R ${PRESETS_PATH}${APACHE_CONFIG_PRESET_NAME} ${APACHE_CONFIG_DIR}${APACHE_CONFIG_NAME}
-cp -R ${PRESETS_PATH}${PHP_CONFIG_PRESET} ${PHP_CONFIG_PATH}
+#Setting MySQL root password
+mysqladmin -u root password ${MYSQL_PASSWD}
 
 #restarting database and web server
 ${MYSQL_INIT_SCRIPT} restart
