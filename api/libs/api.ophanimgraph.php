@@ -43,7 +43,7 @@ class OphanimGraph {
         
     }
 
-    protected function bytesToSpeed($bytes) {
+    public function bytesToSpeed($bytes) {
         $result=0;
         if (!is_numeric($bytes)) {
             $bytes=trim($bytes);
@@ -55,7 +55,7 @@ class OphanimGraph {
         return($result);
     }
 
-    protected function bytesToMb($bytes) {
+    public function bytesToMb($bytes) {
         $result=0;
         if ($bytes!=0) {
             $result=$bytes/1048576; //mbytes
