@@ -138,7 +138,7 @@ ${MYSQL_INIT_SCRIPT} start
 
 #Setting MySQL root password
 TMP_PASS=`tail -n 1 /root/.mysql_secret`
-mysqladmin -u root password ${MYSQL_PASSWD}
+mysqladmin -u root -p${TMP_PASS} password ${MYSQL_PASSWD}
 
 
 #restarting database and web server
@@ -157,4 +157,9 @@ perl -e "s/oph/root/g" -pi config/mysql.ini
 perl -e "s/newpassword/${MYSQL_PASSWD}/g" -pi config/mysql.ini
 perl -e "s/hamster/localhost/g" -pi config/mysql.ini
 
+#setting up updater 
+cp -R ${PRESETS_PATH}autoofupdate.sh /bin/
+chmod a+x /bin/autoofupdate.sh
+
+#here we go?
 echo "Installation finished!"
