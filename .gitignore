@@ -1,7 +1,6 @@
 !.gitignore
 !.htaccess
 !/content/users/admin
-/content/users/
 exports/*
 gdata/*
 DEMO_MODE
