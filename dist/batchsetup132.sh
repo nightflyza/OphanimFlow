@@ -26,7 +26,7 @@ set PATH=/usr/local/bin:/usr/local/sbin:$PATH
 
 
 #bootstraping pkgng
-pkg info
+pkg -y info
 
 #packages installing
 pkg install -y bash
