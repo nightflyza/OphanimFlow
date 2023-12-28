@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DISTRO_URL="https://codeload.github.com/nightflyza/OphanimFlow/zip/refs/heads/main"
-DISTRON_NAME="main.zip"
+DISTRO_NAME="main.zip"
 DISTRO_DIR="OphanimFlow-main"
 
 FETCH="/usr/bin/fetch"
@@ -21,9 +21,6 @@ WEB_DIR="of"
 DUMP_PATH="dist/dumps/ophanimflow.sql"
 LANDING_PATH="dist/landing/"
 CRONTAB_PRESET="dist/crontab/crontab.preconf"
-
-
-
 
 set PATH=/usr/local/bin:/usr/local/sbin:$PATH
 
@@ -101,7 +98,7 @@ MYSQL_PASSWD="mys"${GEN_MYS_PASS}
 #
 
 #downloading and unpacking app distro
-$FETCH -o ${DISTRON_NAME} ${DISTRO_URL}
+$FETCH -o ${DISTRO_NAME} ${DISTRO_URL}
 unzip ${DISTRO_NAME}
 mkdir ${APACHE_DATA_PATH}${WEB_DIR}
 mv ${DISTRO_DIR}/* ${APACHE_DATA_PATH}${WEB_DIR}/
@@ -127,7 +124,6 @@ mkdir /gdata
 touch /etc/of.conf
 touch /etc/pretag.map
 chmod -R 777 /etc/of.conf /etc/pretag.map /gdata
-
 
 #setting landing page
 cp -R ${LANDING_PATH} ${APACHE_DATA_PATH}
