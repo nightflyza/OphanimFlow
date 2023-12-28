@@ -18,11 +18,11 @@ class OphanimDash
      * @var object
      */
     protected $traffStatDb = '';
-     /**
+    /**
      * 
      * @var object
      */
-    protected $messages='';
+    protected $messages = '';
 
     //some predefined stuff
     const PROUTE_IP = 'ip';
@@ -44,8 +44,9 @@ class OphanimDash
         $this->cache = new UbillingCache();
     }
 
-    protected function initMessages() {
-        $this->messages=new UbillingMessageHelper();
+    protected function initMessages()
+    {
+        $this->messages = new UbillingMessageHelper();
     }
 
     protected function initDb()
@@ -76,8 +77,8 @@ class OphanimDash
 
         $availPeriods = array('day' => __('Day'), 'week' => __('Week'), 'month' => __('Month'), 'year' => __('Year'));
         $inputs = wf_SelectorSearchable(self::PROUTE_IP, $ipsAvail, 'IP', ubRouting::post(self::PROUTE_IP), false) . ' ';
-        $inputs .= wf_Selector(self::PROUTE_PERIOD, $availPeriods, 'Period', ubRouting::post(self::PROUTE_PERIOD), false) . ' ';
-        $inputs .= wf_Submit(__('Search'));
+        $inputs .= wf_SelectorSearchable(self::PROUTE_PERIOD, $availPeriods, 'Period', ubRouting::post(self::PROUTE_PERIOD), false) . ' ';
+        $inputs .= wf_Submit(__('Search'), '', 'class="btn btn-primary btn-color"');
         $result .= wf_Form('', 'POST', $inputs, 'glamour');
         return ($result);
     }
@@ -85,30 +86,31 @@ class OphanimDash
     protected function loadTrafProtos($direction)
     {
         $trafTotals = array();
-        $cachedData=$this->cache->get(self::KEY_TRAFPROTO.$direction,$this->cachingTimeout);
+        $cachedData = $this->cache->get(self::KEY_TRAFPROTO . $direction, $this->cachingTimeout);
 
         if (empty($cachedData)) {
-            
-        if (file_exists(OphanimClassifier::LR_PATH . 'LR_' . $direction)) {
-            $lrDown = file_get_contents(OphanimClassifier::LR_PATH . 'LR_R');
-            $lrDown = json_decode($lrDown, true);
 
-            $classifier = new OphanimClassifier();
-            $baseStruct = $classifier->getBaseStruct();
+            if (file_exists(OphanimClassifier::LR_PATH . 'LR_' . $direction)) {
+                $lrDown = file_get_contents(OphanimClassifier::LR_PATH . 'LR_' . $direction);
+                $lrDown = json_decode($lrDown, true);
 
-            foreach ($baseStruct as $io => $each) {
-                $trafTotals[$each] = 0;
-            }
+                $classifier = new OphanimClassifier();
+                $baseStruct = $classifier->getBaseStruct();
+
+                foreach ($baseStruct as $io => $each) {
+                    $trafTotals[$each] = 0;
+                }
 
 
-            if (!empty($lrDown)) {
-                foreach ($lrDown as $eachIp => $eachTs) {
-                    if (!empty($eachTs)) {
-                        foreach ($eachTs as $eachTimestamp => $eachBytes) {
-                            if (!empty($eachBytes)) {
-                                foreach ($eachBytes as $eachProto => $eachCounters) {
-                                    if ($eachProto != 'time') {
-                                        $trafTotals[$eachProto] += $eachCounters;
+                if (!empty($lrDown)) {
+                    foreach ($lrDown as $eachIp => $eachTs) {
+                        if (!empty($eachTs)) {
+                            foreach ($eachTs as $eachTimestamp => $eachBytes) {
+                                if (!empty($eachBytes)) {
+                                    foreach ($eachBytes as $eachProto => $eachCounters) {
+                                        if ($eachProto != 'time') {
+                                            $trafTotals[$eachProto] += $eachCounters;
+                                        }
                                     }
                                 }
                             }
@@ -116,43 +118,50 @@ class OphanimDash
                     }
                 }
             }
+            $this->cache->set(self::KEY_TRAFPROTO . $direction, $trafTotals, $this->cachingTimeout);
+        } else {
+            $trafTotals = $cachedData;
         }
-        $this->cache->set(self::KEY_TRAFPROTO.$direction,$trafTotals,$this->cachingTimeout);
-    } else {
-        $trafTotals=$cachedData;
-    }
         return ($trafTotals);
     }
 
-    public function renderIpGraphs($ip,$period) {
-        $result='';
+    public function renderIpGraphs($ip, $period)
+    {
+        $result = '';
         $this->traffStatDb->where('ip', '=', $ip);
         $this->traffStatDb->where('year', '=', curyear());
         $this->traffStatDb->where('month', '=', date("m"));
         $traffData = $this->traffStatDb->getAll();
         if (!empty($traffData)) {
-          $summary=$ip . ' '.__('Traffic summary').' -  '.__('Downloaded').': ' . zb_convert_size($traffData[0]['dl']) . ' '.__('Uploaded').': ' . zb_convert_size($traffData[0]['ul']);
-          $result.=$this->messages->getStyledMessage($summary,'success');
+            $summary = $ip . ' ' . __('Traffic summary') . ' -  ' . __('Downloaded') . ': ' . zb_convert_size($traffData[0]['dl']) . ' ' . __('Uploaded') . ': ' . zb_convert_size($traffData[0]['ul']);
+            $result .= $this->messages->getStyledMessage($summary, 'success');
         } else {
-            $result.=$this->messages->getStyledMessage(__('Nothing to show'),'warning');
+            $result .= $this->messages->getStyledMessage(__('Nothing to show'), 'warning');
         }
-        $result.=wf_delimiter();
-      
-        
+        $result .= wf_delimiter();
+
+
         $result .= wf_img_sized('?module=graph&dir=R&period=' . $period . '&ip=' . $ip, '', '100%');
         $result .= wf_img_sized('?module=graph&dir=S&period=' . $period . '&ip=' . $ip, '', '100%');
+        return ($result);
+    }
+
+    protected function bytesToSpeed($bytes) {
+        $result=0;
+        if (!is_numeric($bytes)) {
+            $bytes=trim($bytes);
+        }
+        if ($bytes!=0) {
+            $result=($bytes*8)/300/1048576; //mbits per 5 minutes
+            //$result=$result/1024; //in gbits
+        }
+
         return($result);
     }
 
 
-    public function renderTrafProtos()
-    {
-        $result = '';
-        $downloadStats=$this->loadTrafProtos('R');
-        //TODO
-        return ($result);
-    }
 
+  
 
     public function renderSystemInfo()
     {
@@ -231,4 +240,122 @@ class OphanimDash
 
         return ($result);
     }
+
+    public function renderTrafProtos()
+    {
+        $result = '';
+        $downloadStats = $this->loadTrafProtos('R');
+        $uploadStats=$this->loadTrafProtos('S');
+       
+      
+        $ipDlTop='';
+
+        if (!empty($downloadStats) AND !empty($uploadStats)) {
+            $labelsR = '';
+            $dataR = '';
+            $dataS = '';
+            $labelsTotal='';
+            $totalR='';
+            $totalS='';
+            $ignoredProto=array('total','tcp','udp','web','quic');
+            $ignoredProto=array_flip($ignoredProto);
+
+            foreach ($downloadStats as $proto=>$bytes) {
+                if (!isset($ignoredProto[$proto])) {
+                $labelsR.="'".$proto."',";
+                $dataR.=$this->bytesToSpeed($bytes).',';
+                } else {
+                    $totalR.=$this->bytesToSpeed($bytes).',';
+                    $labelsTotal.="'".$proto."',";
+                }
+            }
+
+            foreach ($uploadStats as $proto=>$bytes) {
+                if (!isset($ignoredProto[$proto])) {
+                $dataS.=$this->bytesToSpeed($bytes).',';
+                } else {
+                    $totalS.=$this->bytesToSpeed($bytes).',';
+                }
+            }
+
+            $script = "
+            <script src='modules/jsc/chart.js'></script> 
+            <script>  
+            const ctxt = document.getElementById('total-chart');
+              new Chart(ctxt, {
+                type: 'bar',
+                data: {
+                  labels: [".$labelsTotal."],
+
+                  datasets: [{
+                    label: '".__('Download')."',
+                    borderWidth: 1,
+                    data: [ ".$totalR." ]
+                  }, {
+                    label: '".__('Upload')."',
+                    borderWidth: 1,
+                    data: [ ".$totalS." ]
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  legend: {
+                    position: 'bottom'
+                  }
+                 
+                }
+              });
+
+             const ctx = document.getElementById('proto-chart');
+              new Chart(ctx, {
+                type: 'bar',
+                data: {
+                  labels: [".$labelsR."],
+
+                  datasets: [{
+                    label: '".__('Download')."',
+                    borderWidth: 1,
+                    data: [ ".$dataR." ]
+                  }, {
+                    label: '".__('Upload')."',
+                    borderWidth: 1,
+                    data: [ ".$dataS." ]
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  legend: {
+                    position: 'bottom'
+                  }
+                 
+                }
+              });
+
+
+            </script>
+            ";
+
+            $result.='  <div class="row gap-20 masonry pos-r">';
+            $result.= '<div class="masonry-sizer col-md-4 pos-a"></div>';
+            $result .= '<div class="masonry-item col-md-4"> 
+            <canvas id="total-chart" height="220"></canvas> 
+            </div>';
+            
+            $result.= '<div class="masonry-sizer col-md-4 pos-a"></div>';
+            $result .= '<div class="masonry-item col-md-4"> 
+            <canvas id="proto-chart" height="220"></canvas> 
+            </div>';
+
+            $result.= '<div class="masonry-sizer col-md-4 pos-a"></div>';
+            $result .= '<div class="masonry-item col-md-4"> 
+             '.$ipDlTop.'
+            </div>';
+            
+            $result.='</div>';
+            $result .= $script;
+            
+        }
+        return ($result);
+    }
+
 }

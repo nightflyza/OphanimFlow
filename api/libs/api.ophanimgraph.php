@@ -49,7 +49,7 @@ class OphanimGraph {
             $bytes=trim($bytes);
         }
         if ($bytes!=0) {
-            $result=($bytes*8)/$this->interval/1048576; //per 5 minutes
+            $result=($bytes*8)/$this->interval/1048576; //mbits per 5 minutes
         }
 
         return($result);
@@ -127,10 +127,6 @@ class OphanimGraph {
             $chartMancer->setChartYaxisName(__('Mbit/s'));
             $chartMancer->setDisplayPeakValue(true);
             $chartMancer->setChartTitle($chartTitle);
-            
-            //$chartMancer->setImageWidth(1300);
-            //$chartMancer->setImageHeight(380);
-            //$chartMancer->setBackgroundTransparent(true);
 
             $chartDataRaw=$this->getChartData($ip,$direction,$dateFrom,$dateTo);
             $speedData=$this->parseSpeedData($chartDataRaw,false);
