@@ -248,7 +248,7 @@ class OphanimDash
         $uploadStats=$this->loadTrafProtos('S');
        
       
-        $ipDlTop='';
+       
 
         if (!empty($downloadStats) AND !empty($uploadStats)) {
             $labelsR = '';
@@ -257,6 +257,8 @@ class OphanimDash
             $labelsTotal='';
             $totalR='';
             $totalS='';
+            $ipDlTop='';
+            $topHosts=10;
             $ignoredProto=array('total','tcp','udp','web','quic');
             $ignoredProto=array_flip($ignoredProto);
 
@@ -275,6 +277,17 @@ class OphanimDash
                 $dataS.=$this->bytesToSpeed($bytes).',';
                 } else {
                     $totalS.=$this->bytesToSpeed($bytes).',';
+                }
+            }
+
+            $ipListRaw=$this->cache->get(self::KEY_IPLIST,$this->cachingTimeout);
+            if (!empty($ipListRaw)) {
+                $i=1;
+                foreach ($ipListRaw as $io=>$each) {
+                    if ($i<=$topHosts) {
+                    $ipDlTop.='<small class="fw-600 c-grey-700">'.$each['ip'].'</small><br>';
+                    $i++;
+                    }
                 }
             }
 
@@ -348,7 +361,11 @@ class OphanimDash
 
             $result.= '<div class="masonry-sizer col-md-4 pos-a"></div>';
             $result .= '<div class="masonry-item col-md-4"> 
+            
+            <h5 class="mB-5">Top hosts:</h5>
+            <div class="layer w-100">
              '.$ipDlTop.'
+             </div>
             </div>';
             
             $result.='</div>';

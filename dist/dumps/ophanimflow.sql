@@ -5,8 +5,8 @@ drop table if exists raw_in;
 drop table if exists raw_out; 
 drop table if exists host_in;
 drop table if exists host_out; 
-
 drop table if exists traffstat; 
+drop table if exists networks;
 
 create table raw_out (
     ip_dst CHAR(45) NOT NULL,
@@ -61,4 +61,11 @@ CREATE TABLE `traffstat` (
   KEY `ip` (`ip`),
   KEY `month` (`month`),
   KEY `year` (`year`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+
+CREATE TABLE `networks` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `network` varchar(20) NOT NULL,
+   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;

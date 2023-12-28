@@ -2,20 +2,11 @@
 
 $dashBoard=new OphanimDash();
 
-$ip = '';
-$period = 'day';
-if (ubRouting::checkPost($dashBoard::PROUTE_IP)) {
-  $ip = ubRouting::post($dashBoard::PROUTE_IP);
-}
-
-if (ubRouting::checkPost($dashBoard::PROUTE_PERIOD)) {
-  $period = ubRouting::post($dashBoard::PROUTE_PERIOD);
-}
-
-
+$ip =  (ubRouting::checkPost($dashBoard::PROUTE_IP)) ? ubRouting::post($dashBoard::PROUTE_IP) : '';
+$period =  (ubRouting::checkPost($dashBoard::PROUTE_PERIOD)) ? ubRouting::post($dashBoard::PROUTE_PERIOD) : '';
 
 //per IP search form
-show_window(__('Per-IP data'), $dashBoard->renderIpSelectForm());
+show_window(__('Per host data'), $dashBoard->renderIpSelectForm());
 
 //basic dashboard
 
@@ -26,6 +17,6 @@ if (!$ip) {
 }
 
 if ($ip) {
- 
-  show_window('Charts', $dashBoard->renderIpGraphs($ip,$period));
+  //per-host charts
+   show_window('Charts', $dashBoard->renderIpGraphs($ip,$period));
 }
