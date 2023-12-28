@@ -20,6 +20,7 @@ MYSQL_CONFIG_PATH="/usr/local/etc/mysql/my.cnf"
 WEB_DIR="of"
 DUMP_PATH="dist/dumps/ophanimflow.sql"
 LANDING_PATH="dist/landing/"
+CRONTAB_PRESET="dist/crontab/crontab.preconf"
 
 
 
@@ -130,6 +131,9 @@ chmod -R 777 /etc/of.conf /etc/pretag.map /gdata
 
 #setting landing page
 cp -R ${LANDING_PATH} ${APACHE_DATA_PATH}
+
+#loading default crontab preset
+crontab ./docs/crontab/crontab.preconf
 
 # start services
 ${APACHE_INIT_SCRIPT} start
