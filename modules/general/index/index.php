@@ -5,9 +5,15 @@ if (cfr('ROOT')) {
 
   $ip =  (ubRouting::checkPost($dashBoard::PROUTE_IP)) ? ubRouting::post($dashBoard::PROUTE_IP) : '';
   $period =  (ubRouting::checkPost($dashBoard::PROUTE_PERIOD)) ? ubRouting::post($dashBoard::PROUTE_PERIOD) : '';
+  if (empty($ip)) {
+    //get fallback
+    if (ubRouting::checkGet($dashBoard::PROUTE_IP)) {
+      $ip = ubRouting::get($dashBoard::PROUTE_IP);
+    }
+  }
 
   //per IP search form
-  show_window(__('Per host data'), $dashBoard->renderIpSelectForm());
+  show_window(__('Per host data'), $dashBoard->renderIpSelectForm($ip));
 
   //basic dashboard
 
