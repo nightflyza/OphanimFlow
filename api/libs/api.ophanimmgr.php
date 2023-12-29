@@ -275,6 +275,7 @@ class OphanimMgr
         if (!$this->isCollectorRunning()) {
             $command = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['COLLECTOR_PATH'] . ' -f ' . self::CONF_PATH;
             shell_exec($command);
+            sleep(3);
             if (!$this->isCollectorRunning()) {
                 $result .= __('Collector startup failed by unknown reason');
             }
@@ -287,7 +288,7 @@ class OphanimMgr
     public function stopCollector()
     {
         if ($this->isCollectorRunning()) {
-            $command = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['KILLALL_PATH'] . ' nfacctd';
+            $command = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['KILLALL_PATH'] . ' -9  nfacctd';
             shell_exec($command);
         }
     }
