@@ -15,7 +15,7 @@ NetFlow aggregation and graph toolkit
 ```
 
 
-# NetFlow sensor example
+# NetFlow software sensor usage example
 
 ```
 # softflowd -i bridge0 -s 100 -t udp=60 -t tcp=60 -t icmp=60 -t general=60 -t maxlife=60 -t tcp.rst=60 -t tcp.fin=60 -n 192.168.0.220:42112
@@ -25,7 +25,7 @@ NetFlow aggregation and graph toolkit
 # REST API
 
 The REST API has several endpoints for getting preprocessed data as well as graphs. Details of the payloads and endpoints are below.
-All API requests performs as GET requests with some parameters. 
+All API requests performs as GET requests with some parameters to base URL like http://yourhost/of/ 
 
 ## graph
 
@@ -41,13 +41,13 @@ All endpoint parameters:
 
 Minimal example:
 ```
-/of/?module=graph&ip=172.16.68.173
+?module=graph&ip=172.16.68.173
 ```
 
 
 Full example:
 ```
-/of/?module=graph&dir=R&period=week&ip=172.16.68.173&w=1300&h=400
+?module=graph&dir=R&period=week&ip=172.16.68.173&w=1300&h=400
 ```
 
 ## gettraff
