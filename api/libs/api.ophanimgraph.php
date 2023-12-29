@@ -1,13 +1,14 @@
 <?php
 
-class OphanimGraph {
+class OphanimGraph
+{
 
     /**
      * Default graphs interval
      * 
      * @var int
      */
-    protected $interval=300;
+    protected $interval = 300;
 
 
     /**
@@ -15,123 +16,133 @@ class OphanimGraph {
      * 
      * @var string
      */
-    protected $palette='OphanimFlow';
+    protected $palette = 'OphanimFlow';
 
     /**
      * Bandwidthd-like legacy custom palette overrides
      * 
      * @var array
      */
-    protected $colorOverrides=array(
-                            1=>array('r'=>240,'g'=>0,'b'=>0),
-                            2=>array('r'=>140,'g'=>0,'b'=>0),
-                            3=>array('r'=>0,'g'=>220,'b'=>0),
-                            5=>array('r'=>252,'g'=>93,'b'=>0),
-                            6=>array('r'=>240,'g'=>240,'b'=>0),
-                            7=>array('r'=>174,'g'=>174,'b'=>174),
-                            8=>array('r'=>0,'g'=>0,'b'=>245),
-                        );
+    protected $colorOverrides = array(
+        1 => array('r' => 240, 'g' => 0, 'b' => 0),
+        2 => array('r' => 140, 'g' => 0, 'b' => 0),
+        3 => array('r' => 0, 'g' => 220, 'b' => 0),
+        5 => array('r' => 252, 'g' => 93, 'b' => 0),
+        6 => array('r' => 240, 'g' => 240, 'b' => 0),
+        7 => array('r' => 174, 'g' => 174, 'b' => 174),
+        8 => array('r' => 0, 'g' => 0, 'b' => 245),
+    );
 
     /**
      * Charts debug flag
      * 
      * @var bool
-     */                        
-    protected $debug=false;
+     */
+    protected $debug = false;
 
-    public function __construct() {
-        
+    public function __construct()
+    {
     }
 
-    public function bytesToSpeed($bytes) {
-        $result=0;
+    public function bytesToSpeed($bytes)
+    {
+        $result = 0;
         if (!is_numeric($bytes)) {
-            $bytes=trim($bytes);
+            $bytes = trim($bytes);
         }
-        if ($bytes!=0) {
-            $result=($bytes*8)/$this->interval/1048576; //mbits per 5 minutes
+        if ($bytes != 0) {
+            $result = ($bytes * 8) / $this->interval / 1048576; //mbits per 5 minutes
         }
 
-        return($result);
+        return ($result);
     }
 
-    public function bytesToMb($bytes) {
-        $result=0;
-        if ($bytes!=0) {
-            $result=$bytes/1048576; //mbytes
+    public function bytesToMb($bytes)
+    {
+        $result = 0;
+        if ($bytes != 0) {
+            $result = $bytes / 1048576; //mbytes
         }
-        return($result);
+        return ($result);
     }
 
-    protected function getChartData($ip,$direction,$dateFrom,$dateTo) {
-        $result=array();
-        $tsFrom=strtotime($dateFrom);
-        $tsTo=strtotime($dateTo);
-        $delimiter=OphanimClassifier::DELIMITER;
-        $source=OphanimClassifier::DATA_PATH.$direction.'_'.$ip;
+    protected function getChartData($ip, $direction, $dateFrom, $dateTo)
+    {
+        $result = array();
+        $tsFrom = strtotime($dateFrom);
+        $tsTo = strtotime($dateTo);
+        $delimiter = OphanimClassifier::DELIMITER;
+        $source = OphanimClassifier::DATA_PATH . $direction . '_' . $ip;
         if (file_exists($source)) {
-            $handle=fopen($source,'r');
+            $handle = fopen($source, 'r');
             while (!feof($handle)) {
                 $buffer = fgets($handle, 4096);
                 if (!empty($buffer)) {
-                    $eachLine=explode($delimiter,$buffer);
-                    if ($eachLine[0]>=$tsFrom AND $eachLine[0]<=$tsTo) {
-                    $result[]=$eachLine;
-                 }
+                    $eachLine = explode($delimiter, $buffer);
+                    if ($eachLine[0] >= $tsFrom and $eachLine[0] <= $tsTo) {
+                        $result[] = $eachLine;
+                    }
                 }
             }
             fclose($handle);
         }
-        return($result);
+        return ($result);
     }
-    
-    protected function parseSpeedData($rawData,$allocTimeline=false) {
-        $result=array();
+
+    protected function parseSpeedData($rawData, $allocTimeline = false)
+    {
+        $result = array();
         if ($allocTimeline) {
-             $result=allocDayTimeline();
+            $result = allocDayTimeline();
         }
         if (!empty($rawData)) {
-            $dataSize=sizeof($rawData);
-            foreach ($rawData as $io=>$eachLine) {
-                $xAxis=($dataSize<287) ? date("H:i",$eachLine[0]) : date("d/H:i",$eachLine[0]);
-                $tmpResult=array();
-                foreach ($eachLine as $lnIdx=>$lineData) {
-                    if ($lnIdx>0) {
-                    $tmpResult[]=$this->bytesToSpeed($lineData);
+            $dataSize = sizeof($rawData);
+            foreach ($rawData as $io => $eachLine) {
+                $xAxis = ($dataSize < 287) ? date("H:i", $eachLine[0]) : date("d/H:i", $eachLine[0]);
+                $tmpResult = array();
+                foreach ($eachLine as $lnIdx => $lineData) {
+                    if ($lnIdx > 0) {
+                        $tmpResult[] = $this->bytesToSpeed($lineData);
                     }
                 }
-                $result[$xAxis]=$tmpResult;
+                $result[$xAxis] = $tmpResult;
             }
         }
-        return($result);
+        return ($result);
     }
 
 
-    public function renderGraph($ip,$direction,$dateFrom,$dateTo) {
-            $chartTitle=$ip;
-            if ($direction=='R') {
-                $chartTitle=$ip.' '.__('Download');
-            }
-            if ($direction=='S') {
-                $chartTitle=$ip.' '.__('Upload');
-            }
-            $chartMancer=new ChartMancer();
-            $classifier=new OphanimClassifier();
-            $legend=$classifier->getBaseStruct();
-            
-            
-            $chartMancer->setPalette($this->palette);
-            $chartMancer->setOverrideColors($this->colorOverrides);
-            $chartMancer->setDebug($this->debug);
-            $chartMancer->setChartLegend($legend);
-            $chartMancer->setChartYaxisName(__('Mbit/s'));
-            $chartMancer->setDisplayPeakValue(true);
-            $chartMancer->setChartTitle($chartTitle);
+    public function renderGraph($ip, $direction, $dateFrom, $dateTo, $width = '', $height = '')
+    {
+        $chartTitle = $ip;
+        if ($direction == 'R') {
+            $chartTitle = $ip . ' ' . __('Download');
+        }
+        if ($direction == 'S') {
+            $chartTitle = $ip . ' ' . __('Upload');
+        }
+        
+        $chartWidth= ($width) ? $width : 1540;
+        $chartHeight= ($height) ? $height : 400;
 
-            $chartDataRaw=$this->getChartData($ip,$direction,$dateFrom,$dateTo);
-            $speedData=$this->parseSpeedData($chartDataRaw,false);
-           
-            $chartMancer->renderChart($speedData);
-}
+        $chartMancer = new ChartMancer();
+        $classifier = new OphanimClassifier();
+        $legend = $classifier->getBaseStruct();
 
+        $chartMancer->setImageWidth($chartWidth);
+        $chartMancer->setImageHeight($chartHeight);
+        
+        $chartMancer->setPalette($this->palette);
+        $chartMancer->setOverrideColors($this->colorOverrides);
+        $chartMancer->setDebug($this->debug);
+        $chartMancer->setChartLegend($legend);
+        $chartMancer->setChartYaxisName(__('Mbit/s'));
+        $chartMancer->setDisplayPeakValue(true);
+        $chartMancer->setChartTitle($chartTitle);
+        
+        $chartDataRaw = $this->getChartData($ip, $direction, $dateFrom, $dateTo);
+        $speedData = $this->parseSpeedData($chartDataRaw, false);
+
+        $chartMancer->renderChart($speedData);
+    }
 }

@@ -132,4 +132,33 @@ class OphanimHarvester {
       
     }
 
+
+    public function getTraffCounters($year='',$month='',$ip='') {
+        $year=ubRouting::filters($year,'int');
+        $month=ubRouting::filters($month,'int');
+        $ip=ubRouting::filters($ip,'mres');
+
+        $result=array();
+        if ($year AND $month) {
+            $this->traffDb->where('year','=',$year);
+            $this->traffDb->where('month','=',$month);
+        } else {
+            $this->traffDb->where('year','=',$this->currentYear);
+            $this->traffDb->where('month','=',$this->currentMonth);
+        }
+        
+        if ($ip) {
+            $this->traffDb->where('ip','=',$ip);
+        }
+
+        $rawResult=$this->traffDb->getAll();
+        if (!empty($rawResult)) {
+            foreach ($rawResult as $io=>$each) {
+                $result[$each['ip']]['dl']=$each['dl'];
+                $result[$each['ip']]['ul']=$each['ul'];
+            }
+        }
+        return ($result);
+    }
+
 }
