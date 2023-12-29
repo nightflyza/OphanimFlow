@@ -291,7 +291,7 @@ class OphanimMgr
             //shittiest way ever
             $command = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['KILLALL_PATH'] . ' -9  nfacctd';
             shell_exec($command);
-            $pidRemove=$this->altCfg['SUDO_PATH'] . ' ' .$this->altCfg['RM_PATH'].' -fr '.self::PID_PATH;
+            $pidRemove = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['RM_PATH'] . ' -fr ' . self::PID_PATH;
             shell_exec($pidRemove);
         }
     }

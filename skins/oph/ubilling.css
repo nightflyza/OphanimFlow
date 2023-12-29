@@ -36,7 +36,6 @@ dirty magic class ;)
 }
 
 .loginform { 
-
     border: 1px solid #ddd; 
     padding: 6px 6px 6px 12px; 
     background: #fff;
@@ -48,7 +47,7 @@ dirty magic class ;)
     -webkit-box-shadow:0px 0 50px #ccc;
     -moz-box-shadow:0px 0 50px #ccc; 
     box-shadow:0px 0 50px #ccc;	
-    background-image: url('../../iconz/login.gif');
+    background-image: url('login.png');
     background-repeat: no-repeat;
     background-position: right;
 }	
@@ -486,7 +485,7 @@ sub, sup {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    background: #B5E5EF url(../../icn_alert_info.png) no-repeat;
+    background: #B5E5EF url(../icn_alert_info.png) no-repeat;
     background-position: 10px 10px;
     border: 1px solid #77BACE;
     color: #082B33;
@@ -502,7 +501,7 @@ sub, sup {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    background: #F5F3BA url(../../icn_alert_warning.png) no-repeat;
+    background: #F5F3BA url(../icn_alert_warning.png) no-repeat;
     background-position: 10px 10px;
     border: 1px solid #C7A20D;
     color: #796616;
@@ -518,7 +517,7 @@ sub, sup {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    background: #F3D9D9 url(../../icn_alert_error.png) no-repeat;
+    background: #F3D9D9 url(../icn_alert_error.png) no-repeat;
     background-position: 10px 10px;
     border: 1px solid #D20009;
     color: #7B040F;
@@ -534,7 +533,7 @@ sub, sup {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    background: #E2F6C5 url(../../icn_alert_success.png) no-repeat;
+    background: #E2F6C5 url(../icn_alert_success.png) no-repeat;
     background-position: 10px 10px;
     border: 1px solid #79C20D;
     color: #32510F;

@@ -2,7 +2,13 @@
 
 gateway_enable="YES"
 
-#all needed services
+#firewall
+firewall_enable="YES" 
+firewall_nat_enable="YES" 
+dummynet_enable="YES" 
+firewall_script="/etc/firewall.conf" 
+
+#all required services
 mysql_enable="YES"
 apache24_enable="YES"
 
