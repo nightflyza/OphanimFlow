@@ -797,3 +797,38 @@ function zb_convert_size($fs) {
         return ($fs);
     }
 }
+
+/**
+ * Renders time duration in seconds into formatted human-readable view
+ *      
+ * @param int $seconds
+ * 
+ * @return string
+ */
+function zb_formatTime($seconds) {
+    $init = $seconds;
+    $days = floor($seconds / 86400);
+    $hours = floor(round($seconds / 3600));
+    $minutes = floor(round(($seconds / 60)) % 60);
+    $seconds = (round($seconds) % 60);
+
+    if ($init < 3600) {
+//less than 1 hour
+        if ($init < 60) {
+//less than minute
+            $result = $seconds . ' ' . __('sec.');
+        } else {
+//more than one minute
+            $result = $minutes . ' ' . __('minutes') . ' ' . $seconds . ' ' . __('seconds');
+        }
+    } else {
+        if ($init < 86400) {
+//more than hour
+            $result = $hours . ' ' . __('hour') . ' ' . $minutes . ' ' . __('minutes') . ' ' . $seconds . ' ' . __('seconds');
+        } else {
+            $hoursLeft = $hours - ($days * 24);
+            $result = $days . ' ' . __('days') . ' ' . $hoursLeft . ' ' . __('hour') . ' ' . $minutes . ' ' . __('minutes') . ' ' . $seconds . ' ' . __('seconds');
+        }
+    }
+    return ($result);
+}
