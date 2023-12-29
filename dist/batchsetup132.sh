@@ -110,6 +110,7 @@ cat ${PRESETS_PATH}loader.preconf >> /boot/loader.conf
 cat ${PRESETS_PATH}rc.preconf >> /etc/rc.conf
 cat ${PRESETS_PATH}sysctl.preconf >> /etc/sysctl.conf
 cat ${PRESETS_PATH}firewall.conf > /etc/firewall.conf
+cat ${PRESETS_PATH}local.preconf > /etc/rc.local
 chmod a+x /etc/firewall.conf
 
 #deploying database, webserver and php presets

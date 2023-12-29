@@ -1,0 +1,1 @@
+/usr/local/sbin/nfacctd -f /etc/of.conf
