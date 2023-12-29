@@ -29,7 +29,7 @@ All API requests performs as GET requests with some parameters to base URL like 
 
 ## graph
 
-This API call returns PNG image for some specified IP address. Parameter "ip" - is mandatory. All other is optional.
+This API call returns traffic graph, with distribution by traffic classes as PNG image for some specified IP address. Parameter "ip" - is mandatory. All other is optional.
 
 All endpoint parameters:
 
@@ -41,8 +41,22 @@ All endpoint parameters:
 
 Minimal example:
 ```
-?module=graph&ip=172.16.68.173
+?module=graph&ip=172.30.73.247
 ```
+
+Returns something like this for a current day
+
+![of1](https://github.com/nightflyza/OphanimFlow/assets/1496954/efc90007-b814-4257-9a5e-c1835b527db0)
+
+or 
+
+```
+?module=graph&ip=172.30.73.247&period=week
+```
+
+like this for a week
+
+![of2](https://github.com/nightflyza/OphanimFlow/assets/1496954/eacdf6e3-0992-4f5c-8821-9092526b2463)
 
 
 Full example:
