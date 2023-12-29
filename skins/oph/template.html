@@ -226,6 +226,11 @@
         <!-- ### $App Screen Footer ### -->
         <footer class="bdT ta-c p-30 lh-0 fsz-sm c-grey-600">
           <span>
+            <a href="https://github.com/nightflyza/OphanimFlow">OphanimFlow</a>
+            <?php
+            print(file_get_contents('RELEASE'));
+            ?>
+            | 
             <?php
             if ($system->isLocaleSwitchable()) {
              print(YalfLangSwitch::render());
@@ -236,7 +241,7 @@
             // Page generation time end
             $mtime = explode(' ', microtime());
             $totaltime = $mtime[0] + $mtime[1] - $starttime;
-            print(__('GT:') . round($totaltime, 4));
+            print('GT: ' . round($totaltime, 4));
             print(' QC: ' . $query_counter);
             ?> 
             <? if (XHPROF) { print($xhprof_link); } ?> 

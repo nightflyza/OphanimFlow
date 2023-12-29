@@ -57,6 +57,7 @@ cp ./config/mysql.ini ${RESTORE_POINT}/config/
 cp ./config/ymaps.ini ${RESTORE_POINT}/config/
 cp ./config/yalf.ini ${RESTORE_POINT}/config/
 cp -R ./content/users ${RESTORE_POINT}/content/
+mv ./gdata ${RESTORE_POINT}/gdata_bak
 
 echo "=== web directory cleanup ==="
 rm -fr ${APACHE_DATA_PATH}${APP_PATH}/*
@@ -72,6 +73,8 @@ rm -fr ${APP_RELEASE_NAME}
 rm -fr ${APP_RELEASE_DIR}
 
 echo "=== Restoring configs ==="
+rm -fr ./gdata
+mv ${RESTORE_POINT}/gdata_bak ./gdata
 cp -R ${RESTORE_POINT}/* ./
 rm -fr ${APP_RELEASE_NAME}
 

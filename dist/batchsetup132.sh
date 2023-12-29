@@ -121,10 +121,10 @@ cp -R ${PRESETS_PATH}${PHP_CONFIG_PRESET} ${PHP_CONFIG_PATH}
 chmod -R 777 config content exports gdata
 
 #creating collector config and data storage placeholders
-mkdir /gdata
+mkdir /ofstorage
 touch /etc/of.conf
 touch /etc/pretag.map
-chmod -R 777 /etc/of.conf /etc/pretag.map /gdata
+chmod -R 777 /etc/of.conf /etc/pretag.map /ofstorage
 
 #setting landing page
 cp -R ${LANDING_PATH} ${APACHE_DATA_PATH}
