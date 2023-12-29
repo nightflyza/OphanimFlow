@@ -210,25 +210,25 @@ class OphanimDash
                   <div class="easy-pie-chart" data-size="100" data-percent="' . $loadAvgValue . '" data-bar-color="#f44336">
                     <span></span>
                   </div>
-                  <h6 class="fsz-sm">CPU</h6>
+                  <h6 class="fsz-sm">'.__('System load').'</h6>
                 </div>
                 <div class="peer">
                   <div class="easy-pie-chart" data-size="100" data-percent="' . $diskPercent . '" data-bar-color="#2196f3">
                     <span></span>
                   </div>
-                  <h6 class="fsz-sm">Disk</h6>
+                  <h6 class="fsz-sm">'.__('Disk').'</h6>
                 </div>
                 <div class="peer">
                   <div class="easy-pie-chart" data-size="100" data-percent="' . $downloadValue . '" data-bar-color="#f44336">
                     <span></span>
                   </div>
-                  <h6 class="fsz-sm">Download ratio</h6>
+                  <h6 class="fsz-sm">'.__('Download ratio').'</h6>
                 </div>
                 <div class="peer">
                   <div class="easy-pie-chart" data-size="100" data-percent="' . $uploadValue . '" data-bar-color="#ff9800">
                     <span></span>
                   </div>
-                  <h6 class="fsz-sm">Upload ratio</h6>
+                  <h6 class="fsz-sm">'.__('Upload ratio').'</h6>
                 </div>
               </div>
             </div>

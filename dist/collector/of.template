@@ -20,10 +20,10 @@ aggregate[out]: dst_host, src_port, proto
 aggregate[host_in]: src_host
 aggregate[host_out]: dst_host
 
-pre_tag_filter[in]: {SRC_LO}-{SRC_HI}
-pre_tag_filter[out]: {DST_LO}-{DST_HI}
-pre_tag_filter[host_in]: {SRC_LO}-{SRC_HI}
-pre_tag_filter[host_out]: {DST_LO}-{DST_HI}
+pre_tag_filter[in]: {SRC_RANGE}
+pre_tag_filter[out]: {DST_RANGE}
+pre_tag_filter[host_in]: {SRC_RANGE}
+pre_tag_filter[host_out]: {DST_RANGE}
 
 sql_user: {MYSQLUSER}
 sql_passwd: {MYSQLPASSWORD}

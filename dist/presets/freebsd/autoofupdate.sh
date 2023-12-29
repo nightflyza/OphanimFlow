@@ -76,7 +76,7 @@ cp -R ${RESTORE_POINT}/* ./
 rm -fr ${APP_RELEASE_NAME}
 
 echo "=== Setting FS permissions ==="
-chmod -R 777 content/ config/ exports/
+chmod -R 777 content/ config/ exports/ gdata/
 
 echo "=== Updating autoupdater ==="
 cp -R ${UPDATER_DISTRO} /bin/

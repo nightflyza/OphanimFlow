@@ -194,19 +194,26 @@ class OphanimMgr
             $dbConfig = rcms_parse_ini_file('config/mysql.ini');
             $template = file_get_contents(self::TEMPLATE_PATH);
             $result = $template;
-            $srcLo = 1;
-            $srcHi = $this->netsCount;
-            $dstLo = $this->netsCount + 1;
-            $dstHi = $this->netsCount + $this->netsCount;
+
+            if ($this->netsCount == 1) {
+                $srcRange = 1;
+                $dstRange = 2;
+            } else {
+                $srcLo = 1;
+                $srcHi = $this->netsCount;
+                $dstLo = $this->netsCount + 1;
+                $dstHi = $this->netsCount + $this->netsCount;
+                $srcRange = $srcLo . '-' . $srcHi;
+                $dstRange = $dstLo . '-' . $dstHi;
+            }
+
             $result = str_replace('{PORT}', $this->port, $result);
             $result = str_replace('{NETFLOW_TEMPLATES_PATH}', self::NFT_PATH, $result);
             $result = str_replace('{SAMPLING_RATE}', $this->samplingRate, $result);
             $result = str_replace('{PRETAG_PATH}', self::PRETAG_PATH, $result);
             $result = str_replace('{PID_PATH}', self::PID_PATH, $result);
-            $result = str_replace('{SRC_LO}', $srcLo, $result);
-            $result = str_replace('{SRC_HI}', $srcHi, $result);
-            $result = str_replace('{DST_LO}', $dstLo, $result);
-            $result = str_replace('{DST_HI}', $dstHi, $result);
+            $result = str_replace('{SRC_RANGE}', $srcRange, $result);
+            $result = str_replace('{DST_RANGE}', $dstRange, $result);
             $result = str_replace('{MYSQLUSER}', $dbConfig['username'], $result);
             $result = str_replace('{MYSQLPASSWORD}', $dbConfig['password'], $result);
         }
@@ -226,7 +233,9 @@ class OphanimMgr
     {
         $result = '';
         if ($this->isCollectorRunning()) {
-            $result .= $this->messages->getStyledMessage(__('Netflow collector is running at port') . ' :' . $this->port, 'success');
+            $collectorLabel = '';
+            $collectorLabel .= __('Netflow collector is running at port') . ' ' . $this->port . ', ' . __('sampling rate') . ': ' . $this->samplingRate;
+            $result .= $this->messages->getStyledMessage($collectorLabel, 'success');
             $result .= wf_delimiter();
             $result .= wf_Link(self::URL_ME . '&' . self::ROUTE_STOP . '=true', __('Stop collector'), false, 'btn cur-p btn-danger btn-color');
         } else {

@@ -635,8 +635,8 @@ class ChartMancer {
                     $y1 = (int) $y1;
                     $x2 = (int) $x2;
                     $y2 = (int) $y2;
-                    $rValue =(isset($zBuffer[$subVal])) ? ($subVal-1).'_' : $subVal;
-                    $zBuffer[$rValue] = array(
+                    @$rValue =(isset($zBuffer[$subVal])) ? ($subVal-1).'_' : $subVal;
+                    @$zBuffer[$rValue] = array(
                         'value' => $subVal,
                         'x1' => $x1,
                         'y1' => $y1,
