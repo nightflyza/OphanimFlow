@@ -9,10 +9,10 @@ if (ubRouting::optionCliCheck('run', false)) {
     $diffDumpFlag = ubRouting::optionCliCheck('dumpdiff', false);
     $errorCount=0;
 
-    $ubillingLibsPath = __DIR__ . '/../../ubilling/api/libs/';
+    $ubillingLibsPath = __DIR__ . '/../../YALF/api/libs/';
     $yalfLibsPath = __DIR__ . '/libs/';
 
-    $ignoreList = array('api.compat.php', 'api.ubconfig.php', 'api.mysql.php'); //that libs may be different
+    $ignoreList = array('api.compat.php', 'api.ubconfig.php', 'api.mysql.php','api.yalfloginform.php'); //that libs may be different
     $ignoreList = array_flip($ignoreList);
 
     $allYalfLibs = rcms_scandir($yalfLibsPath, '*.php');

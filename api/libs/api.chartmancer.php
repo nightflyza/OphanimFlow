@@ -157,7 +157,7 @@ class ChartMancer {
      * 
      * @var string
      */
-    protected $font = 'assets/OpenSans-Regular.ttf';
+    protected $font = 'skins/OpenSans-Regular.ttf';
 
     /**
      * Font size in pt.
