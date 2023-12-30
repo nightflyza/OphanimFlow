@@ -47,7 +47,7 @@ class OphanimHarvester
     protected function setDates()
     {
         $this->currentYear = date("Y");
-        $this->currentMonth = date("m");
+        $this->currentMonth = date("n");
         $this->currentDay = date("d");
     }
 

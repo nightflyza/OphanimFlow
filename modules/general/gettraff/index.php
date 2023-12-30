@@ -14,7 +14,7 @@ if (!empty($endpointsAllowedHostsRaw)) {
 }
 
 $year = (ubRouting::get('year', 'int')) ? ubRouting::get('year', 'int') : curyear();
-$month = (ubRouting::get('month', 'int')) ? ubRouting::get('month', 'int') : date("m");
+$month = (ubRouting::get('month', 'int')) ? ubRouting::get('month', 'int') : date("n");
 $ip = (ubRouting::get('ip', 'fi', FILTER_VALIDATE_IP)) ? ubRouting::get('ip', 'fi', FILTER_VALIDATE_IP) : '';
 
 

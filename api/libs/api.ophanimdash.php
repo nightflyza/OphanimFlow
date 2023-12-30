@@ -131,7 +131,7 @@ class OphanimDash
     $result = '';
     $this->traffStatDb->where('ip', '=', $ip);
     $this->traffStatDb->where('year', '=', curyear());
-    $this->traffStatDb->where('month', '=', date("m"));
+    $this->traffStatDb->where('month', '=', date("n"));
     $traffData = $this->traffStatDb->getAll();
     if (!empty($traffData)) {
       $summary = $ip . ' ' . __('Traffic summary') . ' -  ' . __('Downloaded') . ': ' . zb_convert_size($traffData[0]['dl']) . ' ' . __('Uploaded') . ': ' . zb_convert_size($traffData[0]['ul']);
@@ -180,11 +180,11 @@ class OphanimDash
     if (empty($sysInfoCached)) {
       $sysInfoCached = array();
       $this->traffStatDb->where('year', '=', curyear());
-      $this->traffStatDb->where('month', '=', date("m"));
+      $this->traffStatDb->where('month', '=', date("n"));
       $totalDownload = $this->traffStatDb->getFieldsSum('dl');
 
       $this->traffStatDb->where('year', '=', curyear());
-      $this->traffStatDb->where('month', '=', date("m"));
+      $this->traffStatDb->where('month', '=', date("n"));
       $totalUpload = $this->traffStatDb->getFieldsSum('ul');
 
       $totalTraffic = $totalDownload + $totalUpload;

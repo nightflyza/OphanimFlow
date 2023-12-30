@@ -84,7 +84,7 @@ This API call returns JSON array of all traffic summary collected by some period
 Optional endpoint parameters:
 
 - year - year of summary.
-- month - month number to return traffic summary with leading zero.
+- month - month number to return traffic summary without leading zero.
 - ip - IP address in format x.x.x.x
 
 Minimal example:
