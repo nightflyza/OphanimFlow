@@ -56,7 +56,7 @@ class OphanimDash
   }
 
 
-  public function renderIpSelectForm($ip = '')
+  public function renderIpSelectForm($ip = '', $period = '')
   {
     $result = '';
     $ipsAvail = array();
@@ -78,7 +78,7 @@ class OphanimDash
 
     $availPeriods = array('day' => __('Day'), 'week' => __('Week'), 'month' => __('Month'), 'year' => __('Year'));
     $inputs = wf_SelectorSearchable(self::PROUTE_IP, $ipsAvail, 'IP', $ip, false) . ' ';
-    $inputs .= wf_SelectorSearchable(self::PROUTE_PERIOD, $availPeriods, 'Period', $ip, false) . ' ';
+    $inputs .= wf_SelectorSearchable(self::PROUTE_PERIOD, $availPeriods, 'Period', $period, false) . ' ';
     $inputs .= wf_Submit(__('Search'), '', 'class="btn btn-primary btn-color"');
     $result .= wf_Form(self::URL_ME, 'POST', $inputs, 'glamour');
     return ($result);

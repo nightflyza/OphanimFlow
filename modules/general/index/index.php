@@ -4,7 +4,7 @@ if (cfr('ROOT')) {
   $dashBoard = new OphanimDash();
 
   $ip =  (ubRouting::checkPost($dashBoard::PROUTE_IP)) ? ubRouting::post($dashBoard::PROUTE_IP) : '';
-  $period =  (ubRouting::checkPost($dashBoard::PROUTE_PERIOD)) ? ubRouting::post($dashBoard::PROUTE_PERIOD) : '';
+  $period =  (ubRouting::checkPost($dashBoard::PROUTE_PERIOD)) ? ubRouting::post($dashBoard::PROUTE_PERIOD) : 'day';
   if (empty($ip)) {
     //get fallback
     if (ubRouting::checkGet($dashBoard::PROUTE_IP)) {
@@ -13,7 +13,7 @@ if (cfr('ROOT')) {
   }
 
   //per IP search form
-  show_window(__('Per host data'), $dashBoard->renderIpSelectForm($ip));
+  show_window(__('Per host data'), $dashBoard->renderIpSelectForm($ip, $period));
 
   //basic dashboard
 
