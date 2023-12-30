@@ -1,5 +1,7 @@
 # OphanimFlow
-NetFlow aggregation and graph toolkit
+NetFlow aggregation and graph toolkit. 
+
+Basic idea is replacement of bandwidthd and Stargazer cap_nf module in one solution, which performs NetFlow data collecting, classification, preprocessing and performing graphs rendering per each host in your network and basic traffic accounting of it, somewhere on some dedicated host.
 
 # FreeBSD 13.2 batch setup
 
@@ -16,6 +18,8 @@ NetFlow aggregation and graph toolkit
 
 
 # NetFlow software sensor usage example
+
+Default NetFlow collector UDP port is 42112 and default sampling rate is 100. Flows data dumps to database every 5 minutes, and preprocesses every 5 minutes for charts and every 10 minutes for summary traffic counters, so 
 
 ```
 # softflowd -i bridge0 -s 100 -t udp=60 -t tcp=60 -t icmp=60 -t general=60 -t maxlife=60 -t tcp.rst=60 -t tcp.fin=60 -n 192.168.0.220:42112
