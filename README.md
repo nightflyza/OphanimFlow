@@ -1,21 +1,30 @@
 # OphanimFlow
 NetFlow aggregation and graph toolkit. 
 
-Basic idea is replacement of bandwidthd and Stargazer cap_nf module in one solution, which performs NetFlow data collecting, classification, preprocessing and performing graphs rendering per each host in your network and basic traffic accounting of it, somewhere on some dedicated host.
+Basic idea is replacement of bandwidthd and Stargazer cap_nf module in one solution, which performs NetFlow data collecting, classification, preprocessing and performing network bandwidth utilization graphs rendering per each host in your network and basic traffic accounting of it, somewhere on some dedicated host.
 
 # FreeBSD 13.2 batch setup
+
+ninja way
 
 ```
 # fetch https://raw.githubusercontent.com/nightflyza/OphanimFlow/main/dist/batchsetup132.sh
 # sh batchsetup132.sh
 ```
 
-# Automatic upgrade OphanimFlow to latest build
+After that, a simple web interface will be available to you at a link like http://yourhost/of/, which will allow you to make the minimum necessary settings, such as specifying your networks, and start using OphanimFlow. The default login is "admin", the default password is "demo". Don't forget to change it in the user profile settings.
+
+![ofdashboard](https://github.com/nightflyza/OphanimFlow/assets/1496954/df650ff6-1113-4c92-93d6-6f6371799e2f)
+
+# Upgrade OphanimFlow to latest build
+
+Just run the script
 
 ```
 # /bin/autoofupdate.sh
 ```
 
+and stay tuned! ;)
 
 # NetFlow software sensor usage example
 
