@@ -65,6 +65,8 @@ class OphanimDash
     $ipsRaw = $this->cache->get(self::KEY_IPLIST, $this->cachingTimeout);
     if (empty($ipsRaw)) {
       $this->traffStatDb->selectable('ip');
+      $this->traffStatDb->where('year','=',date("Y"));
+      $this->traffStatDb->where('month','=',date("n"));
       $this->traffStatDb->orderBy('dl', 'DESC');
       $ipsRaw = $this->traffStatDb->getAll();
       $this->traffStatDb->selectable();
