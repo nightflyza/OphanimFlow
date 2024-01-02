@@ -37,7 +37,11 @@ Default NetFlow collector UDP port is 42112 and default sampling rate is 100. Fl
 
 # REST API
 
-The REST API has several endpoints for getting preprocessed data as well as graphs. Details of the payloads and endpoints are below.
+The REST API has several endpoints for getting preprocessed data as well as graphs. So you can use OphanimFlow data in your external apps, somethink like that:
+
+![opharchabstract](https://github.com/nightflyza/OphanimFlow/assets/1496954/0115ecc1-7d6f-473c-885a-169d01f5f04e)
+
+Details of the payloads and endpoints are below.
 All API requests performs as GET requests with some parameters to base URL like http://yourhost/of/ 
 
 ## graph
