@@ -81,6 +81,8 @@ Full example:
 ?module=graph&dir=R&period=week&ip=172.16.68.173&w=1300&h=400
 ```
 
+IP 0.0.0.0 returns summary bansiwdth chart for all tracked hosts.
+
 ## gettraff
 
 This API call returns JSON array of all traffic summary collected by some period for all or specified IP address.
