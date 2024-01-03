@@ -65,8 +65,8 @@ class OphanimDash
     $ipsRaw = $this->cache->get(self::KEY_IPLIST, $this->cachingTimeout);
     if (empty($ipsRaw)) {
       $this->traffStatDb->selectable('ip');
-      $this->traffStatDb->where('year','=',date("Y"));
-      $this->traffStatDb->where('month','=',date("n"));
+      $this->traffStatDb->where('year', '=', date("Y"));
+      $this->traffStatDb->where('month', '=', date("n"));
       $this->traffStatDb->orderBy('dl', 'DESC');
       $ipsRaw = $this->traffStatDb->getAll();
       $this->traffStatDb->selectable();
@@ -78,7 +78,7 @@ class OphanimDash
       }
     }
 
-    $availPeriods = array('day' => __('Day'), 'week' => __('Week'), 'month' => __('Month'), 'year' => __('Year'));
+    $availPeriods = array('hour' => __('Hour'), 'day' => __('Day'), 'week' => __('Week'), 'month' => __('Month'), 'year' => __('Year'));
     $inputs = wf_SelectorSearchable(self::PROUTE_IP, $ipsAvail, 'IP', $ip, false) . ' ';
     $inputs .= wf_SelectorSearchable(self::PROUTE_PERIOD, $availPeriods, 'Period', $period, false) . ' ';
     $inputs .= wf_Submit(__('Search'), '', 'class="btn btn-primary btn-color"');
