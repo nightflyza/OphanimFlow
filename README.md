@@ -81,7 +81,7 @@ Full example:
 ?module=graph&dir=R&period=week&ip=172.16.68.173&w=1300&h=400
 ```
 
-IP 0.0.0.0 returns summary bansiwdth chart for all tracked hosts.
+IP 0.0.0.0 returns summary bandwidth chart for all tracked hosts.
 
 ## gettraff
 
@@ -136,3 +136,21 @@ Returns:
 ```
 
 as just data for specified IP 172.16.1.33 for december 2023.
+
+# More configuration
+
+While the API endpoints is currently accessible without any authorization, you may want to limit the list of hosts IPs that can receive data from them. This is done using the ENDPOINTS_HOSTS option in the of/config/alter.ini configuration file. Something like:
+
+```
+ENDPOINTS_HOSTS="192.168.0.8,192.168.42.56"
+```
+
+Also you may want to change NetFlow collector port or sampling rate, you also can do this in the same alter.ini config file using following options:
+
+```
+;NetFlow colloector default options
+COLLECTOR_PORT=42112
+SAMPLING_RATE=100
+```
+
+dont forget regenerate configuration and restart collector after this
