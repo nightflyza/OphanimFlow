@@ -2,11 +2,11 @@
 
 $endpointsAllowedHostsRaw = $ubillingConfig->getAlterParam('ENDPOINTS_HOSTS');
 if (!empty($endpointsAllowedHostsRaw)) {
-    $endpointsAllowedHostsRaw=explode(',',$endpointsAllowedHostsRaw);
-    $endpointsAllowedHosts=array();
-    foreach ($endpointsAllowedHostsRaw as $io=>$each) {
-        $ip=trim($each);
-        $endpointsAllowedHosts[$ip]=$io;
+    $endpointsAllowedHostsRaw = explode(',', $endpointsAllowedHostsRaw);
+    $endpointsAllowedHosts = array();
+    foreach ($endpointsAllowedHostsRaw as $io => $each) {
+        $ip = trim($each);
+        $endpointsAllowedHosts[$ip] = $io;
     }
     if (!isset($endpointsAllowedHosts[$_SERVER['REMOTE_ADDR']])) {
         die('GRAPH:DENIED');
