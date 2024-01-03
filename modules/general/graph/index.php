@@ -27,6 +27,11 @@ $dateTo = date("Y-m-d H:i:s");
 if (ubRouting::checkGet('period')) {
     $period = ubRouting::get('period');
     switch ($period) {
+        case 'hour':
+            $dateFrom = date("Y-m-d H:i:s", strtotime("-1 hour", time()));
+            $dateTo = date("Y-m-d H:i:s");
+            break;
+
         case 'day':
             $dateFrom = date("Y-m-d 00:00:00");
             $dateTo = date("Y-m-d H:i:s");

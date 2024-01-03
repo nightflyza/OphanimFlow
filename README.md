@@ -52,7 +52,7 @@ All endpoint parameters:
 
 - ip - IP address in format x.x.x.x
 - dir - traffic direction. Possible values: R, S that points to "received" and "sent". Default: R.
-- period - possible values: day, week, month, year. Default: day.
+- period - possible values: hour, day, week, month, year. Default: day.
 - w - width of graph image in pixels. Default : 1540.
 - h - heigth of graph image in pixels. Default: 400.
 
