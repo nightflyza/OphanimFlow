@@ -181,21 +181,27 @@ class OphanimClassifier
 
             //total charts data
             $trafTotals = array();
-            $trafTotals['time'] = time();
             $baseStruct = $this->getBaseStruct();
+            $tSctruct = array('time' => 0);
 
             foreach ($baseStruct as $io => $each) {
-                $trafTotals[$each] = 0;
+                $tSctruct[$each] = 0;
             }
 
             if (!empty($aggregatedData)) {
                 foreach ($aggregatedData as $eachIp => $eachTs) {
                     if (!empty($eachTs)) {
                         foreach ($eachTs as $eachTimestamp => $eachBytes) {
+                            if (!isset($trafTotals[$eachTimestamp])) {
+                                $trafTotals[$eachTimestamp]['time'] = $eachTimestamp;
+                                $trafTotals[$eachTimestamp] += $tSctruct;
+                                
+                            }
+
                             if (!empty($eachBytes)) {
                                 foreach ($eachBytes as $eachProto => $eachCounters) {
-                                    if ($eachProto != 'time') {
-                                        $trafTotals[$eachProto] += $eachCounters;
+                                    if ($eachProto !== 'time') {
+                                        $trafTotals[$eachTimestamp][$eachProto] += $eachCounters;
                                     }
                                 }
                             }
@@ -208,8 +214,13 @@ class OphanimClassifier
         if (!empty($trafTotals)) {
             $fnameTotal = self::DATA_PATH . $direction . '_' . '0.0.0.0';
             $line = '';
-            $line .= implode(self::DELIMITER, $trafTotals);
-            $line .= PHP_EOL;
+            if (!empty($trafTotals)) {
+                foreach ($trafTotals as $io => $eachTotalsLine) {
+                    $line .= implode(self::DELIMITER, $eachTotalsLine);
+                    $line .= PHP_EOL;
+                }
+            }
+
             file_put_contents($fnameTotal, $line, FILE_APPEND);
         }
     }
