@@ -18,7 +18,7 @@ class OphanimClassifier
         'vpn' => 0,
         'ftp' => 0,
         'web' => 0,
-        'rtsp' => 0,
+        'proxy' => 0,
         'quic' => 0,
     );
 
@@ -33,14 +33,16 @@ class OphanimClassifier
         143 => 'mail',
         587 => 'mail',
         53 => 'dns',
-        554 => 'rtsp',
+        3128 => 'proxy',
+        8080 => 'proxy',
+        8888 => 'proxy',
+        1080 => 'proxy',
     );
 
     protected $udpProto = array(
         53 => 'dns',
         1701 => 'vpn',
         51820 => 'vpn',
-        554 => 'rtsp',
         443 => 'quic',
         80 => 'quic',
     );
