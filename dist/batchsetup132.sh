@@ -17,6 +17,7 @@ PHP_CONFIG_PATH="/usr/local/etc/php.ini"
 MYSQL_INIT_SCRIPT="/usr/local/etc/rc.d/mysql-server"
 MYSQL_CONFIG_PRESET="80_my.cnf"
 MYSQL_CONFIG_PATH="/usr/local/etc/mysql/my.cnf"
+MYSQL_SECURE="/root/.mysql_secret"
 WEB_DIR="of"
 DUMP_PATH="dist/dumps/ophanimflow.sql"
 LANDING_PATH="dist/landing/"
@@ -137,10 +138,18 @@ crontab ${CRONTAB_PRESET}
 ${APACHE_INIT_SCRIPT} start
 ${MYSQL_INIT_SCRIPT} start
 
-#Setting MySQL root password
-TMP_PASS=`tail -n 1 /root/.mysql_secret`
+# Setting MySQL root password
+if [ -f ${MYSQL_SECURE} ];
+then
+echo "Secure MySQL installation"
+TMP_PASS=`tail -n 1 ${MYSQL_SECURE}`
+echo "Temporary password is ${TMP_PASS}"
 mysqladmin -u root -p${TMP_PASS} password ${MYSQL_PASSWD}
 
+else
+echo "Insecure MySQL installation"
+mysqladmin -u root password ${MYSQL_PASSWD}
+fi
 
 #restarting database and web server
 ${MYSQL_INIT_SCRIPT} restart
