@@ -15,7 +15,7 @@ APACHE_CONFIG_NAME="httpd.conf"
 PHP_CONFIG_PRESET="php8.ini"
 PHP_CONFIG_PATH="/usr/local/etc/php.ini"
 MYSQL_INIT_SCRIPT="/usr/local/etc/rc.d/mysql-server"
-MYSQL_CONFIG_PRESET="57_my.cnf"
+MYSQL_CONFIG_PRESET="80_my.cnf"
 MYSQL_CONFIG_PATH="/usr/local/etc/mysql/my.cnf"
 WEB_DIR="of"
 DUMP_PATH="dist/dumps/ophanimflow.sql"
@@ -39,8 +39,8 @@ pkg install -y automake
 pkg install -y vim-tiny
 pkg install -y memcached
 pkg install -y redis
-pkg install -y mysql57-client
-pkg install -y mysql57-server
+pkg install -y mysql80-client
+pkg install -y mysql80-server
 pkg install -y apache24
 pkg install -y php82
 pkg install -y mod_php82
@@ -82,7 +82,7 @@ pkg install -y git
 
 #building specific software from ports
 portsnap fetch && portsnap extract && portsnap update
-cd /usr/ports/databases/pecl-memcached &&  make BATCH=yes install
+#cd /usr/ports/databases/pecl-memcached &&  make BATCH=yes install
 
 #installing pmacct with mysql support
 cd /usr/ports/net-mgmt/pmacct/ && make  WITH="MYSQL" BATCH=yes install
