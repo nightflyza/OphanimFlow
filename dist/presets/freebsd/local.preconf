@@ -1,1 +1,6 @@
+if [ -s /etc/of.conf ]; then
+echo "running collector"
 /usr/local/sbin/nfacctd -f /etc/of.conf
+else
+echo "skipping collector startup with empty config"
+fi
