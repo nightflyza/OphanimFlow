@@ -145,7 +145,6 @@ echo "Secure MySQL installation"
 TMP_PASS=`tail -n 1 ${MYSQL_SECURE}`
 echo "Temporary password is ${TMP_PASS}"
 mysqladmin -u root -p${TMP_PASS} password ${MYSQL_PASSWD}
-
 else
 echo "Insecure MySQL installation"
 mysqladmin -u root password ${MYSQL_PASSWD}

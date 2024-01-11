@@ -10,7 +10,6 @@ firewall_script="/etc/firewall.conf"
 
 #all required services
 mysql_enable="YES"
-mysql_args="--initialize-insecure --user=mysql"
 apache24_enable="YES"
 
 #NTP
