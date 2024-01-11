@@ -12,6 +12,15 @@ ninja way
 # sh batchsetup132.sh
 ```
 
+# FreeBSD 14.0 batch setup
+
+ready for testing
+
+```
+# fetch https://raw.githubusercontent.com/nightflyza/OphanimFlow/main/dist/batchsetup140.sh
+# sh batchsetup140.sh
+```
+
 After that, a simple web interface will be available to you at a link like http://yourhost/of/, which will allow you to make the minimum necessary settings, such as specifying your networks, and start using OphanimFlow. The default login is "admin", the default password is "demo". Don't forget to change it in the user profile settings.
 
 ![ofdashboard](https://github.com/nightflyza/OphanimFlow/assets/1496954/df650ff6-1113-4c92-93d6-6f6371799e2f)
