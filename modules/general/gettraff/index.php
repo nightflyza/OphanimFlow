@@ -2,11 +2,11 @@
 
 $endpointsAllowedHostsRaw = $ubillingConfig->getAlterParam('ENDPOINTS_HOSTS');
 if (!empty($endpointsAllowedHostsRaw)) {
-    $endpointsAllowedHostsRaw=explode(',',$endpointsAllowedHostsRaw);
-    $endpointsAllowedHosts=array();
-    foreach ($endpointsAllowedHostsRaw as $io=>$each) {
-        $ip=trim($each);
-        $endpointsAllowedHosts[$ip]=$io;
+    $endpointsAllowedHostsRaw = explode(',', $endpointsAllowedHostsRaw);
+    $endpointsAllowedHosts = array();
+    foreach ($endpointsAllowedHostsRaw as $io => $each) {
+        $ip = trim($each);
+        $endpointsAllowedHosts[$ip] = $io;
     }
     if (!isset($endpointsAllowedHosts[$_SERVER['REMOTE_ADDR']])) {
         die('GETTRAFF:DENIED');
@@ -20,7 +20,7 @@ $ip = (ubRouting::get('ip', 'fi', FILTER_VALIDATE_IP)) ? ubRouting::get('ip', 'f
 
 $harvester = new OphanimHarvester();
 
-$trafCounters = $harvester->getTraffCounters($year,$month,$ip);
+$trafCounters = $harvester->getTraffCounters($year, $month, $ip);
 
 header('Content-type: application/json');
 die(json_encode($trafCounters));

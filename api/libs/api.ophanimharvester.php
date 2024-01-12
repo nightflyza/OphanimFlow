@@ -1,32 +1,64 @@
 <?php
 
+/**
+ * Performs traffic summary accounting for each of collected hosts
+ */
+class OphanimHarvester {
 
-class OphanimHarvester
-{
-
+    /**
+     * Contains current year number
+     *
+     * @var int
+     */
     protected $currentYear = 0;
+
+    /**
+     * Contains current month number without leading zero
+     *
+     * @var int
+     */
     protected $currentMonth = 0;
+
+    /**
+     * Contains current day of month number
+     *
+     * @var int
+     */
     protected $currentDay = 0;
 
     /**
+     * Contains aggregated hosts in database abstraction layer
      * 
      * @var object
      */
     protected $inDb = '';
 
     /**
+     * Contains aggregated hosts out database abstraction layer
      * 
      * @var object
      */
     protected $outDb = '';
 
     /**
+     * Contains traffic summary table database abstration layer
      * 
      * @var object
      */
     protected $traffDb = '';
 
+    /**
+     * Contains preloaded previous traffic summary data for current month as ip=>[dl/ul]
+     *
+     * @var array
+     */
     protected $traffStats = array();
+
+    /**
+     * Contains loaded current run traffic as ip>in/out
+     *
+     * @var array
+     */
     protected $currentTraff = array();
 
 
@@ -37,36 +69,51 @@ class OphanimHarvester
     const TABLE_HOST_OUT = 'host_out';
     const TABLE_TRAFFSTAT = 'traffstat';
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->setDates();
         $this->initDb();
         $this->loadTraffStats();
     }
 
-    protected function setDates()
-    {
+    /**
+     * Sets current datetime properties
+     *
+     * @return void
+     */
+    protected function setDates() {
         $this->currentYear = date("Y");
         $this->currentMonth = date("n");
         $this->currentDay = date("d");
     }
 
-    protected function initDb()
-    {
+    /**
+     * Inits database abstraction layers
+     *
+     * @return void
+     */
+    protected function initDb() {
         $this->inDb = new NyanORM(self::TABLE_HOST_IN);
         $this->outDb = new NyanORM(self::TABLE_HOST_OUT);
         $this->traffDb = new NyanORM(self::TABLE_TRAFFSTAT);
     }
 
-    protected function loadTraffStats()
-    {
+    /**
+     * Loads current month saved traffic stats
+     *
+     * @return void
+     */
+    protected function loadTraffStats() {
         $this->traffDb->where('year', '=', $this->currentYear);
         $this->traffDb->where('month', '=', $this->currentMonth);
         $this->traffStats = $this->traffDb->getAll('ip');
     }
 
-    protected function getLastTraff()
-    {
+    /**
+     * Returns last run aggregates traffic stats as ip=>in/out
+     *
+     * @return array
+     */
+    protected function getLastTraff() {
         $tmp = array();
         $allOut = $this->outDb->getAll();
         $allIn = $this->inDb->getAll();
@@ -99,17 +146,24 @@ class OphanimHarvester
         return ($tmp);
     }
 
-    protected function flushLastTraff()
-    {
+    /**
+     * Drops data from host in/out tables
+     *
+     * @return void
+     */
+    protected function flushLastTraff() {
         nr_query('TRUNCATE TABLE `' . self::TABLE_HOST_IN . '`');
         nr_query('TRUNCATE TABLE `' . self::TABLE_HOST_OUT . '`');
     }
 
-    public function runTrafficProcessing()
-    {
+    /**
+     * Performs aggregated traffic processing, flushes raw data and updates summary database if required
+     *
+     * @return void
+     */
+    public function runTrafficProcessing() {
         $currentRunTraff = $this->getLastTraff();
         if (!empty($currentRunTraff)) {
-            debarr($currentRunTraff);
             $this->flushLastTraff();
             foreach ($currentRunTraff as $eachIp => $eachTraff) {
                 if (isset($this->traffStats[$eachIp])) {
@@ -139,9 +193,16 @@ class OphanimHarvester
         }
     }
 
-
-    public function getTraffCounters($year = '', $month = '', $ip = '')
-    {
+    /**
+     * Returns traffic summary data for some period or current month
+     *
+     * @param string $year
+     * @param string $month
+     * @param string $ip
+     * 
+     * @return array
+     */
+    public function getTraffCounters($year = '', $month = '', $ip = '') {
         $year = ubRouting::filters($year, 'int');
         $month = ubRouting::filters($month, 'int');
         $ip = ubRouting::filters($ip, 'mres');

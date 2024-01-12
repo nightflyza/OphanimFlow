@@ -1,24 +1,34 @@
 <?php
 
-class OphanimDash
-{
+/**
+ * Draft dashboard implementation
+ */
+class OphanimDash {
 
   /**
+   * Contains default caching timeout
    * 
    * @var int
    */
   protected $cachingTimeout = 600;
+
   /**
+   * System caching object instance
    * 
    * @var object
    */
+
   protected $cache = '';
+
   /**
+   * traffic stats database abstraction layer 
    * 
    * @var object
    */
   protected $traffStatDb = '';
+
   /**
+   * system messages helper placeholder
    * 
    * @var object
    */
@@ -33,31 +43,49 @@ class OphanimDash
   const KEY_SYSINFO = 'SYSINFO';
   const KEY_TRAFPROTO = 'TRAFFPROTO_';
 
-  public function __construct()
-  {
+  public function __construct() {
     $this->initMessages();
     $this->initCache();
     $this->initDb();
   }
 
-  protected function initCache()
-  {
+  /**
+   * Inits caching object instance
+   *
+   * @return void
+   */
+  protected function initCache() {
     $this->cache = new UbillingCache();
   }
 
-  protected function initMessages()
-  {
+  /**
+   * Inits system messages helper
+   *
+   * @return void
+   */
+  protected function initMessages() {
     $this->messages = new UbillingMessageHelper();
   }
 
-  protected function initDb()
-  {
+  /**
+   * Inits traffic stats database abstraction layer
+   *
+   * @return void
+   */
+  protected function initDb() {
     $this->traffStatDb = new NyanORM(OphanimHarvester::TABLE_TRAFFSTAT);
   }
 
 
-  public function renderIpSelectForm($ip = '', $period = '')
-  {
+  /**
+   * Renders IP selection form
+   *
+   * @param string $ip
+   * @param string $period
+   * 
+   * @return string
+   */
+  public function renderIpSelectForm($ip = '', $period = '') {
     $result = '';
     $ipsAvail = array();
     $ipsAvail = array();
@@ -86,8 +114,14 @@ class OphanimDash
     return ($result);
   }
 
-  protected function loadTrafProtos($direction)
-  {
+  /**
+   * Loads and returns traffic totals for some direction as proto=>counters
+   *
+   * @param string $direction
+   * 
+   * @return array
+   */
+  protected function loadTrafProtos($direction) {
     $trafTotals = array();
     $cachedData = $this->cache->get(self::KEY_TRAFPROTO . $direction, $this->cachingTimeout);
 
@@ -128,8 +162,15 @@ class OphanimDash
     return ($trafTotals);
   }
 
-  public function renderIpGraphs($ip, $period)
-  {
+  /**
+   * Renders chart in both direction for some IP
+   *
+   * @param string $ip
+   * @param string $period
+   * 
+   * @return string
+   */
+  public function renderIpGraphs($ip, $period) {
     $result = '';
     $this->traffStatDb->where('ip', '=', $ip);
     $this->traffStatDb->where('year', '=', curyear());
@@ -149,8 +190,14 @@ class OphanimDash
     return ($result);
   }
 
-  protected function bytesToSpeed($bytes)
-  {
+  /**
+   * Converts bytes counters into mbit/s
+   *
+   * @param int $bytes
+   * 
+   * @return float
+   */
+  protected function bytesToSpeed($bytes) {
     $result = 0;
     if (!is_numeric($bytes)) {
       $bytes = trim($bytes);
@@ -163,12 +210,12 @@ class OphanimDash
     return ($result);
   }
 
-
-
-
-
-  public function renderSystemInfo()
-  {
+  /**
+   * Renders system info panel
+   *
+   * @return string
+   */
+  public function renderSystemInfo() {
     $result = '';
     $sysInfoCached = $this->cache->get(self::KEY_SYSINFO, $this->cachingTimeout);
 
@@ -245,14 +292,15 @@ class OphanimDash
     return ($result);
   }
 
-  public function renderTrafProtos()
-  {
+  /**
+   * Renders traffic summary protos stats
+   *
+   * @return void
+   */
+  public function renderTrafProtos() {
     $result = '';
     $downloadStats = $this->loadTrafProtos('R');
     $uploadStats = $this->loadTrafProtos('S');
-
-
-
 
     if (!empty($downloadStats) and !empty($uploadStats)) {
       $labelsR = '';

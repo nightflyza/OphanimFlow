@@ -1,46 +1,54 @@
 <?php
 
-
-class OphanimMgr
-{
+/**
+ * Performs basic collector config and execution management
+ */
+class OphanimMgr {
 
     /**
+     * Contains alter config as key=>value
      * 
      * @var array
      */
     protected $altCfg = array();
 
     /**
+     * Contains tracked networks database abstraction layer
      * 
      * @var object
      */
     protected $networksDb = '';
 
     /**
+     * Contains system messages helper instance
      * 
      * @var object
      */
     protected $messages = '';
 
     /**
+     * Contains preloaded tracking networks list as id=>id/network
      * 
      * @var array
      */
     protected $allNetworks = array();
 
     /**
+     * Count of tracked networks
      * 
      * @var int
      */
     protected $netsCount = 0;
 
     /**
+     * Contains default sampling rate
      * 
      * @var int
      */
     protected $samplingRate = 100;
 
     /**
+     * Contains default collector port
      * 
      * @var int
      */
@@ -63,41 +71,59 @@ class OphanimMgr
     const ROUTE_STOP = 'stopcollector';
     const ROUTE_RECONF = 'rebuildconfig';
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->initMessages();
         $this->loadConfigs();
         $this->initNetsDb();
         $this->loadNetworks();
     }
 
-    protected function initNetsDb()
-    {
+    /**
+     * Inits networks database abstraction layer
+     *
+     * @return void
+     */
+    protected function initNetsDb() {
         $this->networksDb = new NyanORM(self::TABLE_NETWORKS);
     }
 
-    protected function initMessages()
-    {
+    /**
+     * Inits system messages helper
+     *
+     * @return void
+     */
+    protected function initMessages() {
         $this->messages = new UbillingMessageHelper();
     }
 
-    protected function loadConfigs()
-    {
+    /**
+     * Loads required configs and sets some properties
+     *
+     * @return void
+     */
+    protected function loadConfigs() {
         global $ubillingConfig;
         $this->altCfg = $ubillingConfig->getAlter();
         $this->port = $this->altCfg['COLLECTOR_PORT'];
         $this->samplingRate = $this->altCfg['SAMPLING_RATE'];
     }
 
-
-    protected function loadNetworks()
-    {
+    /**
+     * Loads tracking networks data from database
+     *
+     * @return void
+     */
+    protected function loadNetworks() {
         $this->allNetworks = $this->networksDb->getAll('id');
         $this->netsCount = sizeof($this->allNetworks);
     }
 
-    public function renderNetworksList()
-    {
+    /**
+     * Renders available networks list
+     *
+     * @return string
+     */
+    public function renderNetworksList() {
         $result = '';
         if (!empty($this->allNetworks)) {
             $cells = wf_TableCell(__('Network'));
@@ -117,8 +143,12 @@ class OphanimMgr
         return ($result);
     }
 
-    public function renderNetworkCreateForm()
-    {
+    /**
+     * Renders new network creation form
+     *
+     * @return string
+     */
+    public function renderNetworkCreateForm() {
         $result = '';
         $inputs = wf_TextInput(self::PROUTE_NETW_CREATE, __('Network') . '/CIDR', '', false, '20', 'net-cidr') . ' ';
         $inputs .= wf_Submit(__('Create new'), '', 'class="btn btn-primary btn-color"');
@@ -128,8 +158,14 @@ class OphanimMgr
     }
 
 
-    public function isNetworkIdExists($networkId)
-    {
+    /**
+     * Checks is some network exists by its ID
+     *
+     * @param int $networkId
+     * 
+     * @return bool
+     */
+    public function isNetworkIdExists($networkId) {
         $result = false;
         if (isset($this->allNetworks[$networkId])) {
             $result = true;
@@ -137,8 +173,14 @@ class OphanimMgr
         return ($result);
     }
 
-    public function isNetworkExists($network)
-    {
+    /**
+     * Check is some network exists by its CIDR
+     *
+     * @param string $network
+     * 
+     * @return bool
+     */
+    public function isNetworkExists($network) {
         $result = false;
         if (!empty($this->allNetworks)) {
             foreach ($this->allNetworks as $io => $each) {
@@ -150,8 +192,14 @@ class OphanimMgr
         return ($result);
     }
 
-    public function createNetwork($network)
-    {
+    /**
+     * Creates new network database record
+     *
+     * @param string $network
+     * 
+     * @return void
+     */
+    public function createNetwork($network) {
         $netF = ubRouting::filters($network, 'mres');
         if (!$this->isNetworkExists($network)) {
             $this->networksDb->data('network', $netF);
@@ -159,8 +207,14 @@ class OphanimMgr
         }
     }
 
-    public function deleteNetwork($networkId)
-    {
+    /**
+     * Deletes some network from database
+     *
+     * @param int $networkId
+     * 
+     * @return void
+     */
+    public function deleteNetwork($networkId) {
         $networkId = ubRouting::filters($networkId, 'int');
         if ($this->isNetworkIdExists($networkId)) {
             $this->networksDb->where('id', '=', $networkId);
@@ -168,8 +222,12 @@ class OphanimMgr
         }
     }
 
-    public function generatePretagMap()
-    {
+    /**
+     * Returns pretag map for existing networks
+     *
+     * @return string
+     */
+    public function generatePretagMap() {
         $result = '';
         if (!empty($this->allNetworks)) {
             $srcId = 1;
@@ -187,8 +245,12 @@ class OphanimMgr
         return ($result);
     }
 
-    public function generateConfig()
-    {
+    /**
+     * Generates collector config
+     *
+     * @return string
+     */
+    public function generateConfig() {
         $result = '';
         if (!empty($this->allNetworks)) {
             $dbConfig = rcms_parse_ini_file('config/mysql.ini');
@@ -220,8 +282,12 @@ class OphanimMgr
         return ($result);
     }
 
-    public function isCollectorRunning()
-    {
+    /**
+     * Checks for running collector process
+     *
+     * @return bool
+     */
+    public function isCollectorRunning() {
         $result = false;
         if (file_exists(self::PID_PATH)) {
             $result = true;
@@ -229,8 +295,12 @@ class OphanimMgr
         return ($result);
     }
 
-    public function renderCollectorControls()
-    {
+    /**
+     * Renders collector process conrols depends on it state
+     *
+     * @return string
+     */
+    public function renderCollectorControls() {
         $result = '';
         if ($this->isCollectorRunning()) {
             $collectorLabel = '';
@@ -251,8 +321,12 @@ class OphanimMgr
     }
 
 
-    public function rebuildConfigs()
-    {
+    /**
+     * Rebuilds pretag map and collector config
+     *
+     * @return void/string 
+     */
+    public function rebuildConfigs() {
         $result = '';
         if (!$this->isCollectorRunning()) {
             if (file_exists(self::CONF_PATH) and file_exists(self::PRETAG_PATH)) {
@@ -278,8 +352,12 @@ class OphanimMgr
     }
 
 
-    public function startCollector()
-    {
+    /**
+     * Starts new collector process
+     *
+     * @return void/string
+     */
+    public function startCollector() {
         $result = '';
         if (!$this->isCollectorRunning()) {
             $command = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['COLLECTOR_PATH'] . ' -f ' . self::CONF_PATH;
@@ -294,8 +372,12 @@ class OphanimMgr
         return ($result);
     }
 
-    public function stopCollector()
-    {
+    /**
+     * Brutally kills collector process
+     *
+     * @return void
+     */
+    public function stopCollector() {
         if ($this->isCollectorRunning()) {
             //shittiest way ever
             $command = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['KILLALL_PATH'] . ' -9  nfacctd';

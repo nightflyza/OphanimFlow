@@ -1,9 +1,12 @@
 <?php
 
-class OphanimClassifier
-{
+/**
+ * Basic traffic classifier implementation
+ */
+class OphanimClassifier {
 
     /**
+     * Contains classified counters base structure [0..11]
      * 
      * @var array
      */
@@ -22,7 +25,11 @@ class OphanimClassifier
         'quic' => 0,
     );
 
-
+    /**
+     * Contains TCP proto identifiers as port=>proto
+     *
+     * @var array
+     */
     protected $tcpProto = array(
         80 => 'web',
         443 => 'web',
@@ -39,6 +46,11 @@ class OphanimClassifier
         1080 => 'proxy',
     );
 
+    /**
+     * Contains UDP proto identifiers as port=>proto
+     *
+     * @var array
+     */
     protected $udpProto = array(
         53 => 'dns',
         1701 => 'vpn',
@@ -46,6 +58,8 @@ class OphanimClassifier
         443 => 'quic',
         80 => 'quic',
     );
+
+
 
     /**
      * some predefined stuff here
@@ -57,17 +71,26 @@ class OphanimClassifier
     const TABLE_RAW_OUT = 'raw_out';
 
 
-    public function __construct()
-    {
+    public function __construct() {
     }
 
-    protected function flushSource($dataSource)
-    {
+    /**
+     * Drops datasource table data
+     *
+     * @param string $dataSource
+     * 
+     * @return void
+     */
+    protected function flushSource($dataSource) {
         nr_query('TRUNCATE TABLE `' . $dataSource . '`');
     }
 
-    public function getBaseStruct()
-    {
+    /**
+     * Returns record base struct
+     *
+     * @return array
+     */
+    public function getBaseStruct() {
         $result = array();
         if (!empty($this->baseStruct)) {
             foreach ($this->baseStruct as $class => $io) {
@@ -79,9 +102,16 @@ class OphanimClassifier
         return ($result);
     }
 
-
-    public function aggregateSource($dataSource, $ipColumn, $portColumn)
-    {
+    /**
+     * Loads and returns all aggregated flows data in source and as ip=>baseStruct
+     *
+     * @param string $dataSource
+     * @param string $ipColumn
+     * @param string $portColumn
+     * 
+     * @return array
+     */
+    public function aggregateSource($dataSource, $ipColumn, $portColumn) {
         $result = array();
         $rawData = array();
         $databaseLayer = new NyanORM($dataSource);
@@ -146,8 +176,7 @@ class OphanimClassifier
      * 
      * @return void
      */
-    public function saveAggregatedData($direction, $aggregatedData)
-    {
+    public function saveAggregatedData($direction, $aggregatedData) {
         if (!empty($aggregatedData)) {
             $fnamePrefix = self::DATA_PATH . $direction . '_';
             foreach ($aggregatedData as $eachIp => $eachTimeStamp) {
@@ -173,8 +202,7 @@ class OphanimClassifier
      * 
      * @return void
      */
-    public function saveLastRunData($direction, $aggregatedData)
-    {
+    public function saveLastRunData($direction, $aggregatedData) {
         if (!empty($aggregatedData)) {
             //raw last run data
             $fnameLr = self::LR_PATH . 'LR_' . $direction;
@@ -197,7 +225,6 @@ class OphanimClassifier
                             if (!isset($trafTotals[$eachTimestamp])) {
                                 $trafTotals[$eachTimestamp]['time'] = $eachTimestamp;
                                 $trafTotals[$eachTimestamp] += $tSctruct;
-                                
                             }
 
                             if (!empty($eachBytes)) {
