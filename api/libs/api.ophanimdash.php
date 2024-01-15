@@ -88,7 +88,7 @@ class OphanimDash {
   public function renderIpSelectForm($ip = '', $period = '') {
     $result = '';
     $ipsAvail = array();
-    $ipsAvail = array();
+    $ipsAvail['0.0.0.0'] = __('All hosts');
 
     $ipsRaw = $this->cache->get(self::KEY_IPLIST, $this->cachingTimeout);
     if (empty($ipsRaw)) {
@@ -172,18 +172,19 @@ class OphanimDash {
    */
   public function renderIpGraphs($ip, $period) {
     $result = '';
-    $this->traffStatDb->where('ip', '=', $ip);
-    $this->traffStatDb->where('year', '=', curyear());
-    $this->traffStatDb->where('month', '=', date("n"));
-    $traffData = $this->traffStatDb->getAll();
-    if (!empty($traffData)) {
-      $summary = $ip . ' ' . __('Traffic summary') . ' -  ' . __('Downloaded') . ': ' . zb_convert_size($traffData[0]['dl']) . ' ' . __('Uploaded') . ': ' . zb_convert_size($traffData[0]['ul']);
-      $result .= $this->messages->getStyledMessage($summary, 'success');
-    } else {
-      $result .= $this->messages->getStyledMessage(__('Nothing to show'), 'warning');
+    if ($ip != '0.0.0.0') {
+      $this->traffStatDb->where('ip', '=', $ip);
+      $this->traffStatDb->where('year', '=', curyear());
+      $this->traffStatDb->where('month', '=', date("n"));
+      $traffData = $this->traffStatDb->getAll();
+      if (!empty($traffData)) {
+        $summary = $ip . ' ' . __('Traffic summary') . ' -  ' . __('Downloaded') . ': ' . zb_convert_size($traffData[0]['dl']) . ' ' . __('Uploaded') . ': ' . zb_convert_size($traffData[0]['ul']);
+        $result .= $this->messages->getStyledMessage($summary, 'success');
+      } else {
+        $result .= $this->messages->getStyledMessage(__('Nothing to show'), 'warning');
+      }
+      $result .= wf_delimiter();
     }
-    $result .= wf_delimiter();
-
 
     $result .= wf_img_sized('?module=graph&dir=R&period=' . $period . '&ip=' . $ip, '', '100%');
     $result .= wf_img_sized('?module=graph&dir=S&period=' . $period . '&ip=' . $ip, '', '100%');
