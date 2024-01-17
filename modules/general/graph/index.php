@@ -13,6 +13,7 @@ if (!empty($endpointsAllowedHostsRaw)) {
     }
 }
 
+set_time_limit(60);
 $graph = new OphanimGraph();
 
 $ip = ubRouting::get('ip', 'fi', FILTER_VALIDATE_IP);

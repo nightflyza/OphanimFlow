@@ -126,7 +126,7 @@ class OphanimGraph {
         if (!empty($rawData)) {
             $dataSize = sizeof($rawData);
             foreach ($rawData as $io => $eachLine) {
-                $xAxis = ($dataSize < 287) ? date("H:i", $eachLine[0]) : date("d/H:i", $eachLine[0]);
+                $xAxis = ($dataSize < 287) ? date("H:i", $eachLine[0]) : date("d/m/Y H:i", $eachLine[0]);
                 $tmpResult = array();
                 foreach ($eachLine as $lnIdx => $lineData) {
                     if ($lnIdx > 0) {
