@@ -42,20 +42,26 @@ class OphanimGraph {
     protected $debug = true;
 
     public function __construct() {
+        global $ubillingConfig;
+        $this->debug=$ubillingConfig->getAlterParam('CHARTS_DEBUG');
     }
 
     /**
      * Converts byte counters into speed in Mbit/s for 5 mins
      *
      * @param int $bytes
+     * @param bool $check
      * 
      * @return float
      */
-    public function bytesToSpeed($bytes) {
+    public function bytesToSpeed($bytes, $check = false) {
         $result = 0;
-        if (!is_numeric($bytes)) {
-            $bytes = trim($bytes);
+        if ($check) {
+            if (!is_numeric($bytes)) {
+                $bytes = trim($bytes);
+            }
         }
+
         if ($bytes != 0) {
             $result = ($bytes * 8) / $this->interval / 1048576; //mbits per 5 minutes
         }
@@ -89,23 +95,44 @@ class OphanimGraph {
      * @return array
      */
     protected function getChartData($ip, $direction, $dateFrom, $dateTo) {
+        global $ubillingConfig;
         $result = array();
         $tsFrom = strtotime($dateFrom);
         $tsTo = strtotime($dateTo);
         $delimiter = OphanimClassifier::DELIMITER;
         $source = OphanimClassifier::DATA_PATH . $direction . '_' . $ip;
+
         if (file_exists($source)) {
-            $handle = fopen($source, 'r');
-            while (!feof($handle)) {
-                $buffer = fgets($handle, 4096);
-                if (!empty($buffer)) {
-                    $eachLine = explode($delimiter, $buffer);
-                    if ($eachLine[0] >= $tsFrom and $eachLine[0] <= $tsTo) {
-                        $result[] = $eachLine;
+            if ($ubillingConfig->getAlterParam('SPEED_LOAD')) {
+                $depthLimit = (($tsTo - $tsFrom) / 300) + 200;
+                $depthLimit = round($depthLimit);
+                $tailPath = $ubillingConfig->getAlterParam('TAIL_PATH');
+                $command = $tailPath . ' -n ' . $depthLimit . ' ' . $source;
+                $resultRaw = shell_exec($command);
+                $resultRaw = explodeRows($resultRaw);
+                if (!empty($resultRaw)) {
+                    foreach ($resultRaw as $io => $eachLine) {
+                        if (!empty($eachLine)) {
+                            $eachLine = explode($delimiter, $eachLine);
+                            if ($eachLine[0] >= $tsFrom and $eachLine[0] <= $tsTo) {
+                                $result[] = $eachLine;
+                            }
+                        }
                     }
                 }
+            } else {
+                $handle = fopen($source, 'r');
+                while (!feof($handle)) {
+                    $buffer = fgets($handle, 4096);
+                    if (!empty($buffer)) {
+                        $eachLine = explode($delimiter, $buffer);
+                        if ($eachLine[0] >= $tsFrom and $eachLine[0] <= $tsTo) {
+                            $result[] = $eachLine;
+                        }
+                    }
+                }
+                fclose($handle);
             }
-            fclose($handle);
         }
         return ($result);
     }
@@ -120,6 +147,10 @@ class OphanimGraph {
      */
     protected function parseSpeedData($rawData, $allocTimeline = false) {
         $result = array();
+        global $ubillingConfig;
+        $validationFlag = $ubillingConfig->getAlterParam('VALIDATE_COUNTERS');
+        $validationFlag = ($validationFlag) ? true : false;
+
         if ($allocTimeline) {
             $result = allocDayTimeline();
         }
@@ -130,7 +161,7 @@ class OphanimGraph {
                 $tmpResult = array();
                 foreach ($eachLine as $lnIdx => $lineData) {
                     if ($lnIdx > 0) {
-                        $tmpResult[] = $this->bytesToSpeed($lineData);
+                        $tmpResult[] = $this->bytesToSpeed($lineData, $validationFlag);
                     }
                 }
                 $result[$xAxis] = $tmpResult;
@@ -180,11 +211,13 @@ class OphanimGraph {
 
         $chartDataRaw = $this->getChartData($ip, $direction, $dateFrom, $dateTo);
         $speedData = $this->parseSpeedData($chartDataRaw, false);
+
         if (sizeof($speedData) >= 288) {
             $chartMancer->setXLabelLen(10);
             $chartMancer->setXLabelsCount(12);
             $chartMancer->setCutSuffix('');
         }
+        
         $chartMancer->renderChart($speedData);
     }
 }
