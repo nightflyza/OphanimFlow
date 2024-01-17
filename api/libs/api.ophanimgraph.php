@@ -39,7 +39,7 @@ class OphanimGraph {
      * 
      * @var bool
      */
-    protected $debug = false;
+    protected $debug = true;
 
     public function __construct() {
     }
@@ -180,7 +180,11 @@ class OphanimGraph {
 
         $chartDataRaw = $this->getChartData($ip, $direction, $dateFrom, $dateTo);
         $speedData = $this->parseSpeedData($chartDataRaw, false);
-
+        if (sizeof($speedData) >= 288) {
+            $chartMancer->setXLabelLen(10);
+            $chartMancer->setXLabelsCount(12);
+            $chartMancer->setCutSuffix('');
+        }
         $chartMancer->renderChart($speedData);
     }
 }
