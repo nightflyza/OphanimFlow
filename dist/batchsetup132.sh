@@ -80,6 +80,7 @@ pkg install -y php82-zlib
 pkg install -y php82-pecl-memcached
 pkg install -y php82-pecl-redis
 pkg install -y git
+pkg install -y portsnap
 
 #building specific software from ports
 portsnap fetch && portsnap extract && portsnap update
@@ -162,10 +163,8 @@ echo "New MySQL password is ${MYSQL_PASSWD}"
 
 # configuring database
 cat ${DUMP_PATH} | /usr/local/bin/mysql -u root --password=${MYSQL_PASSWD}
-perl -e "s/oph/root/g" -pi config/mysql.ini
+perl -e "s/mylogin/root/g" -pi config/mysql.ini
 perl -e "s/newpassword/${MYSQL_PASSWD}/g" -pi config/mysql.ini
-perl -e "s/hamster/localhost/g" -pi config/mysql.ini
-perl -e "s/rootanimflow/ophanimflow/g" -pi config/mysql.ini
 
 #setting up updater 
 cp -R ${PRESETS_PATH}autoofupdate.sh /bin/
