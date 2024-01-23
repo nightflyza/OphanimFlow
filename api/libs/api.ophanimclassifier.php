@@ -23,6 +23,7 @@ class OphanimClassifier {
         'web' => 0,
         'proxy' => 0,
         'quic' => 0,
+        'sip' => 0,
     );
 
     /**
@@ -57,6 +58,7 @@ class OphanimClassifier {
         51820 => 'vpn',
         443 => 'quic',
         80 => 'quic',
+        5060=> 'sip',
     );
 
 
