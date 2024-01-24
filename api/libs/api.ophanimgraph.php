@@ -95,7 +95,7 @@ class OphanimGraph {
      * 
      * @return array
      */
-    protected function getChartData($ip, $direction, $dateFrom, $dateTo) {
+    public function getChartData($ip, $direction, $dateFrom, $dateTo) {
         global $ubillingConfig;
         $result = array();
         $tsFrom = strtotime($dateFrom);
