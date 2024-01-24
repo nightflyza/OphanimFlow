@@ -71,15 +71,20 @@ if (cfr('ROOT')) {
             arsort($ipByteCount);
             //rendering report here
             $protoDesc = strtoupper($baseStruct[$protoFilter]);
-            $cells = wf_TableCell(__('Host'));
+            $cells = wf_TableCell('#');
+            $cells .= wf_TableCell(__('Host'));
             $cells .= wf_TableCell($protoDesc . ' ' . __('traffic'));
             $rows = wf_TableRow($cells, 'row1');
+            $i = 0;
             foreach ($ipByteCount as $eachIp => $eachByteCount) {
+                $position = ($i) ? $i : '';
                 $hostName = ($eachIp == '0.0.0.0') ? __('All hosts') : $eachIp;
                 $hostLink = wf_Link('?module=index&ip=' . $eachIp, $hostName);
-                $cells = wf_TableCell($hostLink);
+                $cells = wf_TableCell($position);
+                $cells .= wf_TableCell($hostLink);
                 $cells .= wf_TableCell(zb_convert_size($eachByteCount));
                 $rows .= wf_TableRow($cells, 'row5');
+                $i++;
             }
             $result .= wf_delimiter();
             $result .= wf_TableBody($rows, '100%', 0, '');
