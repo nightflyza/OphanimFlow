@@ -16,6 +16,7 @@ datadir                         = /var/db/mysql
 tmpdir                          = /var/db/mysql_tmpdir
 replica-load-tmpdir             = /var/db/mysql_tmpdir
 secure-file-priv                = /var/db/mysql_secure
+disable_log_bin
 #log-bin                         = mysql-bin
 #log-output                      = TABLE
 relay-log-recovery              = 1
