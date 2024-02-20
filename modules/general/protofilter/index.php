@@ -5,25 +5,63 @@ if (cfr('ROOT')) {
     $result = '';
     $form = '';
 
+
+
     $classifier = new OphanimClassifier();
     $baseStruct = $classifier->getBaseStruct();
 
     $direction = ubRouting::get('direction', 'vf');
     $protoFilter = ubRouting::get('proto', 'int');
-    $depth = ubRouting::get('depth', 'int');
-    $depth = 3;
+    $depth = 0;
+    if (ubRouting::checkPost('depth')) {
+        $depth = ubRouting::post('depth', 'int');
+    } else {
+        if (ubRouting::checkGet('depth')) {
+            $depth = ubRouting::get('depth', 'int');
+        }
+    }
+
+    if (!$depth) {
+        $depth = 3;
+    }
     //search form anyway
     $directionsAvail = array('R' => __('Download'), 'S' => __('Upload'));
 
 
+    //download
+    $form .= wf_tag('div', false, 'bgc-white p-20 bd') . __('Download') . wf_delimiter();
     foreach ($baseStruct as $protoId => $protoName) {
-        $reportUrl = '?module=protofilter&direction=R&proto=' . $protoId;
+        $reportUrl = '?module=protofilter&direction=R&depth=' . $depth . '&proto=' . $protoId;
         $form .= wf_AjaxLink($reportUrl, $protoName, 'reportcontainer', false, 'btn btn-primary btn-color') . ' ';
     }
+    $form .= wf_tag('div', true);
+
+    $form .= wf_delimiter();
+    $form .= wf_tag('div', false, 'bgc-white p-20 bd') . __('Upload') . wf_delimiter();
+    //upload
+    foreach ($baseStruct as $protoId => $protoName) {
+        $reportUrl = '?module=protofilter&direction=S&depth=' . $depth . '&proto=' . $protoId;
+        $form .= wf_AjaxLink($reportUrl, $protoName, 'reportcontainer', false, 'btn btn-secondary btn-color') . ' ';
+    }
+    $form .= wf_tag('div', true);
+
 
     $form .= wf_AjaxLoader();
     $form .= wf_AjaxContainer('reportcontainer', '', '');
-    show_window(__('Top by protocol'), $form);
+
+    $depthsAvail = array(
+        1 => '1 ' . __('hour'),
+        3 => '3 ' . __('hours'),
+        8 => '8 ' . __('hours'),
+        24 => '24 ' . __('hours'),
+        48 => '48 ' . __('hours'),
+    );
+
+    $form.=wf_delimiter();
+    $inputs = wf_SelectorAC('depth', $depthsAvail, __('depth'), $depth, true);
+    $form .= wf_Form('', 'POST', $inputs, '');
+
+    show_window(__('Top by protocol') . ' (' . __('last') . ' ' . $depth . ' ' . __('hours') . ')', $form);
 
     //rendering report
     if ($direction and $depth) {
