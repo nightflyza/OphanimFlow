@@ -28,6 +28,16 @@ $dateTo = date("Y-m-d H:i:s");
 if (ubRouting::checkGet('period')) {
     $period = ubRouting::get('period');
     switch ($period) {
+        case '24h':
+            $dateFrom = date("Y-m-d H:i:s", strtotime("-24 hour", time()));
+            $dateTo = date("Y-m-d H:i:s");
+            break;
+
+        case '48h':
+            $dateFrom = date("Y-m-d H:i:s", strtotime("-48 hour", time()));
+            $dateTo = date("Y-m-d H:i:s");
+            break;
+
         case 'hour':
             $dateFrom = date("Y-m-d H:i:s", strtotime("-1 hour", time()));
             $dateTo = date("Y-m-d H:i:s");

@@ -34,6 +34,13 @@ class OphanimDash {
    */
   protected $messages = '';
 
+  /**
+   * Contains available selectable render periods as id=>__name
+   *
+   * @var array
+   */
+  protected $availPeriods = array();
+
   //some predefined stuff
   const PROUTE_IP = 'ip';
   const PROUTE_PERIOD = 'period';
@@ -45,6 +52,7 @@ class OphanimDash {
 
   public function __construct() {
     $this->initMessages();
+    $this->setPeriods();
     $this->initCache();
     $this->initDb();
   }
@@ -56,6 +64,23 @@ class OphanimDash {
    */
   protected function initCache() {
     $this->cache = new UbillingCache();
+  }
+
+  /**
+   * Sets available periods for selector
+   *
+   * @return void
+   */
+  protected function setPeriods() {
+    $this->availPeriods = array(
+      'hour' => __('Hour'),
+      'day' => __('Day'),
+      'week' => __('Week'),
+      'month' => __('Month'),
+      'year' => __('Year'),
+      '24h' =>  __('Last 24 hours'),
+      '48h' => __('Last 48 hours'),
+    );
   }
 
   /**
@@ -106,9 +131,9 @@ class OphanimDash {
       }
     }
 
-    $availPeriods = array('hour' => __('Hour'), 'day' => __('Day'), 'week' => __('Week'), 'month' => __('Month'), 'year' => __('Year'));
+
     $inputs = wf_SelectorSearchable(self::PROUTE_IP, $ipsAvail, 'IP', $ip, false) . ' ';
-    $inputs .= wf_SelectorSearchable(self::PROUTE_PERIOD, $availPeriods, 'Period', $period, false) . ' ';
+    $inputs .= wf_SelectorSearchable(self::PROUTE_PERIOD, $this->availPeriods, 'Period', $period, false) . ' ';
     $inputs .= wf_Submit(__('Search'), '', 'class="btn btn-primary btn-color"');
     $result .= wf_Form(self::URL_ME, 'POST', $inputs, 'glamour');
     return ($result);
