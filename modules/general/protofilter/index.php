@@ -5,8 +5,6 @@ if (cfr('ROOT')) {
     $result = '';
     $form = '';
 
-
-
     $classifier = new OphanimClassifier();
     $baseStruct = $classifier->getBaseStruct();
 
@@ -25,8 +23,6 @@ if (cfr('ROOT')) {
         $depth = 3;
     }
     //search form anyway
-    $directionsAvail = array('R' => __('Download'), 'S' => __('Upload'));
-
 
     //download
     $form .= wf_tag('div', false, 'bgc-white p-20 bd') . __('Download') . wf_delimiter();
