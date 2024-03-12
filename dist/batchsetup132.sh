@@ -87,7 +87,7 @@ portsnap fetch && portsnap extract && portsnap update
 #cd /usr/ports/databases/pecl-memcached &&  make BATCH=yes install
 
 #installing pmacct with mysql support
-cd /usr/ports/net-mgmt/pmacct/ && make  WITH="MYSQL" BATCH=yes install
+cd /usr/ports/net-mgmt/pmacct/ && make OPTIONS_UNSET="NLS" WITH="MYSQL" BATCH=yes install
 
 
 #generating mysql password
