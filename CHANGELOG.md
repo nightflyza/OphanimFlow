@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.1] - rev 79
+
+- installer: FreeBSD 13.2 setup works again.
+
 ## [0.0.1] - rev 77
 
 - protofilter: implemented time depth selector and separate direction filters
