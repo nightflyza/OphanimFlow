@@ -2,9 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.1] - rev 79
+## [0.0.1] - rev 80
 
 - installer: FreeBSD 13.2 setup works again.
+- installer: FreeBSD 13.3 setup tested and works
 
 ## [0.0.1] - rev 77
 
