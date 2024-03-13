@@ -8,8 +8,7 @@ Basic idea is replacement of bandwidthd and Stargazer cap_nf module in one solut
 ninja way
 
 ```
-# fetch https://raw.githubusercontent.com/nightflyza/OphanimFlow/main/dist/batchsetup132.sh
-# sh batchsetup13.sh
+# fetch https://raw.githubusercontent.com/nightflyza/OphanimFlow/main/dist/batchsetup13.sh && sh batchsetup13.sh
 ```
 
 # FreeBSD 14.0 batch setup
@@ -17,8 +16,7 @@ ninja way
 ready for testing
 
 ```
-# fetch https://raw.githubusercontent.com/nightflyza/OphanimFlow/main/dist/batchsetup140.sh
-# sh batchsetup140.sh
+# fetch https://raw.githubusercontent.com/nightflyza/OphanimFlow/main/dist/batchsetup140.sh && sh batchsetup140.sh
 ```
 
 After that, a simple web interface will be available to you at a link like http://yourhost/of/, which will allow you to make the minimum necessary settings, such as specifying your networks, and start using OphanimFlow. The default login is "admin", the default password is "demo". Don't forget to change it in the user profile settings.
