@@ -69,7 +69,7 @@ apt install -y php8.2-snmp
 apt install -y php8.2-soap 
 apt install -y php8.2-zip 
 apt install -y php8.2-imap 
-apt install -y php8.2-json 
+#apt install -y php8.2-json 
 apt install -y php8.2-tokenizer 
 apt install -y php8.2-xml 
 apt install -y php8.2-xmlreader 
@@ -83,8 +83,8 @@ apt install -y php8.2-pdo
 apt install -y php8.2-pdo-sqlite 
 apt install -y php8.2-phar 
 apt install -y php8.2-posix 
-apt install -y php8.2-memcached 
-apt install -y php8.2-redis 
+#apt install -y php8.2-memcached 
+#apt install -y php8.2-redis 
 #apt install -y ffmpeg 
 #apt install -y graphviz 
 apt install -y vim-tiny 
