@@ -1,0 +1,4 @@
+*/10 * * * *      /usr/bin/curl -o /dev/null "http://localhost/of/?module=aggrtraff"
+*/5 * * * *      /usr/bin/curl -o /dev/null "http://localhost/of/?module=aggrgdata"
+30 3 * * *       /usr/bin/curl -o /dev/null "http://localhost/of/?module=rotator"
+
