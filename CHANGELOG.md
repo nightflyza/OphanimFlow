@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - installer: FreeBSD 13.2 setup works again.
 - installer: FreeBSD 13.3 setup tested and works
+- installer: Linux Debian 12.5 bookworm installer draft
 
 ## [0.0.1] - rev 77
 
