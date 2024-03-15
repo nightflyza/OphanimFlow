@@ -114,7 +114,7 @@ MYSQL_PASSWD="mys"${GEN_MYS_PASS}
 #
 
 #downloading and unpacking app distro
-$FETCH -o ${DISTRO_NAME} ${DISTRO_URL}
+$FETCH -O ${DISTRO_NAME} ${DISTRO_URL}
 unzip ${DISTRO_NAME}
 mkdir ${APACHE_DATA_PATH}${WEB_DIR}
 mv ${DISTRO_DIR}/* ${APACHE_DATA_PATH}${WEB_DIR}/
