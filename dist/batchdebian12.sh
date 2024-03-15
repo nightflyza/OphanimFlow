@@ -163,6 +163,9 @@ cat ${DUMP_PATH} | /usr/bin/mysql -u root --password=${MYSQL_PASSWD}
 perl -e "s/mylogin/root/g" -pi ./config/mysql.ini
 perl -e "s/newpassword/${MYSQL_PASSWD}/g" -pi ./config/mysql.ini
 
+#overriding binary paths in alter.config
+cat ${PRESETS_PATH}alter_append >> ./config/alter.ini
+
 #setting up updater 
 cp -R ${PRESETS_PATH}autoofupdate.sh /bin/
 chmod a+x /bin/autoofupdate.sh

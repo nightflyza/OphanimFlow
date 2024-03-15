@@ -34,7 +34,7 @@ echo "=== Start OphanimFlow auto update ==="
 cd ${APACHE_DATA_PATH}${APP_PATH}
 
 echo "=== Downloading latest release ==="
-$FETCH -o ${APP_RELEASE_NAME} ${APP_RELEASE_URL}
+$FETCH -O ${APP_RELEASE_NAME} ${APP_RELEASE_URL}
 
 if [ -f ${APP_RELEASE_NAME} ];
 then

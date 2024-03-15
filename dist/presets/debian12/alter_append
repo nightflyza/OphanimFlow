@@ -1,0 +1,8 @@
+;
+; Debian systems binary paths overrides
+;
+SUDO_PATH="/usr/bin/sudo"
+KILLALL_PATH="/usr/bin/killall"
+COLLECTOR_PATH="/usr/sbin/nfacctd"
+RM_PATH="/usr/bin/rm"
+TAIL_PATH="/usr/bin/tail"
