@@ -16,11 +16,11 @@ APACHE_CONFIG_PRESET_NAME="debi12_apache2.conf"
 APACHE_CONFIG_NAME="apache2.conf"
 PHP_CONFIG_PRESET="php82.ini"
 PHP_CONFIG_PATH="/etc/php/8.2/apache2/php.ini"
-MYSQL_INIT_SCRIPT="/usr/local/etc/rc.d/mysql-server"
+MYSQL_INIT_SCRIPT="/usr/sbin/service mariadb"
 WEB_DIR="of"
 DUMP_PATH="dist/dumps/ophanimflow.sql"
 LANDING_PATH="dist/landing/"
-CRONTAB_PRESET="dist/presets/deb12/crontab.debian"
+CRONTAB_PRESET="dist/presets/debian12/crontab.debian"
 
 
 #initial repos update
@@ -137,7 +137,7 @@ touch /etc/pretag.map
 chmod -R 777 /etc/of.conf /etc/pretag.map /ofstorage
 
 #setting landing page
-cp -R ${LANDING_PATH} ${APACHE_DATA_PATH}
+cp -R ${LANDING_PATH}* ${APACHE_DATA_PATH}
 
 #loading default crontab preset
 crontab ${CRONTAB_PRESET}
@@ -151,15 +151,10 @@ ${MYSQL_INIT_SCRIPT} start
 echo "User_Alias OPHANIM = www-data" >> /etc/sudoers.d/ophanim
 echo "OPHANIM        ALL = NOPASSWD: ALL" >> /etc/sudoers.d/ophanim
 
-
-#enabling required apache modules
-/usr/sbin/a2enmod headers
-/usr/sbin/a2enmod expires
-
 echo "New MySQL password is ${MYSQL_PASSWD}"
 
 #Setting MySQL root password
-mysqladmin -u root password ${MYSQL_PASSWD} >> ${INSTALLER_LOG} 2>&1
+mysqladmin -u root password ${MYSQL_PASSWD}
 
 # configuring database
 cat ${DUMP_PATH} | /usr/bin/mysql -u root --password=${MYSQL_PASSWD}
@@ -172,6 +167,9 @@ perl -e "s/newpassword/${MYSQL_PASSWD}/g" -pi ./config/mysql.ini
 cp -R ${PRESETS_PATH}autoofupdate.sh /bin/
 chmod a+x /bin/autoofupdate.sh
 
+#enabling required apache modules
+/usr/sbin/a2enmod headers
+/usr/sbin/a2enmod expires
 
 #restarting database and web server
 ${MYSQL_INIT_SCRIPT} restart
