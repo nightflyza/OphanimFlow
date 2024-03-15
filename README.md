@@ -159,7 +159,7 @@ ENDPOINTS_HOSTS="192.168.0.8,192.168.42.56"
 Also you may want to change NetFlow collector port or sampling rate, you also can do this in the same alter.ini config file using following options:
 
 ```
-;NetFlow colloector default options
+;NetFlow collector default options
 COLLECTOR_PORT=42112
 SAMPLING_RATE=100
 ```
