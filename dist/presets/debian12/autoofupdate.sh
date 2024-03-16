@@ -9,7 +9,7 @@ FETCH="/usr/bin/wget"
 UNZIP="/usr/bin/unzip"
 
 # path to your apache data dir
-APACHE_DATA_PATH="/usr/local/www/apache24/data/"
+APACHE_DATA_PATH="/var/www/html/"
 
 # application path
 APP_PATH="of/"
