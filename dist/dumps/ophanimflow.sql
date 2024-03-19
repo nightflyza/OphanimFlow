@@ -69,3 +69,6 @@ CREATE TABLE `networks` (
   `network` varchar(20) NOT NULL,
    PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+-- 0.0.2 patch
+ALTER TABLE `networks` ADD `descr` VARCHAR(255) NULL AFTER `network`;

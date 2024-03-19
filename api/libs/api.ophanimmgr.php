@@ -54,7 +54,16 @@ class OphanimMgr {
      */
     protected $port = 42112;
 
+    /**
+     * Contains networks table structure as field=>index
+     *
+     * @var array
+     */
+    protected $networksStruct = array();
+
     //some predefined stuff here
+    const DB_PATCHES_PATH = 'dist/dumps/patches/';
+    const DB_PATCHES_EXT = '.sql';
     const CONF_PATH = '/etc/of.conf';
     const PRETAG_PATH = '/etc/pretag.map';
     const TEMPLATE_PATH = 'dist/collector/of.template';
@@ -66,6 +75,7 @@ class OphanimMgr {
     //and some routes
     const URL_ME = '?module=settings';
     const PROUTE_NETW_CREATE = 'newnetwork';
+    const PROUTE_NETW_DESC = 'newnetworkdescr';
     const ROUTE_NETW_DEL = 'deletenetwork';
     const ROUTE_START = 'startcollector';
     const ROUTE_STOP = 'stopcollector';
@@ -75,6 +85,7 @@ class OphanimMgr {
         $this->initMessages();
         $this->loadConfigs();
         $this->initNetsDb();
+        $this->loadNetStruct();
         $this->loadNetworks();
     }
 
@@ -119,18 +130,77 @@ class OphanimMgr {
     }
 
     /**
+     * Loads networks database struct and applies some patches if required
+     *
+     * @return void
+     */
+    protected function loadNetStruct() {
+        $patchesApplied = false;
+        $structTmp = $this->networksDb->getTableStructure(true);
+        $structTmp = array_flip($structTmp);
+        $this->networksStruct = $structTmp;
+
+        //0.0.2 patch
+        if (!isset($this->networksStruct['descr'])) {
+            debarr($this->networksStruct);
+            $this->applyDbPatch('0.0.2');
+            $patchesApplied = true;
+        }
+
+        //viewport refresh
+        if ($patchesApplied) {
+            ubRouting::nav(self::URL_ME);
+        }
+    }
+
+    /**
+     * Apllies database patch by its name
+     *
+     * @param type $patchName
+     * 
+     * @return void
+     */
+    protected function applyDbPatch($patchName) {
+        if (!empty($patchName)) {
+            $patchPath = self::DB_PATCHES_PATH . $patchName . self::DB_PATCHES_EXT;
+            if (file_exists($patchPath)) {
+                $patchContent = file_get_contents($patchPath);
+                if (!empty($patchContent)) {
+                    $patchContent = explode(';', $patchContent);
+                    if (!empty($patchContent)) {
+                        foreach ($patchContent as $io => $eachQuery) {
+                            $eachQuery = trim($eachQuery);
+                            if (!empty($eachQuery)) {
+                                nr_query($eachQuery);
+                                show_success(__('DB patch') . $patchName . ': ' . $eachQuery);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Renders available networks list
      *
      * @return string
      */
     public function renderNetworksList() {
         $result = '';
+
         if (!empty($this->allNetworks)) {
             $cells = wf_TableCell(__('Network'));
+            if (isset($this->networksStruct['descr'])) {
+                $cells .= wf_TableCell(__('Description'));
+            }
             $cells .= wf_TableCell(__('Actions'));
             $rows = wf_TableRow($cells, 'table-light');
             foreach ($this->allNetworks as $io => $each) {
                 $cells = wf_TableCell($each['network']);
+                if (isset($this->networksStruct['descr'])) {
+                    $cells .= wf_TableCell($each['descr']);
+                }
                 $delUrl = self::URL_ME . '&' . self::ROUTE_NETW_DEL . '=' . $each['id'];
                 $actLinks = wf_JSAlertStyled($delUrl, __('Delete'), __('Are you serious') . '?', 'btn cur-p btn-danger btn-color');
                 $cells .= wf_TableCell($actLinks);
@@ -151,6 +221,7 @@ class OphanimMgr {
     public function renderNetworkCreateForm() {
         $result = '';
         $inputs = wf_TextInput(self::PROUTE_NETW_CREATE, __('Network') . '/CIDR', '', false, '20', 'net-cidr') . ' ';
+        $inputs .= wf_TextInput(self::PROUTE_NETW_DESC, __('Description'), '', false, '20', '') . ' ';
         $inputs .= wf_Submit(__('Create new'), '', 'class="btn btn-primary btn-color"');
         $result .= wf_delimiter();
         $result .= wf_Form('', 'POST', $inputs, 'glamour');
@@ -196,13 +267,16 @@ class OphanimMgr {
      * Creates new network database record
      *
      * @param string $network
+     * @param string $descr
      * 
      * @return void
      */
-    public function createNetwork($network) {
+    public function createNetwork($network, $descr = '') {
         $netF = ubRouting::filters($network, 'mres');
+        $descrF = ubRouting::filters($descr, 'mres');
         if (!$this->isNetworkExists($network)) {
             $this->networksDb->data('network', $netF);
+            $this->networksDb->data('descr', $descrF);
             $this->networksDb->create();
         }
     }

@@ -6,8 +6,9 @@ if (cfr('ROOT')) {
 
     if (ubRouting::checkPost($settings::PROUTE_NETW_CREATE)) {
         $netToCreate = ubRouting::post($settings::PROUTE_NETW_CREATE);
+        $descrToCreate = ubRouting::post($settings::PROUTE_NETW_DESC);
         if (!$settings->isNetworkExists($netToCreate)) {
-            $settings->createNetwork($netToCreate);
+            $settings->createNetwork($netToCreate, $descrToCreate);
             ubRouting::nav($settings::URL_ME);
         } else {
             show_error(__('Network') . ' `' . $netToCreate . '` ' . __('already exists'));
@@ -29,12 +30,12 @@ if (cfr('ROOT')) {
         if (empty($reconfResult)) {
             ubRouting::nav($settings::URL_ME);
         } else {
-            show_error(__('Fatal').': '.$reconfResult);
+            show_error(__('Fatal') . ': ' . $reconfResult);
         }
     }
 
     if (ubRouting::checkGet($settings::ROUTE_START)) {
-        $startResult=$settings->startCollector();
+        $startResult = $settings->startCollector();
         if (empty($startResult)) {
             ubRouting::nav($settings::URL_ME);
         } else {
