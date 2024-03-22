@@ -32,7 +32,7 @@ pkg info
 #packages installing
 pkg install -y bash
 pkg install -y sudo
-pkg install -y gmake
+#pkg install -y gmake
 pkg install -y libtool
 pkg install -y autoconf
 pkg install -y m4
@@ -84,7 +84,9 @@ pkg install -y portsnap
 
 #building specific software from ports
 portsnap fetch && portsnap extract && portsnap update
-#cd /usr/ports/databases/pecl-memcached &&  make BATCH=yes install
+
+#fresh gmake
+cd /usr/ports/devel/gmake && make BATCH=yes install 
 
 #installing pmacct with mysql support
 cd /usr/ports/net-mgmt/pmacct/ && make  WITH="MYSQL" BATCH=yes install
