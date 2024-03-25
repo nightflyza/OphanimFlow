@@ -35,8 +35,8 @@ pkg install -y sudo
 #pkg install -y gmake
 pkg install -y libtool
 #pkg install -y autoconf
+#pkg install -y automake
 pkg install -y m4
-pkg install -y automake
 pkg install -y vim-tiny
 pkg install -y memcached
 pkg install -y redis
