@@ -3,18 +3,12 @@ NetFlow aggregation and graph toolkit.
 
 Basic idea is replacement of bandwidthd and Stargazer cap_nf module in one solution, which performs NetFlow data collecting, classification, preprocessing and performing network bandwidth utilization graphs rendering per each host in your network and basic traffic accounting of it, somewhere on some dedicated host.
 
-# FreeBSD 13.2/13.3 batch setup
+# FreeBSD 13.2/13.3/14.0 batch setup
 
 ninja way
 
 ```
-# fetch https://raw.githubusercontent.com/nightflyza/OphanimFlow/main/dist/batchsetup13.sh && sh batchsetup13.sh
-```
-
-# FreeBSD 14.0 batch setup
-
-```
-# fetch https://raw.githubusercontent.com/nightflyza/OphanimFlow/main/dist/batchsetup140.sh && sh batchsetup140.sh
+# fetch https://raw.githubusercontent.com/nightflyza/OphanimFlow/main/dist/batchfreebsd.sh && sh batchfreebsd.sh
 ```
 
 # Debian 12.5 bookworm batch setup
