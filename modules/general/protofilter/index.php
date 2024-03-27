@@ -103,10 +103,19 @@ if (cfr('ROOT')) {
 
         if (!empty($ipByteCount)) {
             arsort($ipByteCount);
+            $netDescFlag=false;
+            if ($ubillingConfig->getAlterParam('CHARTS_NETDESC')) {
+                $netLib=new OphanimNetLib(true);
+                $netDescFlag=true;
+            }
+
             //rendering report here
             $protoDesc = strtoupper($baseStruct[$protoFilter]);
             $cells = wf_TableCell('#');
             $cells .= wf_TableCell(__('Host'));
+            if ($netDescFlag) {
+                $cells .= wf_TableCell(__('Network'));
+            }
             $cells .= wf_TableCell($protoDesc . ' ' . __('traffic'));
             $rows = wf_TableRow($cells, 'row1');
             $i = 0;
@@ -116,6 +125,10 @@ if (cfr('ROOT')) {
                 $hostLink = wf_Link('?module=index&ip=' . $eachIp, $hostName);
                 $cells = wf_TableCell($position);
                 $cells .= wf_TableCell($hostLink);
+                if ($netDescFlag) {
+                    $hostDesc=$netLib->getIpNetDescription($eachIp);
+                    $cells .= wf_TableCell($hostDesc);
+                }
                 $cells .= wf_TableCell(zb_convert_size($eachByteCount));
                 $rows .= wf_TableRow($cells, 'row5');
                 $i++;

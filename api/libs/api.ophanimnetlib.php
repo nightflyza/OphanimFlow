@@ -5,8 +5,27 @@
  */
 class OphanimNetLib {
 
-    public function __construct() {
+    /**
+     * Contains all available networks array
+     *
+     * @var array
+     */
+    protected $allNets = array();
+
+    public function __construct($loadNets = true) {
+        if ($loadNets) {
+            $this->loadNets();
+        }
     }
+
+    /**
+     * Loads the networks by retrieving all networks from the OphanimMgr class.
+     */
+    protected function loadNets() {
+        $settings = new OphanimMgr();
+        $this->allNets = $settings->getAllNetworks();
+    }
+
     /**
      * Returns array with range start and end IP from IP address with CIDR notation
      *
@@ -87,10 +106,8 @@ class OphanimNetLib {
      */
     public function getIpNetDescription($ip) {
         $result = '';
-        $settings = new OphanimMgr();
-        $allNets = $settings->getAllNetworks();
-        if (!empty($allNets)) {
-            foreach ($allNets as $netId => $eachNetData) {
+        if (!empty($this->allNets)) {
+            foreach ($this->allNets as $netId => $eachNetData) {
                 if ($this->isIpInCidr($ip, $eachNetData['network'])) {
                     $netDesc = $eachNetData['network'];
                     if (isset($eachNetData['descr'])) {
@@ -99,6 +116,7 @@ class OphanimNetLib {
                         }
                     }
                     $result = $netDesc;
+                    break;
                 }
             }
         }
