@@ -44,7 +44,7 @@ class OphanimGraph {
 
     public function __construct() {
         global $ubillingConfig;
-        $this->debug=$ubillingConfig->getAlterParam('CHARTS_DEBUG');
+        $this->debug = $ubillingConfig->getAlterParam('CHARTS_DEBUG');
     }
 
     /**
@@ -180,16 +180,20 @@ class OphanimGraph {
      * @param string $dateTo
      * @param string $width
      * @param string $height
+     * @param string $titleAppend
      * 
      * @return void
      */
-    public function renderGraph($ip, $direction, $dateFrom, $dateTo, $width = '', $height = '') {
+    public function renderGraph($ip, $direction, $dateFrom, $dateTo, $width = '', $height = '', $titleAppend = '') {
         $chartTitle = $ip;
         if ($direction == 'R') {
             $chartTitle = $ip . ' ' . __('Download');
         }
         if ($direction == 'S') {
             $chartTitle = $ip . ' ' . __('Upload');
+        }
+        if ($titleAppend) {
+            $chartTitle .= $titleAppend;
         }
 
         $chartWidth = ($width) ? $width : 1540;
@@ -218,7 +222,7 @@ class OphanimGraph {
             $chartMancer->setXLabelsCount(12);
             $chartMancer->setCutSuffix('');
         }
-        
+
         $chartMancer->renderChart($speedData);
     }
 }

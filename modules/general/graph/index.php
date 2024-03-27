@@ -21,6 +21,15 @@ $direction = (ubRouting::get('dir', 'vf') == 'S') ? 'S' : 'R';
 $w = (ubRouting::get('w', 'int')) ? ubRouting::get('w', 'int') : 1540;
 $h = (ubRouting::get('h', 'int')) ? ubRouting::get('h', 'int') : 400;
 
+$customTitle = '';
+if ($ubillingConfig->getAlterParam('CHARTS_NETDESC')) {
+    $netLib = new OphanimNetLib();
+    $netDesc = $netLib->getIpNetDescription($ip);
+    if ($netDesc) {
+        $customTitle .= ' (' . $netDesc . ')';
+    }
+}
+
 //day by default
 $dateFrom = date("Y-m-d 00:00:00");
 $dateTo = date("Y-m-d H:i:s");
@@ -65,4 +74,4 @@ if (ubRouting::checkGet('period')) {
     }
 }
 
-$graph->renderGraph($ip, $direction, $dateFrom, $dateTo, $w, $h);
+$graph->renderGraph($ip, $direction, $dateFrom, $dateTo, $w, $h, $customTitle);

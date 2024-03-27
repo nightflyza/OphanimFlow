@@ -81,11 +81,13 @@ class OphanimMgr {
     const ROUTE_STOP = 'stopcollector';
     const ROUTE_RECONF = 'rebuildconfig';
 
-    public function __construct() {
+    public function __construct($checkDatabaseStruct = false) {
         $this->initMessages();
         $this->loadConfigs();
         $this->initNetsDb();
-        $this->loadNetStruct();
+        if ($checkDatabaseStruct) {
+            $this->loadNetStruct();
+        }
         $this->loadNetworks();
     }
 
@@ -459,5 +461,15 @@ class OphanimMgr {
             $pidRemove = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['RM_PATH'] . ' -fr ' . self::PID_PATH;
             shell_exec($pidRemove);
         }
+    }
+
+    
+    /**
+     * Retrieves all networks as id=>networkData
+     *
+     * @return array
+     */
+    public function getAllNetworks() {
+        return($this->allNetworks);
     }
 }

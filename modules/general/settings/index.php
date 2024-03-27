@@ -2,7 +2,7 @@
 
 if (cfr('ROOT')) {
 
-    $settings = new OphanimMgr();
+    $settings = new OphanimMgr(true);
 
     if (ubRouting::checkPost($settings::PROUTE_NETW_CREATE)) {
         $netToCreate = ubRouting::post($settings::PROUTE_NETW_CREATE);
