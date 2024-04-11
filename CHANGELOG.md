@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 - alter.ini: new option CHARTS_NETDESC that enables networks description render on charts
 - settings: networks descriptions implemented
 - graph: optional ability to render network description or its CIDR on charts
+- graph: cosmetic issues fixed, better data vizualization
+- graph: additional debug counters with drawcalls
+- graph: significant performance improvements with ChartMancer 0.0.9 lib.
 - protofilter: optional ability to render network description or its CIDR on charts
 - installer: FreeBSD 13.2 setup works again.
 - installer: FreeBSD 13.3 setup tested and works
