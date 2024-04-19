@@ -42,9 +42,17 @@ class OphanimGraph {
      */
     protected $debug = true;
 
+    /**
+     * Accurate charts instead of maximum performance flag
+     *
+     * @var bool
+     */
+    protected $accurateFlag = false;
+
     public function __construct() {
         global $ubillingConfig;
         $this->debug = $ubillingConfig->getAlterParam('CHARTS_DEBUG');
+        $this->accurateFlag = $ubillingConfig->getAlterParam('CHARTS_ACCURATE');
     }
 
     /**
@@ -221,6 +229,10 @@ class OphanimGraph {
             $chartMancer->setXLabelLen(10);
             $chartMancer->setXLabelsCount(12);
             $chartMancer->setCutSuffix('');
+        }
+
+        if ($this->accurateFlag) {
+            $chartMancer->setDrawFirstColumn(true);
         }
 
         $chartMancer->renderChart($speedData);

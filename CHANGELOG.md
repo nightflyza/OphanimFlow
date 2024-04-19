@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.3] - rev 91
+
 ## [0.0.2] - rev 88
 
 - alter.ini: new option CHARTS_NETDESC that enables networks description render on charts
