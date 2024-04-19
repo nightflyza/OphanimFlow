@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.0.3] - rev 91
 
+- alter.ini: new option CHARTS_ACCURATE that enables more detailed and accurate charts instead of maximum performance
+- graph: now different classes of traffic are not overdrawn by the total column by default
+
 ## [0.0.2] - rev 88
 
 - alter.ini: new option CHARTS_NETDESC that enables networks description render on charts
