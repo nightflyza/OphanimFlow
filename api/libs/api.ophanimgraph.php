@@ -231,9 +231,7 @@ class OphanimGraph {
             $chartMancer->setCutSuffix('');
         }
 
-        if ($this->accurateFlag) {
-            $chartMancer->setDrawFirstColumn(true);
-        }
+        $chartMancer->setDrawFirstColumn($this->accurateFlag);
 
         $chartMancer->renderChart($speedData);
     }
