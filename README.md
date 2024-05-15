@@ -57,7 +57,7 @@ All endpoint parameters:
 
 - ip - IP address in format x.x.x.x
 - dir - traffic direction. Possible values: R, S that points to "received" and "sent". Default: R.
-- period - possible values: hour, day, week, month, year, 24h, 48h. Default: day.
+- period - possible values: hour, day, week, month, year, 24h, 48h, explict. Default: day.
 - w - width of graph image in pixels. Default : 1540.
 - h - heigth of graph image in pixels. Default: 400.
 
@@ -80,6 +80,12 @@ like this for a week
 
 ![of2](https://github.com/nightflyza/OphanimFlow/assets/1496954/eacdf6e3-0992-4f5c-8821-9092526b2463)
 
+explict period requires set of two UNIX timestamp GET variables - "from" and "to"
+
+Explict period usage:
+```
+
+```
 
 Full example:
 ```

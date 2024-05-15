@@ -71,6 +71,17 @@ if (ubRouting::checkGet('period')) {
             $dateFrom = date("Y-m-d H:i:s", strtotime("-1 year", time()));
             $dateTo = date("Y-m-d H:i:s");
             break;
+
+        case 'explict':
+            if (ubRouting::checkGet(array('from', 'to'))) {
+                $timeStampFrom = ubRouting::get('from');
+                $timeStampTo = ubRouting::get('to');
+                if ($timeStampFrom < $timeStampTo) {
+                    $dateFrom = date("Y-m-d H:i:s", $timeStampFrom);
+                    $dateTo = date("Y-m-d H:i:s", $timeStampTo);
+                }
+            }
+            break;
     }
 }
 

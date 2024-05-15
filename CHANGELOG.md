@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - alter.ini: new option CHARTS_ACCURATE that enables more detailed and accurate charts instead of maximum performance
 - graph: now different classes of traffic are not overdrawn by the total column by default
+- graph: explict period option implemented
 
 ## [0.0.2] - rev 88
 
