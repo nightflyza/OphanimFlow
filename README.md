@@ -68,7 +68,8 @@ Minimal example:
 
 Returns something like this for a current day
 
-![of1](https://github.com/nightflyza/OphanimFlow/assets/1496954/efc90007-b814-4257-9a5e-c1835b527db0)
+![day](https://github.com/nightflyza/OphanimFlow/assets/1496954/54296af6-9e7a-4145-b301-37c243df87d7)
+
 
 or 
 
@@ -78,7 +79,16 @@ or
 
 like this for a week
 
-![of2](https://github.com/nightflyza/OphanimFlow/assets/1496954/eacdf6e3-0992-4f5c-8821-9092526b2463)
+![week](https://github.com/nightflyza/OphanimFlow/assets/1496954/9eaf8f1f-7bd6-43f5-a165-d38ae37ad141)
+
+or 
+
+```
+?module=graph&ip=172.30.73.247&period=hour
+```
+![hour](https://github.com/nightflyza/OphanimFlow/assets/1496954/5c5b4c0a-5cea-4114-aaab-ae16f729b411)
+
+like this for a past hour
 
 explict period requires set of two UNIX timestamp GET variables - "from" and "to"
 
