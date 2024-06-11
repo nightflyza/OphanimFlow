@@ -94,10 +94,10 @@ explict period requires set of two UNIX timestamp GET variables - "from" and "to
 
 Explict period usage:
 ```
-
+?module=graph&dir=R&period=explict&ip=0.0.0.0&period=explict&ip=0.0.0.0&from=1115779033&to=1715782633
 ```
 
-Full example:
+Full example with custom dimensions:
 ```
 ?module=graph&dir=R&period=week&ip=172.16.68.173&w=1300&h=400
 ```
