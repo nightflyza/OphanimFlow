@@ -2,11 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.3] - rev 91
+## [0.0.3] - rev 94
 
 - alter.ini: new option CHARTS_ACCURATE that enables more detailed and accurate charts instead of maximum performance
 - graph: now different classes of traffic are not overdrawn by the total column by default
 - graph: explict period option implemented
+- installer: FreeBSD 14.1 setup tested
 
 ## [0.0.2] - rev 88
 
