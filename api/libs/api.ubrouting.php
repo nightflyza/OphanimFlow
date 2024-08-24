@@ -170,7 +170,9 @@ class ubRouting {
                 break;
             case 'login':
                 $filteredResult = str_replace(' ', '_', $rawData);
-                return (preg_replace("#[^a-z0-9A-Z_]#Uis", '', $filteredResult));
+                $loginAllowedChars = 'a-z0-9A-Z_\.' . $callback;
+                $filteredLogin = preg_replace("#[^" . $loginAllowedChars . "]#Uis", '', $filteredResult);
+                return ($filteredLogin);
                 break;
             case 'safe':
                 $rawData = preg_replace('/\0/s', '', $rawData);
@@ -181,7 +183,7 @@ class ubRouting {
                     $rawData = strip_tags($rawData);
                 }
 
-                $allowedChars = 'a-zA-Z0-9А-Яа-яЁёЇїІіЄєҐґ+«»№=_\ ,\.\-:;!?\(\){}\/\r\n\x{200d}\x{2600}-\x{1FAFF}' . $callback;
+                $allowedChars = 'a-zA-Z0-9А-Яа-яЁёЇїІіЄєҐґ\w++«»№=_\ ,\.\-:;!?\(\){}\/\r\n\x{200d}\x{2600}-\x{1FAFF}' . $callback;
                 $regex = '#[^' . $allowedChars . ']#u';
                 $filteredData = preg_replace($regex, '', $rawData);
                 $filteredData = str_replace('--', '', $filteredData);
