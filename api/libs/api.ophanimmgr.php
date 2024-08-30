@@ -305,19 +305,33 @@ class OphanimMgr {
      */
     public function generatePretagMap() {
         $result = '';
+        $vlansFlag = false;
+        if (isset($this->altCfg['CONSIDER_VLANS'])) {
+            if ($this->altCfg['CONSIDER_VLANS']) {
+                $vlansFlag = true;
+            }
+        }
+
         if (!empty($this->allNetworks)) {
             $srcId = 1;
             foreach ($this->allNetworks as $io => $each) {
                 $result .= "id=" . $srcId . " filter='src net " . $each['network'] . "'" . PHP_EOL;
+                if ($vlansFlag) {
+                    $result .= "id=" . $srcId . " filter='vlan and src net " . $each['network'] . "'" . PHP_EOL;
+                }
                 $srcId++;
             }
 
             $dstId = $this->netsCount + 1;
             foreach ($this->allNetworks as $io => $each) {
                 $result .= "id=" . $dstId . " filter='dst net " . $each['network'] . "'" . PHP_EOL;
+                if ($vlansFlag) {
+                    $result .= "id=" . $dstId . " filter='vlan and dst net " . $each['network'] . "'" . PHP_EOL;
+                }
                 $dstId++;
             }
         }
+
         return ($result);
     }
 
@@ -463,13 +477,13 @@ class OphanimMgr {
         }
     }
 
-    
+
     /**
      * Retrieves all networks as id=>networkData
      *
      * @return array
      */
     public function getAllNetworks() {
-        return($this->allNetworks);
+        return ($this->allNetworks);
     }
 }
