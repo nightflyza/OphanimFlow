@@ -21,6 +21,7 @@ if (cfr('ROOT')) {
     //dashboard
     show_window(__('System info'), $dashBoard->renderSystemInfo());
     show_window(__('Traffic summary'), $dashBoard->renderTrafProtos());
+    show_window(__('Host details'),$dashBoard->renderHostDetails());
   }
 
   if ($ip) {

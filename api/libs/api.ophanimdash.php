@@ -5,12 +5,21 @@
  */
 class OphanimDash {
 
+
+  /**
+   * System hardware info instance placeholder
+   *
+   * @var object
+   */
+  protected $hwInfo = '';
+
+
   /**
    * Contains default caching timeout
    * 
    * @var int
    */
-  protected $cachingTimeout = 600;
+  protected $cachingTimeout = 1;
 
   /**
    * System caching object instance
@@ -55,6 +64,7 @@ class OphanimDash {
     $this->setPeriods();
     $this->initCache();
     $this->initDb();
+    $this->initHwInfo();
   }
 
   /**
@@ -99,6 +109,16 @@ class OphanimDash {
    */
   protected function initDb() {
     $this->traffStatDb = new NyanORM(OphanimHarvester::TABLE_TRAFFSTAT);
+  }
+
+
+  /**
+   * Inits system hw info instance
+   * 
+   * @return void
+   */
+  protected function initHwInfo() {
+    $this->hwInfo = new SystemHwInfo();
   }
 
 
@@ -230,7 +250,6 @@ class OphanimDash {
     }
     if ($bytes != 0) {
       $result = ($bytes * 8) / 300 / 1048576; //mbits per 5 minutes
-      //$result=$result/1024; //in gbits
     }
 
     return ($result);
@@ -244,13 +263,11 @@ class OphanimDash {
   public function renderSystemInfo() {
     $result = '';
     $sysInfoCached = $this->cache->get(self::KEY_SYSINFO, $this->cachingTimeout);
+    $cpuLoad = $this->hwInfo->getSystemLoadPercent();
+    $diskStats = $this->hwInfo->getDiskStat('/');
 
-    $loadAvg = sys_getloadavg();
-    $loadAvgValue = round($loadAvg[0], 2) * 100;
-
-    $totalSpace = disk_total_space('/');
-    $freeSpace = disk_free_space('/');
-    $diskPercent = zb_PercentValue($totalSpace, ($totalSpace - $freeSpace));
+    $freeSpace = $diskStats['free'];
+    $diskPercent = $diskStats['usedpercent'];
 
     if (empty($sysInfoCached)) {
       $sysInfoCached = array();
@@ -267,7 +284,7 @@ class OphanimDash {
       $uploadValue = zb_PercentValue($totalTraffic, $totalUpload);
 
 
-      $sysInfoCached['la'] = $loadAvg;
+      $sysInfoCached['cl'] = $cpuLoad;
       $sysInfoCached['fs'] = $freeSpace;
       $sysInfoCached['dl'] = $downloadValue;
       $sysInfoCached['ul'] = $uploadValue;
@@ -284,7 +301,7 @@ class OphanimDash {
             <div class="mT-30">
               <div class="peers mT-20 fxw-nw@lg+ jc-sb ta-c gap-10">
                 <div class="peer">
-                  <div class="easy-pie-chart" data-size="100" data-percent="' . $loadAvgValue . '" data-bar-color="#f44336">
+                  <div class="easy-pie-chart" data-size="100" data-percent="' . $cpuLoad . '" data-bar-color="#f44336">
                     <span></span>
                   </div>
                   <h6 class="fsz-sm">' . __('System load') . '</h6>
@@ -315,6 +332,28 @@ class OphanimDash {
       </div>
       ';
 
+    return ($result);
+  }
+
+  public function renderHostDetails() {
+    $result = '';
+
+    $cpuName = $this->hwInfo->getCpuName();
+    $cpuCores = $this->hwInfo->getCpuCores();
+    $memTotal = $this->hwInfo->getMemTotal();
+    $uptime = $this->hwInfo->getUptime();
+    $osLabel = $this->hwInfo->getOs() . ' ' . $this->hwInfo->getOsRelease() . ', ';
+    $phpLabel = __('PHP') . ': ' . $this->hwInfo->getPhpVersion() . ', ';
+    $memLabel = zb_convert_size($memTotal) . ' ' . __('RAM') . '.';
+    $uptimeLabel = __('Uptime') . ': ' . zb_formatTime($uptime);
+    $sysLabel = __('CPU') . ': ' . $cpuName . ', ' . $cpuCores . ' ' . __('Cores') . ', ' . $memLabel;
+    $sysLabel .= ' ' . $osLabel . ' ' . $phpLabel . ' ' . $uptimeLabel;
+
+    $result .= wf_tag('div', false, 'masonry-item col-md-12');
+    $result .= wf_tag('div', false, 'bgc-white p-20 bd');
+    $result .= $sysLabel;
+    $result .= wf_tag('div', true);
+    $result .= wf_tag('div', true);
     return ($result);
   }
 

@@ -2,12 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.3] - rev 94
+## [0.0.3] - rev 99
 
 - alter.ini: new option CHARTS_ACCURATE that enables more detailed and accurate charts instead of maximum performance
 - alter.ini: new option CONSIDER_VLANS that enables VLANs filters for v9/IPFIX flows.
 - graph: now different classes of traffic are not overdrawn by the total column by default
 - graph: explict period option implemented
+- dashboard: better system info UX
 - installer: FreeBSD 14.1 setup tested
 
 ## [0.0.2] - rev 88
