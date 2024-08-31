@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.4] - rev 100
+- nothing happens at this moment
+
 ## [0.0.3] - rev 99
 
 - alter.ini: new option CHARTS_ACCURATE that enables more detailed and accurate charts instead of maximum performance
