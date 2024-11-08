@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [0.0.4] - rev 100
 
 - nothing happens at this moment
+- installer: FreeBSD 13.4 setup tested
 
 ## [0.0.3] - rev 99
 
