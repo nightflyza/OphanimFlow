@@ -19,7 +19,7 @@ class OphanimDash {
    * 
    * @var int
    */
-  protected $cachingTimeout = 1;
+  protected $cachingTimeout = 300;
 
   /**
    * System caching object instance
