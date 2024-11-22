@@ -2,9 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.4] - rev 100
+## [0.0.5] - rev 110
 
 - nothing happens at this moment
+
+
+## [0.0.4] - rev 100
+
 - installer: FreeBSD 13.4 setup tested
 - dashboard: the IP list should not be broken anymore
 - graph: fixed traffic classes rendering... again...
