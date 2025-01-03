@@ -862,7 +862,7 @@ function zb_TrimTextLog($fileName, $size) {
                     }
                 }
                 $fileContent = array_reverse($fileContent);
-                file_put_contents($fileName, implode(PHP_EOL, $fileContent));
+                file_put_contents($fileName, implode(PHP_EOL, $fileContent).PHP_EOL);
             }
         }
     }
