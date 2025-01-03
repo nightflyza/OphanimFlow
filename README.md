@@ -175,3 +175,12 @@ SAMPLING_RATE=100
 ```
 
 dont forget regenerate configuration and restart collector after this
+
+Also OphanimFlow from release 0.0.5 automatically rotates and flushes old data to keep some storage space reserved and prevent it from exhausting. Its 10% of total storage size by default. This behaviour is controlled by following options:
+
+```
+;Reserved storage free space percent
+STORAGE_RESERVED_SPACE=10
+;write data rotator debug log into exports/rotator.log?
+ROTATOR_DEBUG=0
+```
