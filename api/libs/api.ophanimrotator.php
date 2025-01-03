@@ -165,7 +165,7 @@ class OphanimRotator {
             }
         } else {
             if ($this->debugFlag) {
-                $logString = curdatetime() . 'ROTATOR SKIPPED ' . $this->storageFree . ' FREE > ' . $this->storageReserved . ' RESERVED' . PHP_EOL;
+                $logString = curdatetime() . ' ROTATOR SKIPPED ' . $this->storageFree . ' FREE > ' . $this->storageReserved . ' RESERVED' . PHP_EOL;
                 file_put_contents(self::LOG_PATH, $logString, FILE_APPEND);
             }
         }
