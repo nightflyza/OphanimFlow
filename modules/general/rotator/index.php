@@ -1,14 +1,8 @@
 <?php
 
-$endpointsAllowedHostsRaw = $ubillingConfig->getAlterParam('ENDPOINTS_HOSTS');
-if (!empty($endpointsAllowedHostsRaw)) {
-    $endpointsAllowedHostsRaw = explode(',', $endpointsAllowedHostsRaw);
-    $endpointsAllowedHosts = array();
-    foreach ($endpointsAllowedHostsRaw as $io => $each) {
-        $ip = trim($each);
-        $endpointsAllowedHosts[$ip] = $io;
-    }
-    if (!isset($endpointsAllowedHosts[$_SERVER['REMOTE_ADDR']])) {
+$servicesAllowedHost = $ubillingConfig->getAlterParam('SERVICES_HOST');
+if (!empty($servicesAllowedHost)) {
+    if ($_SERVER['REMOTE_ADDR'] != $servicesAllowedHost) {
         die('ROTATOR:DENIED');
     }
 }
