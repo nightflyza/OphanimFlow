@@ -6,9 +6,10 @@ if (!empty($servicesAllowedHost)) {
         die('AGGRGDATA:DENIED');
     }
 }
-
+$rotatorProcess = new StarDust('ROTATOR');
 $pid = new StarDust('AGGRGDATA');
-if ($pid->notRunning()) {
+
+if ($pid->notRunning() and $rotatorProcess->notRunning()) {
     set_time_limit(0);
     $pid->start();
     $classifier = new OphanimClassifier();

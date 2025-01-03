@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.0.5] - rev 110
 
-- nothing happens at this moment
+- alter.ini: new option STORAGE_RESERVED_SPACE that sets reserved free storage percent (10% by default)
+- alter.ini: new option ROTATOR_DEBUG that sets rotator debug flag
+- rotator now works and preserves some disk space
 
 
 ## [0.0.4] - rev 100

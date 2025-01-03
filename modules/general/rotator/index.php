@@ -18,10 +18,12 @@ $pid = new StarDust('ROTATOR');
 if ($pid->notRunning()) {
     set_time_limit(0);
     $rotator=new OphanimRotator();
-    ic($rotator);
     $pid->start();
     $rotator->run();
     $pid->stop();
+    die('ROTATOR:OK');
+} else {
+    die('ROTATOR:SKIP');
 }
 
 
