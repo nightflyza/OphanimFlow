@@ -151,7 +151,12 @@ class OphanimRotator {
                         if ($fileSize > $maxAllowedSize) {
                             zb_TrimTextLog($filePath, $trimToMb);
                             if ($this->debugFlag) {
-                                $logString = curdatetime() . ' TRIM ' . $filePath . ' ' . $fileSize . ' => ' . $maxAllowedSize . '(' . $trimToMb . 'Mb)' . PHP_EOL;
+                                $logString = curdatetime() . ' TRIM ' . $filePath . ' ' . $fileSize . ' >= ' . $maxAllowedSize . '(' . $trimToMb . 'Mb)' . PHP_EOL;
+                                file_put_contents(self::LOG_PATH, $logString, FILE_APPEND);
+                            }
+                        } else {
+                            if ($this->debugFlag) {
+                                $logString = curdatetime() . ' IGNORED ' . $filePath . ' ' . $fileSize . ' <= ' . $maxAllowedSize . '(' . $trimToMb . 'Mb)' . PHP_EOL;
                                 file_put_contents(self::LOG_PATH, $logString, FILE_APPEND);
                             }
                         }
@@ -160,7 +165,7 @@ class OphanimRotator {
             }
         } else {
             if ($this->debugFlag) {
-                $logString = curdatetime() . ' SKIPPED ' . $this->storageFree . ' FREE > ' . $this->storageReserved . ' RESERVED' . PHP_EOL;
+                $logString = curdatetime() . 'ROTATOR SKIPPED ' . $this->storageFree . ' FREE > ' . $this->storageReserved . ' RESERVED' . PHP_EOL;
                 file_put_contents(self::LOG_PATH, $logString, FILE_APPEND);
             }
         }
