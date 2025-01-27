@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.6] - rev 113
+- alter.ini: new option UBILLING_URL that sets full URL of Ubilling >=1.5.2 for integration
+- alter.ini: new option UBILLING_API_KEY that sets Ubilling API key aka serial for integration
+- protofilter: optional ability to show remote Ubilling user data in reports
+
 ## [0.0.5] - rev 110
 
 - alter.ini: new option STORAGE_RESERVED_SPACE that sets reserved free storage percent (10% by default)

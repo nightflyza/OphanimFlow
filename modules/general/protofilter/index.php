@@ -53,7 +53,7 @@ if (cfr('ROOT')) {
         48 => '48 ' . __('hours'),
     );
 
-    $form.=wf_delimiter();
+    $form .= wf_delimiter();
     $inputs = wf_SelectorAC('depth', $depthsAvail, __('depth'), $depth, true);
     $form .= wf_Form('', 'POST', $inputs, '');
 
@@ -103,10 +103,16 @@ if (cfr('ROOT')) {
 
         if (!empty($ipByteCount)) {
             arsort($ipByteCount);
-            $netDescFlag=false;
+            $netDescFlag = false;
+            $userDataFlag = false;
             if ($ubillingConfig->getAlterParam('CHARTS_NETDESC')) {
-                $netLib=new OphanimNetLib(true);
-                $netDescFlag=true;
+                $netLib = new OphanimNetLib(true);
+                $netDescFlag = true;
+            }
+
+            if ($ubillingConfig->getAlterParam('UBILLING_URL') and $ubillingConfig->getAlterParam('UBILLING_API_KEY')) {
+                $userDataFlag = true;
+                $ubUserData = new UbUserData();
             }
 
             //rendering report here
@@ -115,6 +121,12 @@ if (cfr('ROOT')) {
             $cells .= wf_TableCell(__('Host'));
             if ($netDescFlag) {
                 $cells .= wf_TableCell(__('Network'));
+            }
+
+            if ($userDataFlag) {
+                $cells .= wf_TableCell(__('Address'));
+                $cells .= wf_TableCell(__('Real Name'));
+                $cells .= wf_TableCell(__('Phones'));
             }
             $cells .= wf_TableCell($protoDesc . ' ' . __('traffic'));
             $rows = wf_TableRow($cells, 'row1');
@@ -126,8 +138,24 @@ if (cfr('ROOT')) {
                 $cells = wf_TableCell($position);
                 $cells .= wf_TableCell($hostLink);
                 if ($netDescFlag) {
-                    $hostDesc=$netLib->getIpNetDescription($eachIp);
+                    $hostDesc = $netLib->getIpNetDescription($eachIp);
                     $cells .= wf_TableCell($hostDesc);
+                }
+                if ($userDataFlag) {
+                    $userAddress = '-';
+                    $userRealName = '-';
+                    $userPhones = '-';
+                    if ($eachIp != '0.0.0.0') {
+                        $userData = $ubUserData->getUserData($eachIp);
+                        if (!empty($userData)) {
+                            $userAddress = $userData['fulladress'];
+                            $userRealName = $userData['realname'];
+                            $userPhones = $userData['phone'].' '.$userData['mobile'];
+                        }
+                    }
+                    $cells .= wf_TableCell($userAddress);
+                    $cells .= wf_TableCell($userRealName);
+                    $cells .= wf_TableCell($userPhones);
                 }
                 $cells .= wf_TableCell(zb_convert_size($eachByteCount));
                 $rows .= wf_TableRow($cells, 'row5');
