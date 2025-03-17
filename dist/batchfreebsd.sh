@@ -188,16 +188,17 @@ done
 
 if [ -n "$missing_packages" ]; then
     echo "Following packages is missing: $missing_packages"
+    echo "❌ Installation FAILED :( ❌"
     exit 1
 else
     echo "All required packages are installed."
+    #here we go?
+    echo "========= ✅ Installation finished! ✅ ============"
+    echo "Please, reboot your server to check correct"
+    echo "startup of all services. You cah access web"
+    echo "interface by URL http://thishost/${WEB_DIR}/"
+    echo "with login admin and password demo"
+    echo "==================================================="
     exit 0
 fi
 
-#here we go?
-echo "========== Installation finished! ============="
-echo "Please, reboot your server to check correct"
-echo "startup of all services. You cah access web"
-echo "interface by URL http://thishost/${WEB_DIR}/"
-echo "with login admin and password demo"
-echo "================================================"
