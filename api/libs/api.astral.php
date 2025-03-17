@@ -1502,16 +1502,27 @@ function wf_DatePickerPreset($field, $date, $extControls = false, $CtrlID = '', 
  * @param bool $useHTMLInTitle
  * @param bool $useHTMLListViewOnly
  * @param string $ajaxURLForDnD
+ * @param bool $saveViewState
  *
  * @return string
  */
-function wf_FullCalendar($data, $options = '', $useHTMLInTitle = false, $useHTMLListViewOnly = false, $ajaxURLForDnD = '') {
+function wf_FullCalendar($data, $options = '', $useHTMLInTitle = false, $useHTMLListViewOnly = false, $ajaxURLForDnD = '', $saveViewState = false) {
     global $ubillingConfig;
 
     $elementid = wf_InputId();
     $dragdropON = ($ubillingConfig->getAlterParam('CALENDAR_DRAG_AND_DROP_ON') and !empty($ajaxURLForDnD));
     $dndConfirmON = $ubillingConfig->getAlterParam('CALENDAR_DRAG_AND_DROP_CONFIRM_ON');
     $titlesSearchON = $ubillingConfig->getAlterParam('CALENDAR_TITLES_SEARCH_ON');
+    $viewLoad = '';
+    $viewSetup = '';
+    $viewSave = '';
+    if ($saveViewState) {
+        $viewLoad = "var savedView = localStorage.getItem('calendarView') || 'month';";
+        $viewSetup = "defaultView: savedView,";
+        $viewSave = ",viewRender: function(view) {
+                        localStorage.setItem('calendarView', view.name);
+                    }";
+    }
 
     if ($useHTMLInTitle) {
         if ($useHTMLListViewOnly) {
@@ -1554,6 +1565,8 @@ function wf_FullCalendar($data, $options = '', $useHTMLInTitle = false, $useHTML
 		var d = date.getDate();
 		var m = date.getMonth();
 		var y = date.getFullYear();
+
+        " . $viewLoad . "
          
 		$('#" . $elementid . "').fullCalendar({
                      header: {
@@ -1570,7 +1583,9 @@ function wf_FullCalendar($data, $options = '', $useHTMLInTitle = false, $useHTML
                         displayEventTime: false,
                         height: 'auto',
                         contentHeight: 'auto',
+                        " . $viewSetup . "
                         " . $options . "
+                        
                         monthNamesShort: [
                         '" . rcms_date_localise('Jan') . "',
                         '" . rcms_date_localise('Feb') . "',
@@ -1634,7 +1649,8 @@ function wf_FullCalendar($data, $options = '', $useHTMLInTitle = false, $useHTML
 				" . $data . "
 			
 			]
-                        
+
+            " . $viewSave . "
 		});
 		
 	});
@@ -2532,6 +2548,106 @@ function wf_CleanDiv() {
 }
 
 /**
+ * Renders JQuery Data Table with some embedded data
+ *
+ * @param array $columns columns names array
+ * @param string $data data array to render
+ * @param bool $saveState grid state saving - conflicts with default sort order
+ * @param string $objects object names
+ * @param int $rowsCount rows count to default display
+ * @param string $opts additional options like:
+ *                                       "order": [[ 0, "desc" ]]
+ *                                       or
+ *                                       dom: \'Bfrtipsl\',  buttons: [\'copy\', \'csv\', \'excel\', \'pdf\', \'print\']
+ *                                       or "dom": \'<"F"lfB>rti<"F"ps>\',  buttons: [\'csv\', \'excel\', \'pdf\', \'print\']
+ * @param bool $addFooter
+ * @param string $footerOpts
+ * @param string $footerTHOpts
+ *
+ * @return string
+ */
+function wf_JqDtEmbed($columns, $dataArr, $saveState = false, $objects = 'users', $rowsCount = 100, $opts = '', $addFooter = false, $footerOpts = '', $footerTHOpts = '') {
+    $jsArr = array();
+    $jsArr = json_encode($dataArr);
+
+    $tableId = 'jqdte_' . wf_InputId();
+    $result = '';
+    $saveState = ($saveState) ? 'true' : 'false';
+    $opts = (!empty($opts)) ? $opts . ',' : '';
+
+    $lenMenu = '[[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "' . __('All') . '"]]';
+    $jq_dt = wf_tag('script', false, '', ' type="text/javascript" charset="utf-8"');
+    $jq_dt .= '
+ 		$(document).ready(function() {     
+        
+            var data=' . $jsArr . '
+            
+            var table=$(\'#' . $tableId . '\').dataTable( {
+                "oLanguage": {
+                        "sLengthMenu": "' . __('Show') . ' _MENU_",
+                        "sZeroRecords": "' . __('Nothing found') . '",
+                        "sInfo": "' . __('Showing') . ' _START_ ' . __('to') . ' _END_ ' . __('of') . ' _TOTAL_ ' . __($objects) . '",
+                        "sInfoEmpty": "' . __('Showing') . ' 0 ' . __('to') . ' 0 ' . __('of') . ' 0 ' . __($objects) . '",
+                        "sInfoFiltered": "(' . __('Filtered') . ' ' . __('from') . ' _MAX_ ' . __('Total') . ')",
+                        "sSearch":       "' . __('Search') . '",
+                        "sProcessing":   "' . __('Processing') . '...",
+                        "oPaginate": {
+                            "sFirst": "' . __('First') . '",
+                            "sPrevious": "' . __('Previous') . '",
+                            "sNext": "' . __('Next') . '",
+                            "sLast": "' . __('Last') . '"
+                        },
+                },
+            
+                "bPaginate": true,
+                "bLengthChange": true,
+                "bFilter": true,
+                "bSort": true,
+                "bInfo": true,
+                "bAutoWidth": false,
+                "bProcessing": true,
+                "bStateSave": ' . $saveState . ',
+                "iDisplayLength": ' . $rowsCount . ',
+                "data": data,
+                "bDeferRender": true,
+                "lengthMenu": ' . $lenMenu . ',
+                ' . $opts . '
+                "bJQueryUI": true
+            } );
+                   
+		} );
+                
+               
+          ';
+    $jq_dt .= wf_tag('script', true);
+
+    $result = $jq_dt;
+    $result .= wf_tag('table', false, 'display compact', 'id="' . $tableId . '"');
+    $result .= wf_tag('thead', false);
+
+    $tablecells = '';
+    $footerCells = '<tfoot ' . $footerOpts . '><tr>';
+    foreach ($columns as $io => $eachColumn) {
+        $tablecells .= wf_TableCell(__($eachColumn));
+
+        if ($addFooter) {
+            $footerCells .= '<th ' . $footerTHOpts . '></th>';
+        }
+    }
+
+    $result .= wf_TableRow($tablecells);
+    $result .= wf_tag('thead', true);
+
+    if ($addFooter) {
+        $result .= $footerCells . '</tr></tfoot>';
+    }
+
+    $result .= wf_tag('table', true);
+
+    return ($result);
+}
+
+/**
  * Renders JQuery Data Tables container
  *
  * @param array $columns columns names array
@@ -2558,7 +2674,7 @@ function wf_JqDtLoader($columns, $ajaxUrl, $saveState = false, $objects = 'users
     $saveState = ($saveState) ? 'true' : 'false';
     $opts = (!empty($opts)) ? $opts . ',' : '';
     $sside = ($serverSide) ? '"serverSide": true,' : '';
-    $lenMenu=($serverSide) ? '[[10, 25, 50, 100, 200], [10, 25, 50, 100, 200]]' : '[[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "' . __('All') . '"]]';
+    $lenMenu = ($serverSide) ? '[[10, 25, 50, 100, 200], [10, 25, 50, 100, 200]]' : '[[10, 25, 50, 100, 200, -1], [10, 25, 50, 100, 200, "' . __('All') . '"]]';
     $jq_dt = wf_tag('script', false, '', ' type="text/javascript" charset="utf-8"');
     $jq_dt .= '
  		$(document).ready(function() {                 
@@ -2592,7 +2708,7 @@ function wf_JqDtLoader($columns, $ajaxUrl, $saveState = false, $objects = 'users
                 "sAjaxSource": \'' . $ajaxUrl . '\',
                 "bDeferRender": true,
                 ' . $sside . '
-                "lengthMenu": '.$lenMenu.',
+                "lengthMenu": ' . $lenMenu . ',
                 ' . $opts . '
                 "bJQueryUI": true
             } );

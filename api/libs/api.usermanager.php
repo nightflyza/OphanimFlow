@@ -27,6 +27,7 @@ class UserManager {
     const ROUTE_EDIT = 'edituserdata';
     const ROUTE_PERMISSIONS = 'edituserpermissions';
     const ROUTE_NEWUSER = 'registernewuser';
+    const ROUTE_GHOSTMODE = 'ghostmode';
 
     /**
      * New user parameters here
@@ -93,6 +94,7 @@ class UserManager {
     public function renderUsersList() {
         $result = '';
         $allUsers = rcms_scandir(USERS_PATH);
+        $myLogin = whoami();
         if (!empty($allUsers)) {
 
             $cells = wf_TableCell(__('User'));
@@ -103,7 +105,13 @@ class UserManager {
                 $actControls = '';
                 $actControls = wf_JSAlert(self::URL_ME . '&' . self::ROUTE_DELETE . '=' . $eachUser, web_delete_icon(), $this->messages->getDeleteAlert()) . ' ';
                 $actControls .= wf_JSAlert(self::URL_ME . '&' . self::ROUTE_EDIT . '=' . $eachUser, wf_img('skins/icon_key.gif', __('Edit user')), $this->messages->getEditAlert()) . ' ';
-                $actControls .= wf_Link(self::URL_ME . '&' . self::ROUTE_PERMISSIONS . '=' . $eachUser, web_edit_icon(__('Permissions')), $this->messages->getEditAlert());
+                $actControls .= wf_Link(self::URL_ME . '&' . self::ROUTE_PERMISSIONS . '=' . $eachUser, web_edit_icon(__('Permissions')), false);
+                if (cfr('ROOT')) {
+                    if ($myLogin != $eachUser) {
+                        $ghostModeLabel = __('Login as') . ' ' . $eachUser . ' ' . __('in ghost mode');
+                        $actControls .= wf_JSAlert(self::URL_ME . '&' . self::ROUTE_GHOSTMODE . '=' . $eachUser, wf_img('skins/ghost.png', $ghostModeLabel), $ghostModeLabel . '?');
+                    }
+                }
                 $cells .= wf_TableCell($actControls);
                 $rows .= wf_TableRow($cells, 'row5');
             }
@@ -116,7 +124,7 @@ class UserManager {
         $result .= wf_delimiter();
 
         $result .= wf_Link(self::URL_ME . '&' . self::ROUTE_NEWUSER . '=true', web_add_icon() . ' ' . __('Register new user'), false, 'ubButton');
-        return($result);
+        return ($result);
     }
 
     /**
@@ -136,7 +144,7 @@ class UserManager {
         $inputs .= wf_Submit(__('Create'));
 
         $result .= wf_Form('', 'POST', $inputs, 'glamour');
-        return($result);
+        return ($result);
     }
 
     /**
@@ -161,8 +169,8 @@ class UserManager {
             $newLogin = ubRouting::post(self::PROUTE_USERNAME, 'vf');
             $newPasword = ubRouting::post(self::PROUTE_PASSWORD);
             $confirmation = ubRouting::post(self::PROUTE_PASSWORDCONFIRM);
-            $newNickName = ubRouting::post(self::PROUTE_NICKNAME, 'mres');
-            $newEmail = ubRouting::post(self::PROUTE_EMAIL, 'mres');
+            $newNickName = ubRouting::post(self::PROUTE_NICKNAME, 'safe');
+            $newEmail = ubRouting::post(self::PROUTE_EMAIL, 'safe', '@');
             $newUserRights = '';
 
             if (!empty($newLogin)) {
@@ -201,7 +209,7 @@ class UserManager {
                 $result .= __('Empty login');
             }
         }
-        return($result);
+        return ($result);
     }
 
     /**
@@ -231,7 +239,7 @@ class UserManager {
         } else {
             $result .= $this->messages->getStyledMessage(__('Empty username'), 'error');
         }
-        return($result);
+        return ($result);
     }
 
     /**
@@ -307,7 +315,7 @@ class UserManager {
                 $result .= __('Empty username');
             }
         }
-        return($result);
+        return ($result);
     }
 
     /**
@@ -316,6 +324,7 @@ class UserManager {
      * @return void/string on error
      */
     public function savePermissions() {
+        $result = '';
         if (ubRouting::checkPost(self::PROUTE_DOPERMS)) {
             $editUserName = ubRouting::post(self::PROUTE_DOPERMS, 'vf');
             if (!empty($editUserName)) {
@@ -333,7 +342,7 @@ class UserManager {
 
                         if (ubRouting::checkPost('_rights')) {
                             $rightsTmp = ubRouting::post('_rights');
-                            if (!empty($rightsTmp) AND is_array($rightsTmp)) {
+                            if (!empty($rightsTmp) and is_array($rightsTmp)) {
                                 foreach ($rightsTmp as $eachRight => $rightState) {
                                     if (isset($systemRights[$eachRight])) {
                                         //skipping unknown rights
@@ -342,8 +351,6 @@ class UserManager {
                                 }
                             }
                         }
-
-
 
                         //new user state is "have root permisssions"
                         if ($newRootState) {
@@ -375,6 +382,7 @@ class UserManager {
                 $result .= __('Empty username');
             }
         }
+        return ($result);
     }
 
     /**
@@ -433,7 +441,8 @@ class UserManager {
         } else {
             $result .= $this->messages->getStyledMessage(__('Empty username'), 'error');
         }
-        return($result);
+        return ($result);
     }
 
+ 
 }
