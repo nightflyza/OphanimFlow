@@ -28,8 +28,8 @@ set PATH=/usr/local/bin:/usr/local/sbin:$PATH
 requiredpackages="gmake bash sudo libtool m4 vim-tiny memcached redis 
 mysql80-client mysql80-server apache24 php84 mod_php84 
 php84-bcmath php84-ctype php84-curl php84-dom php84-extensions 
-php84-filter php84-ftp php84-gd php84-hash php84-iconv php84-imap 
-php84-json php84-mbstring php84-mysqli php84-opcache php84-openssl 
+php84-filter php84-ftp php84-gd php84-iconv 
+php84-mbstring php84-mysqli php84-opcache 
 php84-pdo php84-pdo_sqlite php84-phar php84-posix php84-session 
 php84-simplexml php84-snmp php84-soap php84-sockets php84-sqlite3 
 php84-tokenizer php84-xml php84-xmlreader php84-xmlwriter 
@@ -60,14 +60,10 @@ pkg install -y php84-extensions
 pkg install -y php84-filter
 pkg install -y php84-ftp
 pkg install -y php84-gd
-pkg install -y php84-hash
 pkg install -y php84-iconv
-pkg install -y php84-imap
-pkg install -y php84-json
 pkg install -y php84-mbstring
 pkg install -y php84-mysqli
 pkg install -y php84-opcache
-pkg install -y php84-openssl
 pkg install -y php84-pdo
 pkg install -y php84-pdo_sqlite
 pkg install -y php84-phar
