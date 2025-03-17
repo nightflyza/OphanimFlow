@@ -25,6 +25,16 @@ CRONTAB_PRESET="dist/crontab/crontab.preconf"
 
 set PATH=/usr/local/bin:/usr/local/sbin:$PATH
 
+requiredpackages="gmake bash sudo libtool m4 vim-tiny memcached redis 
+mysql80-client mysql80-server apache24 php84 mod_php84 
+php84-bcmath php84-ctype php84-curl php84-dom php84-extensions 
+php84-filter php84-ftp php84-gd php84-hash php84-iconv php84-imap 
+php84-json php84-mbstring php84-mysqli php84-opcache php84-openssl 
+php84-pdo php84-pdo_sqlite php84-phar php84-posix php84-session 
+php84-simplexml php84-snmp php84-soap php84-sockets php84-sqlite3 
+php84-tokenizer php84-xml php84-xmlreader php84-xmlwriter 
+php84-zip php84-zlib php84-pecl-memcached php84-pecl-redis 
+git pmacct"
 
 #bootstraping pkgng
 pkg info
@@ -32,10 +42,7 @@ pkg info
 #packages installing
 pkg install -y bash
 pkg install -y sudo
-#pkg install -y gmake
 pkg install -y libtool
-#pkg install -y autoconf
-#pkg install -y automake
 pkg install -y m4
 pkg install -y vim-tiny
 pkg install -y memcached
@@ -43,42 +50,42 @@ pkg install -y redis
 pkg install -y mysql80-client
 pkg install -y mysql80-server
 pkg install -y apache24
-pkg install -y php83
-pkg install -y mod_php83
-pkg install -y php83-bcmath
-pkg install -y php83-ctype
-pkg install -y php83-curl
-pkg install -y php83-dom
-pkg install -y php83-extensions
-pkg install -y php83-filter
-pkg install -y php83-ftp
-pkg install -y php83-gd
-pkg install -y php83-hash
-pkg install -y php83-iconv
-pkg install -y php83-imap
-pkg install -y php83-json
-pkg install -y php83-mbstring
-pkg install -y php83-mysqli
-pkg install -y php83-opcache
-pkg install -y php83-openssl
-pkg install -y php83-pdo
-pkg install -y php83-pdo_sqlite
-pkg install -y php83-phar
-pkg install -y php83-posix
-pkg install -y php83-session
-pkg install -y php83-simplexml
-pkg install -y php83-snmp
-pkg install -y php83-soap
-pkg install -y php83-sockets
-pkg install -y php83-sqlite3
-pkg install -y php83-tokenizer
-pkg install -y php83-xml
-pkg install -y php83-xmlreader
-pkg install -y php83-xmlwriter
-pkg install -y php83-zip
-pkg install -y php83-zlib
-pkg install -y php83-pecl-memcached
-pkg install -y php83-pecl-redis
+pkg install -y php84
+pkg install -y mod_php84
+pkg install -y php84-bcmath
+pkg install -y php84-ctype
+pkg install -y php84-curl
+pkg install -y php84-dom
+pkg install -y php84-extensions
+pkg install -y php84-filter
+pkg install -y php84-ftp
+pkg install -y php84-gd
+pkg install -y php84-hash
+pkg install -y php84-iconv
+pkg install -y php84-imap
+pkg install -y php84-json
+pkg install -y php84-mbstring
+pkg install -y php84-mysqli
+pkg install -y php84-opcache
+pkg install -y php84-openssl
+pkg install -y php84-pdo
+pkg install -y php84-pdo_sqlite
+pkg install -y php84-phar
+pkg install -y php84-posix
+pkg install -y php84-session
+pkg install -y php84-simplexml
+pkg install -y php84-snmp
+pkg install -y php84-soap
+pkg install -y php84-sockets
+pkg install -y php84-sqlite3
+pkg install -y php84-tokenizer
+pkg install -y php84-xml
+pkg install -y php84-xmlreader
+pkg install -y php84-xmlwriter
+pkg install -y php84-zip
+pkg install -y php84-zlib
+pkg install -y php84-pecl-memcached
+pkg install -y php84-pecl-redis
 pkg install -y git
 pkg install -y portsnap
 
@@ -171,6 +178,25 @@ perl -e "s/newpassword/${MYSQL_PASSWD}/g" -pi config/mysql.ini
 #setting up updater 
 cp -R ${PRESETS_PATH}autoofupdate.sh /bin/
 chmod a+x /bin/autoofupdate.sh
+
+#checking installed packages
+missing_packages=""
+for pkg in $requiredpackages; do
+    if ! pkg info -q "$pkg"; then
+        echo "❌ $pkg [MISSING]"
+        missing_packages="$missing_packages $pkg"
+    else
+        echo "✅ $pkg [OK]"
+    fi
+done
+
+if [ -n "$missing_packages" ]; then
+    echo "Following packages is missing: $missing_packages"
+    exit 1
+else
+    echo "All required packages are installed."
+    exit 0
+fi
 
 #here we go?
 echo "========== Installation finished! ============="
