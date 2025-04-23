@@ -316,10 +316,7 @@ class YALFCore {
                         if (file_exists(self::LANG_PATH . $customLocale)) {
                             $this->language = $customLocale;
                             setcookie($this->cookie_locale, $customLocale, time() + 2592000);
-                            $currentUrlCallback = $_SERVER['REQUEST_URI'];
-                            $currentUrlCallback = str_replace('&yalfswitchlocale=' . $rawLocale, '', $currentUrlCallback);
-                            $currentUrlCallback = str_replace('?yalfswitchlocale=' . $rawLocale, '', $currentUrlCallback);
-                            rcms_redirect($currentUrlCallback, true); //back to the same URL witchout switch param
+                            rcms_redirect('index.php');
                         }
                     }
                 }
@@ -771,7 +768,25 @@ class YALFCore {
     protected function performUserAuth() {
         if ($this->config['YALF_AUTH_ENABLED']) {
             if (!empty($_POST['login_form'])) {
-                $this->logInUser(@$_POST['username'], @$_POST['password'], !empty($_POST['remember']) ? true : false);
+                $remember=false;
+                $keepLoggedDefault=$this->getConfigOption('YALF_AUTH_KEEP_DEFAULT') ? true : false;
+                $stayLogInFlagCB=$this->getConfigOption('YALF_AUTH_KEEP_CB') ? true : false;
+                if ($keepLoggedDefault) {
+                    $remember=true;
+                } 
+                
+                if ($stayLogInFlagCB) {
+                    if (!empty($_POST['remember'])) {
+                        $remember=true;
+                    } else {
+                        $remember=false;
+                    }
+                }
+
+                $this->logInUser(@$_POST['username'], @$_POST['password'], $remember);
+                if (!$this->getConfigOption('YALF_AUTH_NOREDIR')) {
+                    rcms_redirect('index.php', true);
+                }
             }
             //default POST logout
             if (!empty($_POST['logout_form'])) {

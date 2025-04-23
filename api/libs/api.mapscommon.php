@@ -124,12 +124,12 @@ function sm_MapDrawSwitchUplinks($traceid = '') {
         foreach ($allswitches as $io => $each) {
             if (!empty($each['parentid'])) {
                 if (isset($allswitches[$each['parentid']])) {
-                    if (($allswitches[$each['parentid']]['geo'] != '') AND ( $each['geo'] != '')) {
+                    if (($allswitches[$each['parentid']]['geo'] != '') and ($each['geo'] != '')) {
                         $coord1 = $each['geo'];
                         $coord2 = $allswitches[$each['parentid']]['geo'];
                         $hint = $each['location'] . ' ' . $each['ip'] . ' → ' . $allswitches[$each['parentid']]['location'] . ' ' . $allswitches[$each['parentid']]['ip'];
 
-                        if ((!isset($deadarr[$each['ip']])) AND ( !isset($deadarr[$allswitches[$each['parentid']]['ip']]))) {
+                        if ((!isset($deadarr[$each['ip']])) and (!isset($deadarr[$allswitches[$each['parentid']]['ip']]))) {
                             $color = '#00FF00';
                         } else {
                             $color = '#FF0000';
@@ -304,8 +304,15 @@ function sm_MapDrawSwitches() {
  * @return string
  */
 function um_MapDrawBuilds($buildIdFilter = '') {
+    global $ubillingConfig;
+    $result = '';
     $buildIdFilter = ubRouting::filters($buildIdFilter, 'int');
-    $ym_conf = rcms_parse_ini_file(CONFIG_PATH . "ymaps.ini");
+    $defferedLoading = ($ubillingConfig->getAlterParam('BUILDMAP_DEFERRED')) ? true : false;
+    if ($defferedLoading) {
+        if (!function_exists('generic_MapAddMarkDynamic')) {
+            $defferedLoading = false;
+        }
+    }
     $query = "SELECT * from `build` WHERE `geo` != '' ";
     //optional filter here
     if ($buildIdFilter) {
@@ -313,6 +320,7 @@ function um_MapDrawBuilds($buildIdFilter = '') {
     }
     $allbuilds = simple_queryall($query);
     $allstreets = zb_AddressGetStreetAllData();
+    $alluserips = zb_UserGetAllIPs();
     $streetData = array();
 
     $cache = new UbillingCache();
@@ -332,6 +340,7 @@ function um_MapDrawBuilds($buildIdFilter = '') {
             $streetData[$eachstreet['id']] = $eachstreet['streetname'];
         }
     }
+
     //get apts in all builds aggregated with users logins
     $aptData = array();
     $allapts_q = "SELECT `buildid`,`apt`,`login` from `apt` JOIN `address` ON `apt`.`id`=`address`.`aptid`";
@@ -339,25 +348,12 @@ function um_MapDrawBuilds($buildIdFilter = '') {
     if (!empty($allapts)) {
         $aptData = $allapts;
     }
-    //get all user ips
-    $alluserips = zb_UserGetAllIPs();
-    //form alive ips array 
-    $aliveIps = array();
-    if (file_exists("exports/nmaphostscan")) {
-        $nmapData = file_get_contents("exports/nmaphostscan");
-        $nmapData = explodeRows($nmapData);
-        if (!empty($nmapData)) {
-            foreach ($nmapData as $ic => $eachnmaphost) {
-                $zhost = zb_ExtractIpAddress($eachnmaphost);
-                if ($zhost) {
-                    $aliveIps[$zhost] = $zhost;
-                }
-            }
-        }
+
+    //get all Online users if available
+    $dnUsers = rcms_scandir('content/dn');
+    if (!empty($dnUsers)) {
+        $dnUsers = array_flip($dnUsers);
     }
-
-    $result = '';
-
 
     if (!empty($allbuilds)) {
         foreach ($allbuilds as $io => $each) {
@@ -395,9 +391,10 @@ function um_MapDrawBuilds($buildIdFilter = '') {
                     foreach ($aptData as $ib => $eachapt) {
                         if ($eachapt['buildid'] == $each['id']) {
                             if (isset($alluserips[$eachapt['login']])) {
+                                $userLogin = $eachapt['login'];
                                 $userIp = $alluserips[$eachapt['login']];
                                 $usersCount++;
-                                if (isset($aliveIps[$userIp])) {
+                                if (isset($dnUsers[$userLogin])) {
                                     $aliveFlag = web_bool_led(true);
                                     $aliveUsers++;
                                     $aliveKey = 'live';
@@ -408,7 +405,7 @@ function um_MapDrawBuilds($buildIdFilter = '') {
 
 
                                 $cells = wf_TableCell($eachapt['apt']);
-                                $cells .= wf_TableCell(wf_Link('?module=userprofile&username=' . $eachapt['login'], $userIp, false));
+                                $cells .= wf_TableCell(wf_Link('?module=userprofile&username=' . $userLogin, $userIp, false));
                                 $cells .= wf_TableCell($aliveFlag, '', '', 'sorttable_customkey="' . $aliveKey . '"');
                                 $rows .= wf_TableRow($cells, 'row5');
                             }
@@ -420,6 +417,7 @@ function um_MapDrawBuilds($buildIdFilter = '') {
                     $cachedData[$each['id']]['aliveusers'] = $aliveUsers;
                 }
             }
+
             $footer = __('Active') . ' ' . $aliveUsers . '/' . $usersCount;
             $icon = um_MapBuildIcon($usersCount);
 
@@ -434,7 +432,11 @@ function um_MapDrawBuilds($buildIdFilter = '') {
             $title = str_replace("'", '', $title);
             $title = str_replace("\n", '', $title);
 
-            $result .= sm_MapAddMark($geo, $title, $content, $footer, $icon, $iconlabel, true);
+            if ($defferedLoading) {
+                $result .= generic_MapAddMarkDynamic($geo, $title, '?module=usersmap&getbuildusers=' . $each['id'], $icon);
+            } else {
+                $result .= sm_MapAddMark($geo, $title, $content, $footer, $icon, $iconlabel, true);
+            }
         }
 
         //update cache data if required
@@ -442,6 +444,39 @@ function um_MapDrawBuilds($buildIdFilter = '') {
             $cache->set('INBUILDUSERS', $cachedData, $cacheTime);
         }
     }
+    return ($result);
+}
+
+/**
+ * Retrieves and formats building data including address and user statistics
+ * 
+ * This function gets building information from cache and formats it with address,
+ * user table data and statistics about active/total users.
+ *
+ * @param mixed $buildId Building ID to retrieve data for
+ * 
+ * @return string 
+ */
+function um_GetBuildData($buildId) {
+    $buildId = ubRouting::filters($buildId, 'int');
+    $result = 'Oo';
+    $cache = new UbillingCache();
+    $cacheTime = 3600;
+    $cachedData = $cache->get('INBUILDUSERS', $cacheTime);
+    if (is_array($cachedData) and !empty($cachedData)) {
+        if (isset($cachedData[$buildId])) {
+            $result = '';
+            $allBuildsAddress = zb_AddressGetBuildAllAddress(false);
+            if (isset($allBuildsAddress[$buildId])) {
+                $result .= wf_tag('b') . $allBuildsAddress[$buildId] . wf_tag('b', true);
+            }
+            $buildData = $cachedData[$buildId];
+            $result .= wf_TableBody($buildData['rows'], '', 0);
+            $result .= wf_delimiter(0);
+            $result .= __('Active') . ' ' . $buildData['aliveusers'] . '/' . $buildData['userscount'];
+        }
+    }
+
     return ($result);
 }
 
@@ -649,11 +684,11 @@ function sm_ShowMapContainer() {
     $container = wf_tag('div', false, '', 'id="ubmap" style="width: 1000; height:800px;"');
     $container .= wf_tag('div', true);
     $controls = '';
-    if (cfr('USERSMAP')) {
-        $controls .= wf_Link("?module=usersmap", wf_img('skins/ymaps/build.png') . ' ' . __('Builds map'), false, 'ubButton');
-    }
     if (cfr('SWITCHMAP')) {
         $controls .= wf_Link("?module=switchmap", wf_img('skins/ymaps/network.png') . ' ' . __('Switches map'), false, 'ubButton');
+    }
+    if (cfr('USERSMAP')) {
+        $controls .= wf_Link("?module=usersmap", wf_img('skins/ymaps/build.png') . ' ' . __('Builds map'), false, 'ubButton');
     }
     if (cfr('SWITCHESEDIT')) {
         $controls .= wf_Link("?module=switchmap&locfinder=true", wf_img('skins/ymaps/edit.png') . ' ' . __('Edit map'), false, 'ubButton');
@@ -661,7 +696,7 @@ function sm_ShowMapContainer() {
     $controls .= wf_Link("?module=switchmap&showuplinks=true", wf_img('skins/ymaps/uplinks.png') . ' ' . __('Show links'), false, 'ubButton');
     $controls .= wf_Link("?module=switchmap&coverage=true", wf_img('skins/ymaps/coverage.png') . ' ' . __('Coverage area'), false, 'ubButton');
     if (cfr('SWITCHES')) {
-        $controls .= wf_Link("?module=switches", wf_img('skins/ymaps/switchdir.png') . ' ' . __('Available switches'), true, 'ubButton');
+        $controls .= wf_Link("?module=switches", wf_img('skins/ymaps/switchdir.png') . ' ' . __('Available switches'), false, 'ubButton');
     }
     $controls .= wf_delimiter(1);
 
