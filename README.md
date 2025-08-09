@@ -3,7 +3,7 @@ NetFlow aggregation and graph toolkit.
 
 Basic idea is replacement of bandwidthd and Stargazer cap_nf module in one solution, which performs NetFlow data collecting, classification, preprocessing and performing network bandwidth utilization graphs rendering per each host in your network and basic traffic accounting of it, somewhere on some dedicated host.
 
-# FreeBSD 13.5/13.4/14.1/14.2 batch setup
+# FreeBSD 13.5/14.2/14.3 batch setup
 
 ninja way
 
