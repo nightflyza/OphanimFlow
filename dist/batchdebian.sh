@@ -36,7 +36,7 @@ apt install -y gnupg2
 
 
 #MariaDB setup
-apt install -y software-properties-common dirmngr 
+apt install -y dirmngr 
 apt install -y mariadb-server 
 apt install -y mariadb-client 
 apt install -y libmariadb-dev 
@@ -54,7 +54,6 @@ apt install -y curl
 apt install -y apache2 
 apt install -y libapache2-mod-php8.4 
 apt install -y build-essential 
-apt install -y libxmlrpc-c++8-dev 
 apt install -y memcached 
 apt install -y redis 
 apt install -y php8.4-cli 
@@ -67,7 +66,6 @@ apt install -y php8.4-gd
 apt install -y php8.4-snmp 
 apt install -y php8.4-soap 
 apt install -y php8.4-zip 
-apt install -y php8.4-imap 
 apt install -y php8.4-tokenizer 
 apt install -y php8.4-xml 
 apt install -y php8.4-xmlreader 
@@ -76,7 +74,6 @@ apt install -y php8.4-simplexml
 apt install -y php8.4-sqlite3 
 apt install -y php8.4-sockets 
 apt install -y php8.4-opcache 
-apt install -y php8.4-json 
 apt install -y php8.4-pdo 
 apt install -y php8.4-pdo-sqlite 
 apt install -y php8.4-phar 
@@ -88,7 +85,6 @@ apt install -y nano
 apt install -y mtr 
 apt install -y expect 
 apt install -y git 
-apt install -y netdiag 
 apt install -y htop 
 apt install -y rsyslog 
 
