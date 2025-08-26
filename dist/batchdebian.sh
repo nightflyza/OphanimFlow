@@ -8,19 +8,19 @@ DISTRO_DIR="OphanimFlow-main"
 DIALOG="dialog"
 FETCH="/usr/bin/wget"
 APACHE_VERSION="apache24"
-PRESETS_PATH="dist/presets/debian12/"
+PRESETS_PATH="dist/presets/debian/"
 APACHE_DATA_PATH="/var/www/html/"
 APACHE_CONFIG_DIR="/etc/apache2/"
 APACHE_INIT_SCRIPT="/usr/sbin/service apache2"
-APACHE_CONFIG_PRESET_NAME="debi12_apache2.conf"
+APACHE_CONFIG_PRESET_NAME="apache2.conf"
 APACHE_CONFIG_NAME="apache2.conf"
-PHP_CONFIG_PRESET="php82.ini"
-PHP_CONFIG_PATH="/etc/php/8.2/apache2/php.ini"
+PHP_CONFIG_PRESET="php8.ini"
+PHP_CONFIG_PATH="/etc/php/8.4/apache2/php.ini"
 MYSQL_INIT_SCRIPT="/usr/sbin/service mariadb"
 WEB_DIR="of"
 DUMP_PATH="dist/dumps/ophanimflow.sql"
 LANDING_PATH="dist/landing/"
-CRONTAB_PRESET="dist/presets/debian12/crontab.debian"
+CRONTAB_PRESET="dist/presets/debian/crontab.debian"
 
 
 #initial repos update
@@ -52,50 +52,41 @@ apt install -y libexpat1-dev
 apt install -y sudo 
 apt install -y curl 
 apt install -y apache2 
-apt install -y libapache2-mod-php8.2 
+apt install -y libapache2-mod-php8.4 
 apt install -y build-essential 
 apt install -y libxmlrpc-c++8-dev 
-#apt install -y ipset 
 apt install -y memcached 
 apt install -y redis 
-apt install -y php8.2-cli 
-apt install -y php8.2-mysql 
-apt install -y php8.2-mysqli 
-apt install -y php8.2-mbstring 
-apt install -y php8.2-bcmath 
-apt install -y php8.2-curl 
-apt install -y php8.2-gd 
-apt install -y php8.2-snmp 
-apt install -y php8.2-soap 
-apt install -y php8.2-zip 
-apt install -y php8.2-imap 
-#apt install -y php8.2-json 
-apt install -y php8.2-tokenizer 
-apt install -y php8.2-xml 
-apt install -y php8.2-xmlreader 
-apt install -y php8.2-xmlwriter 
-apt install -y php8.2-simplexml 
-apt install -y php8.2-sqlite3 
-apt install -y php8.2-sockets 
-apt install -y php8.2-opcache 
-apt install -y php8.2-json 
-apt install -y php8.2-pdo 
-apt install -y php8.2-pdo-sqlite 
-apt install -y php8.2-phar 
-apt install -y php8.2-posix 
-#apt install -y php8.2-memcached 
-#apt install -y php8.2-redis 
-#apt install -y ffmpeg 
-#apt install -y graphviz 
+apt install -y php8.4-cli 
+apt install -y php8.4-mysql 
+apt install -y php8.4-mysqli 
+apt install -y php8.4-mbstring 
+apt install -y php8.4-bcmath 
+apt install -y php8.4-curl 
+apt install -y php8.4-gd 
+apt install -y php8.4-snmp 
+apt install -y php8.4-soap 
+apt install -y php8.4-zip 
+apt install -y php8.4-imap 
+apt install -y php8.4-tokenizer 
+apt install -y php8.4-xml 
+apt install -y php8.4-xmlreader 
+apt install -y php8.4-xmlwriter 
+apt install -y php8.4-simplexml 
+apt install -y php8.4-sqlite3 
+apt install -y php8.4-sockets 
+apt install -y php8.4-opcache 
+apt install -y php8.4-json 
+apt install -y php8.4-pdo 
+apt install -y php8.4-pdo-sqlite 
+apt install -y php8.4-phar 
+apt install -y php8.4-posix 
 apt install -y vim-tiny 
-#apt install -y arping 
 apt install -y elinks 
 apt install -y mc 
 apt install -y nano 
-#apt install -y nmap 
 apt install -y mtr 
 apt install -y expect 
-#apt install -y bwm-ng 
 apt install -y git 
 apt install -y netdiag 
 apt install -y htop 

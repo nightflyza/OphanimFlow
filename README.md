@@ -11,10 +11,10 @@ ninja way
 # fetch https://raw.githubusercontent.com/nightflyza/OphanimFlow/main/dist/batchfreebsd.sh && sh batchfreebsd.sh
 ```
 
-# Debian 12.5 bookworm batch setup
+# Debian 13.0 trixie batch setup
 ```
 $ su -
-# wget https://raw.githubusercontent.com/nightflyza/OphanimFlow/main/dist/batchdebian12.sh && sh batchdebian12.sh
+# wget https://raw.githubusercontent.com/nightflyza/OphanimFlow/main/dist/batchdebian.sh && sh batchdebian.sh
 ```
 
 After that, a simple web interface will be available to you at a link like http://yourhost/of/, which will allow you to make the minimum necessary settings, such as specifying your networks, and start using OphanimFlow. The default login is "admin", the default password is "demo". Don't forget to change it in the user profile settings.

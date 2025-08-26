@@ -2,10 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.6] - rev 113
+## [0.0.6] - in development now
 - alter.ini: new option UBILLING_URL that sets full URL of Ubilling >=1.5.2 for integration
 - alter.ini: new option UBILLING_API_KEY that sets Ubilling API key aka serial for integration
 - protofilter: optional ability to show remote Ubilling user data in reports
+- installer: Debian 13.0 trixie tested and works
+- installer: FreeBSD 14.3 tested and works
 
 ## [0.0.5] - rev 110
 
