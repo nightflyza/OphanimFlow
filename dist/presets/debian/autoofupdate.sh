@@ -21,7 +21,7 @@ LOG_FILE="/var/log/ophanimflowupdate.log"
 RESTORE_POINT="/tmp/of_restore"
 
 #updater distro
-UPDATER_DISTRO="dist/presets/debian12/autoofupdate.sh"
+UPDATER_DISTRO="dist/presets/debian/autoofupdate.sh"
 
 #defaults
 APP_RELEASE_URL="https://codeload.github.com/nightflyza/OphanimFlow/zip/refs/heads/main"
