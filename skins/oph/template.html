@@ -182,9 +182,7 @@
                 <a href="" class="dropdown-toggle no-after peers fxw-nw ai-c lh-1" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                   <div class="peer mR-10">
                  <?php
-                    $adminEmail = gravatar_GetUserEmail(whoami());
-                    $avatarUrl=gravatar_GetAvatar($adminEmail, 64,'w-2r bdrs-50p');
-                    print($avatarUrl);
+                    print(FaceKit::getAvatar(whoami(),64,'w-2r bdrs-50p'));
                 ?>
                   </div>
                   <div class="peer">
