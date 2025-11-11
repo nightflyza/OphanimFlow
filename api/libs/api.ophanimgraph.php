@@ -6,7 +6,7 @@
 class OphanimGraph {
 
     /**
-     * Default graphs interval
+     * Default graphs interval in seconds
      * 
      * @var int
      */
@@ -49,10 +49,49 @@ class OphanimGraph {
      */
     protected $accurateFlag = false;
 
+    /**
+     * Daily timeline allocation flag
+     *
+     * @var bool
+     */
+    protected $preallocTimelineFlag = false;
+
+
+    /**
+                From the castle in the fog
+                with countless battles
+
+                              _,-'|
+                           ,-'._  |
+                 .||,      |####\ |
+                \.`',/     \####| |
+                = ,. =      |###| |
+                / || \    ,-'\#/,'`.
+                  ||     ,'   `,,. `.
+                  ,|____,' , ,;' \| |
+                 (3|\    _/|/'   _| |
+                  ||/,-''  | >-'' _,\\
+                  ||'      ==\ ,-'  ,'
+                  ||       |  V \ ,|
+                  ||       |    |` |
+                  ||       |    |   \
+                  ||       |    \    \
+                  ||       |     |    \
+                  ||       |      \_,-'
+                  ||       |___,,--")_\
+                  ||         |_|   ccc/
+                  ||        ccc/
+                  ||
+
+                Surrounded with dull clouds and frozen winds
+                I summon the mournful night
+
+    */
     public function __construct() {
         global $ubillingConfig;
         $this->debug = $ubillingConfig->getAlterParam('CHARTS_DEBUG');
         $this->accurateFlag = $ubillingConfig->getAlterParam('CHARTS_ACCURATE');
+        $this->preallocTimelineFlag = $ubillingConfig->getAlterParam('CHARTS_PREALLOC_TIMELINE');
     }
 
     /**
@@ -147,6 +186,41 @@ class OphanimGraph {
     }
 
     /**
+     * Allocates timeline array with given intervals count
+     *
+     * @param string $dateFrom
+     * @param string $dateTo
+     * 
+     * @return array
+     */
+    protected function preallocIntervalTimeline($dateFrom, $dateTo) {
+        $result = array();
+        $classifier = new OphanimClassifier();
+        $classCount = sizeof($classifier->getBaseStruct());
+
+        //zero filled array of speeds for each class
+        $zeroStruct=array();
+        for ($i = 0; $i < $classCount; $i++) {
+            $zeroStruct[] = 0;
+        }
+
+        //format array(hh:mm=>$zeroStruct) or array(d/m/Y hh:mm=>$zeroStruct) depend start/end datetime
+        $tsFrom = strtotime($dateFrom);
+        $tsTo = strtotime($dateTo);
+        $intervalsCount = ($tsTo - $tsFrom) / $this->interval;
+        if ($intervalsCount < 288) {
+            for ($i = 0; $i < $intervalsCount; $i++) {
+                $result[date("H:i", $tsFrom + $i * $this->interval)] = $zeroStruct;
+            }
+        } else {
+            for ($i = 0; $i < $intervalsCount; $i++) {
+                $result[date("d/m/Y H:i", $tsFrom + $i * $this->interval)] = $zeroStruct;
+            }
+        }
+        return ($result);
+    }
+
+    /**
      * Parses raw traffic data per line and returns it prepared for charting as datetime=>speedsArr
      *
      * @param array $rawData
@@ -178,6 +252,8 @@ class OphanimGraph {
         }
         return ($result);
     }
+
+
 
     /**
      * Renders PNG chart for some IP
@@ -224,7 +300,13 @@ class OphanimGraph {
 
         $chartDataRaw = $this->getChartData($ip, $direction, $dateFrom, $dateTo);
         $speedData = $this->parseSpeedData($chartDataRaw, false);
+        if ($this->preallocTimelineFlag) {
+            $preallocData = $this->preallocIntervalTimeline($dateFrom, $dateTo);
+            //mixing preallocated empty timeline with actualspeed data
+            $speedData = array_merge($preallocData, $speedData);
+        }
 
+        
         if (sizeof($speedData) >= 288) {
             $chartMancer->setXLabelLen(10);
             $chartMancer->setXLabelsCount(12);

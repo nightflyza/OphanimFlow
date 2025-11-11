@@ -32,7 +32,12 @@ if ($ubillingConfig->getAlterParam('CHARTS_NETDESC')) {
 
 //day by default
 $dateFrom = date("Y-m-d 00:00:00");
-$dateTo = date("Y-m-d H:i:s");
+$dateTo = date ("Y-m-d H:i:s"); //till now
+
+$preallocTimelineFlag = ($ubillingConfig->getAlterParam('CHARTS_PREALLOC_TIMELINE')) ? true : false;
+if ($preallocTimelineFlag) {
+    $dateTo = date("Y-m-d 23:59:59"); //full day timeline
+}
 
 if (ubRouting::checkGet('period')) {
     $period = ubRouting::get('period');
@@ -54,7 +59,10 @@ if (ubRouting::checkGet('period')) {
 
         case 'day':
             $dateFrom = date("Y-m-d 00:00:00");
-            $dateTo = date("Y-m-d H:i:s");
+            $dateTo = date ("Y-m-d H:i:s");
+            if ($preallocTimelineFlag) {
+                $dateTo = date("Y-m-d 23:59:59"); 
+            }
             break;
 
         case 'week':
