@@ -56,6 +56,9 @@ class OphanimGraph {
      */
     protected $preallocTimelineFlag = false;
 
+    //other predefined stuff
+    const ROUTE_DUMPDATA = 'dumpdata';
+
 
     /**
                 From the castle in the fog
@@ -355,15 +358,36 @@ class OphanimGraph {
 
         $chartDataRaw = $this->getChartData($ip, $direction, $dateFrom, $dateTo);
         $speedData = $this->parseSpeedData($chartDataRaw, false, $dateFrom, $dateTo);
+
+        if (ubRouting::checkGet(self::ROUTE_DUMPDATA)) {
+            print(wf_tag('pre', false));
+            print('==== original data ===='.PHP_EOL);
+            print('[stat] data keys count: '.sizeof($speedData).PHP_EOL);
+            print_r($speedData);
+         
+        }
+
         if ($this->preallocTimelineFlag) {
             $preallocData = $this->preallocIntervalTimeline($dateFrom, $dateTo);
             //mixing preallocated empty timeline with actualspeed data
             $speedData = array_merge($preallocData, $speedData);
+            ksort($speedData);
         }
-        
+
+        if (ubRouting::checkGet(self::ROUTE_DUMPDATA)) {
+            print('==== mixed with timeline ===='.PHP_EOL);
+            print('[stat] data keys count: '.sizeof($speedData).PHP_EOL);
+            print_r($speedData);
+            print(wf_tag('pre', true));
+            die();
+        }
+
         if (sizeof($speedData) >= $this->getDayIntervalCount()) {
             $chartMancer->setXLabelLen(10);
             $chartMancer->setXLabelsCount(12);
+            $chartMancer->setCutSuffix('');
+        } else {
+            $chartMancer->setXLabelsCount(20);
             $chartMancer->setCutSuffix('');
         }
 
