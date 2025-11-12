@@ -244,7 +244,7 @@ class OphanimGraph {
             return ($result);
         }
 
-        $format = ($this->isMoreThanDay($dateFrom, $dateTo)) ?  "d/m/Y H:i" : "H:i";
+        $format = ($this->isMoreThanDay($dateFrom, $dateTo)) ?  "Y-m-d H:i" : "H:i";
         for ($currentTs = $firstTick; $currentTs <= $lastTick; $currentTs += $interval) {
             $result[date($format, $currentTs)] = $zeroStruct;
         }
@@ -299,7 +299,7 @@ class OphanimGraph {
         }
         if (!empty($rawData)) {
             foreach ($rawData as $io => $eachLine) {
-                $xAxis = ($this->isMoreThanDay($dateFrom, $dateTo)) ? date("d/m/Y H:i", $eachLine[0]) : date("H:i", $eachLine[0]);
+                $xAxis = ($this->isMoreThanDay($dateFrom, $dateTo)) ? date("Y-m-d H:i", $eachLine[0]) : date("H:i", $eachLine[0]);
                 $tmpResult = array();
                 foreach ($eachLine as $lnIdx => $lineData) {
                     if ($lnIdx > 0) {
