@@ -268,6 +268,16 @@ class OphanimGraph {
     }
 
     /**
+     * Returns number of intervals in one day
+     *
+     * @return int
+     */
+    protected function getDayIntervalCount() {
+        $result = 86400 / $this->interval;
+        return ($result);
+    }
+
+    /**
      * Parses raw traffic data per line and returns it prepared for charting as datetime=>speedsArr
      *
      * @param array $rawData
@@ -351,7 +361,7 @@ class OphanimGraph {
             $speedData = array_merge($preallocData, $speedData);
         }
         
-        if ($this->isMoreThanDay($dateFrom, $dateTo)) {
+        if (sizeof($speedData) >= $this->getDayIntervalCount()) {
             $chartMancer->setXLabelLen(10);
             $chartMancer->setXLabelsCount(12);
             $chartMancer->setCutSuffix('');
