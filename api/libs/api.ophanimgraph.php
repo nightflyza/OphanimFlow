@@ -382,12 +382,12 @@ class OphanimGraph {
             die();
         }
 
-        if (sizeof($speedData) >= $this->getDayIntervalCount()) {
+        if (sizeof($speedData) > ($this->getDayIntervalCount())) {
             $chartMancer->setXLabelLen(10);
             $chartMancer->setXLabelsCount(12);
             $chartMancer->setCutSuffix('');
         } else {
-            $chartMancer->setXLabelsCount(20);
+            $chartMancer->setXLabelsCount(24);
             $chartMancer->setCutSuffix('');
         }
 
