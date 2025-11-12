@@ -187,6 +187,7 @@ class OphanimGraph {
 
     /**
      * Allocates timeline array with given intervals count
+     * format array(hh:mm=>$zeroStruct) or array(d/m/Y hh:mm=>$zeroStruct) depends on start/end datetime
      *
      * @param string $dateFrom
      * @param string $dateTo
@@ -204,20 +205,66 @@ class OphanimGraph {
             $zeroStruct[] = 0;
         }
 
-        //format array(hh:mm=>$zeroStruct) or array(d/m/Y hh:mm=>$zeroStruct) depend start/end datetime
         $tsFrom = strtotime($dateFrom);
         $tsTo = strtotime($dateTo);
-        $intervalsCount = ($tsTo - $tsFrom) / $this->interval;
-        if ($intervalsCount < 288) {
-            for ($i = 0; $i < $intervalsCount; $i++) {
-                $result[date("H:i", $tsFrom + $i * $this->interval)] = $zeroStruct;
-            }
-        } else {
-            for ($i = 0; $i < $intervalsCount; $i++) {
-                $result[date("d/m/Y H:i", $tsFrom + $i * $this->interval)] = $zeroStruct;
-            }
+        if ($tsFrom === false or $tsTo === false) {
+            return ($result);
+        }
+
+        if ($tsFrom > $tsTo) {
+            $tmpTs = $tsFrom;
+            $tsFrom = $tsTo;
+            $tsTo = $tmpTs;
+        }
+
+        $interval = $this->interval;
+        if ($interval <= 0) {
+            return ($result);
+        }
+
+        $startRemainder = $tsFrom % $interval;
+        if ($startRemainder < 0) {
+            $startRemainder += $interval;
+        }
+        $firstTick = $tsFrom - $startRemainder;
+        if ($firstTick < 0) {
+            $firstTick = 0;
+        }
+
+        $endRemainder = $tsTo % $interval;
+        if ($endRemainder < 0) {
+            $endRemainder += $interval;
+        }
+        $lastTick = ($endRemainder === 0) ? $tsTo : $tsTo + ($interval - $endRemainder);
+
+        if ($firstTick > $lastTick) {
+            return ($result);
+        }
+
+        $format = ($this->isMoreThanDay($dateFrom, $dateTo)) ?  "d/m/Y H:i" : "H:i";
+        for ($currentTs = $firstTick; $currentTs <= $lastTick; $currentTs += $interval) {
+            $result[date($format, $currentTs)] = $zeroStruct;
         }
         return ($result);
+    }
+
+    /**
+     * Calculates if the timeline is more than one day to show full date in x-axis
+     *
+     * @param string $dateFrom
+     * @param string $dateTo
+     * 
+     * @return int
+     */
+    protected function isMoreThanDay($dateFrom, $dateTo) {
+        $result = false;
+        $tsFrom = strtotime($dateFrom);
+        $tsTo = strtotime($dateTo);
+   
+        if (($tsTo - $tsFrom) > 86400) {
+            $result = true;
+        }
+        return ($result);   
     }
 
     /**
@@ -228,7 +275,7 @@ class OphanimGraph {
      * 
      * @return array
      */
-    protected function parseSpeedData($rawData, $allocTimeline = false) {
+    protected function parseSpeedData($rawData, $allocTimeline = false, $dateFrom = '', $dateTo = '') {
         $result = array();
         global $ubillingConfig;
         $validationFlag = $ubillingConfig->getAlterParam('VALIDATE_COUNTERS');
@@ -238,9 +285,8 @@ class OphanimGraph {
             $result = allocDayTimeline();
         }
         if (!empty($rawData)) {
-            $dataSize = sizeof($rawData);
             foreach ($rawData as $io => $eachLine) {
-                $xAxis = ($dataSize < 287) ? date("H:i", $eachLine[0]) : date("d/m/Y H:i", $eachLine[0]);
+                $xAxis = ($this->isMoreThanDay($dateFrom, $dateTo)) ? date("d/m/Y H:i", $eachLine[0]) : date("H:i", $eachLine[0]);
                 $tmpResult = array();
                 foreach ($eachLine as $lnIdx => $lineData) {
                     if ($lnIdx > 0) {
@@ -252,7 +298,6 @@ class OphanimGraph {
         }
         return ($result);
     }
-
 
 
     /**
@@ -299,15 +344,14 @@ class OphanimGraph {
         $chartMancer->setChartTitle($chartTitle);
 
         $chartDataRaw = $this->getChartData($ip, $direction, $dateFrom, $dateTo);
-        $speedData = $this->parseSpeedData($chartDataRaw, false);
+        $speedData = $this->parseSpeedData($chartDataRaw, false, $dateFrom, $dateTo);
         if ($this->preallocTimelineFlag) {
             $preallocData = $this->preallocIntervalTimeline($dateFrom, $dateTo);
             //mixing preallocated empty timeline with actualspeed data
             $speedData = array_merge($preallocData, $speedData);
         }
-
         
-        if (sizeof($speedData) >= 288) {
+        if ($this->isMoreThanDay($dateFrom, $dateTo)) {
             $chartMancer->setXLabelLen(10);
             $chartMancer->setXLabelsCount(12);
             $chartMancer->setCutSuffix('');
