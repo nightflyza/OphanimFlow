@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - alter.ini: new option UBILLING_API_KEY that sets Ubilling API key aka serial for integration
 - alter.ini: new option CHARTS_PREALLOC_TIMELINE implemented which allows render more human familiar look.
 - protofilter: optional ability to show remote Ubilling user data in reports
+- graph: fixed timestamp offsets. Now its calculated depends on selected period instead of available datasize.
 - global: gravatar/libravatar replaced with facekit
 - installer: Debian 13.0 trixie tested and works
 - installer: FreeBSD 14.3 tested and works
