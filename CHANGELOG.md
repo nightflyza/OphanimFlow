@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - protofilter: optional ability to show remote Ubilling user data in reports
 - graph: now optional can preallocate timeline depend on selected time period.
 - graph: fixed timestamp offsets. Now its calculated depends on selected period instead of available datasize.
+- graph: dates format changed to ISO 8601 to avoid ordering issues.
 - global: gravatar/libravatar replaced with facekit
 - installer: Debian 13.0 trixie tested and works
 - installer: FreeBSD 14.3 tested and works
