@@ -104,6 +104,88 @@ Full example with custom dimensions:
 
 IP 0.0.0.0 returns summary bandwidth chart for all tracked hosts.
 
+Data debugging: requires "dumpdata" GET parameter.
+
+```
+?module=graph&dir=R&period=hour&ip=0.0.0.0&dumpdata=true
+```
+
+returns something like this instead graph:
+```
+==== original data ====
+[stat] data keys count: 10
+Array
+(
+    [15:30] => Array
+        (
+            [0] => 0.071194966634115
+            [1] => 0
+            [2] => 0
+            [3] => 0.071194966634115
+            [4] => 0
+            [5] => 0
+            [6] => 0
+            [7] => 0
+            [8] => 0
+            [9] => 0
+            [10] => 0
+            [11] => 0
+        )
+
+    [15:35] => Array
+        (
+            [0] => 0.067311604817708
+            [1] => 0
+            [2] => 0
+            [3] => 0.067311604817708
+            [4] => 0
+            [5] => 0
+            [6] => 0
+            [7] => 0
+            [8] => 0
+            [9] => 0
+            [10] => 0
+            [11] => 0
+        )
+.....
+
+==== mixed with timeline ====
+[stat] data keys count: 14
+Array
+(
+    [15:25] => Array
+        (
+            [0] => 0
+            [1] => 0
+            [2] => 0
+            [3] => 0
+            [4] => 0
+            [5] => 0
+            [6] => 0
+            [7] => 0
+            [8] => 0
+            [9] => 0
+            [10] => 0
+            [11] => 0
+        )
+
+    [15:30] => Array
+        (
+            [0] => 0.071194966634115
+            [1] => 0
+            [2] => 0
+            [3] => 0.071194966634115
+            [4] => 0
+            [5] => 0
+            [6] => 0
+            [7] => 0
+            [8] => 0
+            [9] => 0
+            [10] => 0
+            [11] => 0
+        )
+```
+
 ## gettraff
 
 This API call returns JSON array of all traffic summary collected by some period for all or specified IP address.
