@@ -97,6 +97,13 @@ class WolfDispatcher {
     protected $chatType = '';
 
     /**
+     * Method name which will be executed on any callback query receive
+     * 
+     * @var string
+     */
+    protected $callbackQueryMethod = '';
+
+    /**
      * Method name which will be executed on any image receive
      *
      * @var string
@@ -316,6 +323,19 @@ class WolfDispatcher {
     }
 
     /**
+     * Sets method name which will be executed on any callback query received
+     * 
+     * @param string $method
+     * 
+     * @return void
+     */
+    public function setCallbackQueryHandler($method) {
+        if (!empty($method)) {
+            $this->callbackQueryMethod = $method;
+        }
+    }
+
+    /**
      * Sets method name which will be executed on any image input
      * 
      * @param string $name existing method name to process received images
@@ -514,6 +534,7 @@ class WolfDispatcher {
                         $this->handleEmptyText();
                     }
 
+
                     //this method will be executed on image receive if set
                     if (!empty($this->photoHandleMethod)) {
                         if ($this->isPhotoReceived()) {
@@ -539,6 +560,18 @@ class WolfDispatcher {
                         $this->handlePhotoReceived();
                     }
                 }
+            }
+
+            //callback query processing
+            if (!empty($this->callbackQueryMethod)) {
+                if ($this->isCallbackQueryReceived()) {
+                    $this->runAction($this->callbackQueryMethod);
+                }
+            }
+
+            //this will be executed while any callback query received
+            if ($this->isCallbackQueryReceived()) {
+                $this->handleCallbackQuery();
             }
 
             //this shall be executed on any non empty data recieve
@@ -583,6 +616,15 @@ class WolfDispatcher {
     }
 
     /**
+     * Dummy method which will be executed on receive any callback query
+     * 
+     * @return void
+     */
+    protected function handleCallbackQuery() {
+        //will be executed if any callback query received
+    }
+
+    /**
      * Writes debug data to separate per-class log if debugging flag enabled.
      * 
      * @global int $starttime
@@ -616,7 +658,9 @@ class WolfDispatcher {
      */
     public function listen() {
         //may be automatic setup required?
-        $this->installWebHook();
+        if ($this->hookAutoSetup) {
+            $this->installWebHook();
+        }
         //is something here?
         $this->receivedData = $this->telegram->getHookData();
         if (!empty($this->receivedData)) {
@@ -634,6 +678,19 @@ class WolfDispatcher {
         }
         $this->writeDebugLog();
         return ($this->receivedData);
+    }
+
+    /**
+     * Checks is any callback query received?
+     * 
+     * @return array|bool
+     */
+    protected function isCallbackQueryReceived() {
+        $result = false;
+        if (isset($this->receivedData['callback_query'])) {
+            $result = $this->receivedData;
+        }
+        return ($result);
     }
 
     /**
@@ -666,7 +723,7 @@ class WolfDispatcher {
      *   id, is_bot, first_name, username, language_code, is_premium - normal users
      *   id, is_bot, first_name, username - bots
      * 
-     * @return array/bool
+     * @return array|bool
      */
     protected function isNewChatMemberAppear() {
         $result = false;
@@ -682,7 +739,7 @@ class WolfDispatcher {
      *   id, is_bot, first_name, username, language_code, is_premium - normal users
      *   id, is_bot, first_name, username - bots
      * 
-     * @return array/bool
+     * @return array|bool
      */
     protected function isChatMemberLeft() {
         $result = false;
@@ -853,7 +910,7 @@ class WolfDispatcher {
      * 
      * @param string $savePath
      * 
-     * @return string/void
+     * @return string|void
      */
     protected function savePhoto($savePath) {
         $result = '';
@@ -877,7 +934,7 @@ class WolfDispatcher {
      * @param string $message
      * @param array $keyboard
      * 
-     * @return string/bool
+     * @return string|bool
      */
     protected function reply($message = '', $keyboard = array()) {
         $result = '';
@@ -897,7 +954,7 @@ class WolfDispatcher {
      * @param array $keyboard
      * @param int $replyToMsg
      * 
-     * @return string/bool
+     * @return string|bool
      */
     protected function replyTo($message = '', $keyboard = array(), $replyToMsg = '') {
         $result = '';
@@ -910,6 +967,73 @@ class WolfDispatcher {
                 $result = json_decode($replyResult, true);
             }
         }
+        return ($result);
+    }
+
+    /**
+     * Universal method for sending different types of media and files to chat.
+     * 
+     * Usage examples:
+     *   $this->sendMedia('photo', 'https://example.com/image.jpg', 'Photo caption');
+     *   $this->sendMedia('video', 'https://example.com/video.mp4', 'Video description');
+     *   $this->sendMedia('audio', 'https://example.com/audio.mp3', 'Song title');
+     *   $this->sendMedia('document', 'https://example.com/file.pdf', 'Document name');
+     *   $this->sendMedia('location', '48.253449, 24.926184');
+     *   $this->sendMedia('venue', '48.253449, 24.926184', '', '', '', array('address' => 'Mountain', 'title' => 'Jesus lives here'));
+     *
+     * @param string $type media type: photo, video, audio, document, location, venue
+     * @param string $urlOrData media URL or data
+     * @param string $caption media caption
+     * @param int $chatId chat ID (optional, default is current chat ID)
+     * @param int $replyToMsgId reply to message ID 
+     * @param array $additionalData additional data for venue (optional, default is empty array)
+     *
+     * @return array
+     */
+    protected function sendMedia($type, $urlOrData, $caption = '', $chatId = '', $replyToMsgId = '', $additionalData = array()) {
+        $result = array();
+        $message = '';
+        if (empty($chatId)) {
+            $chatId = $this->chatId;
+        }
+
+        $allowedTypes = array('photo', 'video', 'audio', 'document', 'location', 'venue');
+        if (!in_array($type, $allowedTypes)) {
+            return ($result);
+        }
+
+        switch ($type) {
+            case 'photo':
+            case 'video':
+            case 'audio':
+            case 'document':
+                if (!empty($urlOrData)) {
+                    $captionPart = !empty($caption) ? '{' . $caption . '}' : '';
+                    $methodName = 'send' . ucfirst($type);
+                    $message = $methodName . ':[' . $urlOrData . ']' . $captionPart;
+                }
+                break;
+
+            case 'location':
+                if (!empty($urlOrData)) {
+                    $message = 'sendLocation:' . $urlOrData;
+                }
+                break;
+
+            case 'venue':
+                if (!empty($urlOrData) and isset($additionalData['address']) and isset($additionalData['title'])) {
+                    $message = 'sendVenue:[' . $urlOrData . '](' . $additionalData['address'] . '){' . $additionalData['title'] . '}';
+                }
+                break;
+        }
+
+        if (!empty($message)) {
+            $sendResult = $this->telegram->directPushMessage($chatId, $message, array(), false, $replyToMsgId);
+            if ($sendResult) {
+                $result = json_decode($sendResult, true);
+            }
+        }
+
         return ($result);
     }
 
@@ -929,6 +1053,67 @@ class WolfDispatcher {
         }
         return ($result);
     }
+
+    /**
+     * Edits a message by its ID in a specified chat.
+     *
+     * @param string $message The new text of the message.
+     * @param int $chatId The ID of the chat in which the message will be edited.
+     * @param int $messageId The ID of the message to be edited.
+     * 
+     * @return array
+     */
+    protected function editMessageText($messageId, $chatId, $messageText) {
+        $result = array();
+        $editResult = $this->telegram->directPushMessage($chatId, 'editMessageText:[' . $messageId . '@' . $chatId . ']' . $messageText);
+        if ($editResult) {
+            $result = json_decode($editResult, true);
+        }
+        return ($result);
+    }
+
+    /**
+     * Pins a message by its ID in a specified chat.
+     *
+     * @param int $messageId
+     * @param int $chatId
+     * @param bool $disableNotification
+     *
+     * @return array
+     */
+    protected function pinChatMessage($messageId, $chatId, $disableNotification = false) {
+        $result = array();
+        $disableFlag = $disableNotification ? '@1' : '';
+        $pinResult = $this->telegram->directPushMessage($chatId, 'pinChatMessage:[' . $messageId . '@' . $chatId . $disableFlag . ']');
+        if ($pinResult) {
+            $result = json_decode($pinResult, true);
+        }
+        return ($result);
+    }
+
+    /**
+     * Unpins a message by its ID in a specified chat or unpins all messages if messageId is empty.
+     *
+     * @param int $chatId
+     * @param int $messageId
+     *
+     * @return array
+     */
+    protected function unpinChatMessage($chatId, $messageId = '') {
+        $result = array();
+        if (empty($messageId)) {
+            $unpinResult = $this->telegram->directPushMessage($chatId, 'unpinChatMessage:[' . $chatId . ']');
+        } else {
+            $unpinResult = $this->telegram->directPushMessage($chatId, 'unpinChatMessage:[' . $messageId . '@' . $chatId . ']');
+        }
+        if ($unpinResult) {
+            $result = json_decode($unpinResult, true);
+        }
+        return ($result);
+    }
+
+    
+    
 
     /**
      * Bans a member from a specified group.
@@ -969,6 +1154,22 @@ class WolfDispatcher {
     }
 
     /**
+     * Rearranges flat buttons array into 2D array with specified buttons per row
+     * 
+     * @param array $buttonsArray flat buttons array
+     * @param int $inRow buttons per row
+     * 
+     * @return array
+     */
+    protected function rearrangeButtons($buttonsArray, $inRow = 2) {
+        $result = array();
+        if (!empty($buttonsArray)) {
+            $result = array_chunk($buttonsArray, $inRow);
+        }
+        return ($result);
+    }
+
+    /**
      * Sends some keyboard to current chat
      * 
      * @param array $buttons
@@ -976,10 +1177,25 @@ class WolfDispatcher {
      * 
      * @return void
      */
-    protected function castKeyboard($buttons, $text = '⌨️') {
+    protected function castKeyboard($buttons, $text = '⌨️', $inline = false) {
         if (!empty($buttons)) {
-            $keyboard = $this->telegram->makeKeyboard($buttons);
+            $keyboard = $this->telegram->makeKeyboard($buttons, $inline);
             $this->reply($text, $keyboard);
+        }
+    }
+
+
+    /**
+     * Confirms a current callback query with some text and optional show alert flag
+     * 
+     * @param string $text text to show in callback query balloon or alert text
+     * @param bool $showAlert show alert flag
+     * 
+     * @return void
+     */
+    protected function confirmCallbackQuery($text = '', $showAlert = false) {
+        if (!empty($this->receivedData['callback_query']['id'])) {
+            $this->telegram->answerCallbackQuery($this->receivedData['callback_query']['id'], $text, $showAlert);
         }
     }
 
@@ -996,49 +1212,58 @@ class WolfDispatcher {
 
     /**
      * Automatically registers new web-hook URL for bot if isnt registered yet.
+     * 
+     * @param string $customUrl custom web-hook listener URL
      *
-     * @return void
+     * @return string
      */
-    protected function installWebHook() {
-        if ($this->hookAutoSetup) {
+    public function installWebHook($customUrl = '') {
+        $result = '';
+        if (empty($customUrl)) {
+            //automatic current listener URL detection
             $listenerUrl = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-            $tokenHash = md5($this->botToken . $listenerUrl);
-            $hookPidName = self::HOOK_PID_PATH . $this->botImplementation . $tokenHash . '.hook';
-            //need to be installed?
-            if (!file_exists($hookPidName)) {
-                $hookInfo = json_decode($this->telegram->getWebHookInfo(), true);
-                $hookInfo = $hookInfo['result'];
-                $hookAllowedUpdates = isset($hookInfo['allowed_updates']) ? $hookInfo['allowed_updates'] : array();
+        } else {
+            //overriding with explict custom URL
+            $listenerUrl = $customUrl;
+        }
 
-                if ($hookInfo['url'] != $listenerUrl or $hookAllowedUpdates != $this->allowedUpdates or $hookInfo['max_connections'] != $this->maxConnections) {
-                    //need to be installed new URL with new params
-                    $this->telegram->setWebHook($listenerUrl, $this->maxConnections, $this->allowedUpdates);
-                    if (function_exists('show_success')) {
-                        show_success($this->botImplementation . 'installed web-hook URL: ' . $hookInfo['url']);
-                    }
-                } else {
-                    //already set, but no PID
-                    if (function_exists('show_warning')) {
-                        show_warning($this->botImplementation . ' PID saved for web-hook URL: ' . $hookInfo['url']);
-                    }
-                }
-                //write hook pid
-                file_put_contents($hookPidName, $listenerUrl);
-                //some logging
-                if ($this->debugFlag) {
-                    $logFileName = strtolower($this->botImplementation) . '_debug.log';
-                    $logData = $this->botImplementation . ': ' . curdatetime() . PHP_EOL;
-                    $logData .= 'INSTALLED WEB HOOK: ' . $listenerUrl . PHP_EOL;
-                    $logData .= 'HOOK PID: ' . $hookPidName . PHP_EOL;
-                    file_put_contents(self::LOG_PATH . $logFileName, $logData, FILE_APPEND);
+        $tokenHash = md5($this->botToken . $listenerUrl);
+        $hookPidName = self::HOOK_PID_PATH . $this->botImplementation . $tokenHash . '.hook';
+        //need to be installed?
+        if (!file_exists($hookPidName)) {
+            $hookInfo = json_decode($this->telegram->getWebHookInfo(), true);
+            $hookInfo = $hookInfo['result'];
+            $hookAllowedUpdates = isset($hookInfo['allowed_updates']) ? $hookInfo['allowed_updates'] : array();
+
+            if ($hookInfo['url'] != $listenerUrl or $hookAllowedUpdates != $this->allowedUpdates or $hookInfo['max_connections'] != $this->maxConnections) {
+                //need to be installed new URL with new params
+                $result = $this->telegram->setWebHook($listenerUrl, $this->maxConnections, $this->allowedUpdates);
+                if (function_exists('show_success')) {
+                    show_success($this->botImplementation . 'installed web-hook URL: ' . $hookInfo['url']);
                 }
             } else {
-                //ok, hook is already installed
-                $currentHookUrl = file_get_contents($hookPidName);
-                if (function_exists('show_info')) {
-                    show_info($this->botImplementation . ' web-hook URL: ' . $currentHookUrl);
+                //already set, but no PID
+                if (function_exists('show_warning')) {
+                    show_warning($this->botImplementation . ' PID saved for web-hook URL: ' . $hookInfo['url']);
                 }
             }
+            //write hook pid
+            file_put_contents($hookPidName, $listenerUrl);
+            //some logging
+            if ($this->debugFlag) {
+                $logFileName = strtolower($this->botImplementation) . '_debug.log';
+                $logData = $this->botImplementation . ': ' . curdatetime() . PHP_EOL;
+                $logData .= 'INSTALLED WEB HOOK: ' . $listenerUrl . PHP_EOL;
+                $logData .= 'HOOK PID: ' . $hookPidName . PHP_EOL;
+                file_put_contents(self::LOG_PATH . $logFileName, $logData, FILE_APPEND);
+            }
+        } else {
+            //ok, hook is already installed
+            $currentHookUrl = file_get_contents($hookPidName);
+            if (function_exists('show_info')) {
+                show_info($this->botImplementation . ' web-hook URL: ' . $currentHookUrl);
+            }
         }
+        return ($result);
     }
 }

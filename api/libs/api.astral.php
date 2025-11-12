@@ -2138,15 +2138,15 @@ function wf_Graph($data, $width = '500', $height = '300', $errorbars = false, $G
     $result .= $objectId . ' = new Dygraph(';
     $result .= 'document.getElementById("' . $randomId . '"),' . "\n";
     $result .= $cleandata;
-  
+
     $result .= ', {  errorBars: ' . $errorbars;
     $result .= (!empty($GraphTitle)) ? ', title: \'' . $GraphTitle . '\'' : '';
     $result .= (!empty($XLabel)) ? ', xlabel: \'' . $XLabel . '\'' : '';
     $result .= (!empty($YLabel)) ? ', ylabel: \'' . $YLabel . '\'' : '';
-   
+
     $result .= (!empty($RangeSelector)) ? ', showRangeSelector: true' : '';
     $result .= ' }' . "\n";
-   
+
     $result .= ');';
     $result .= wf_tag('script', true);
     $result .= wf_tag('style');
@@ -3350,7 +3350,7 @@ var dataView = new google.visualization.DataView(data);
  *
  * @param string $url Link URL
  * @param string $title Link title
- * @param bool $br Line break line after link
+ * @param bool   $br Line break line after link
  * @param string $class Link class name
  * @param string $opts Link style or attributes
  *
@@ -3359,6 +3359,46 @@ var dataView = new google.visualization.DataView(data);
 function wf_BackLink($url, $title = '', $br = false, $class = 'ubButton', $opts = '') {
     $title = (empty($title)) ? __('Back') : __($title);
     $result = wf_Link($url, wf_img('skins/back.png') . ' ' . $title, $br, $class, $opts);
+    return ($result);
+}
+
+/**
+ * Returns default back control with automatic custom backURL detection
+ *
+ * @param string $url Default back link URL. Used if no valid custom backURL received
+ * @param string $title Link title
+ * @param bool   $br Line break line after link
+ * @param string $class Link class name
+ * @param string $opts Link style or attributes
+ *
+ * @return string
+ */
+function wf_BackLinkAuto($url, $title = '', $br = false, $class = 'ubButton', $opts = '') {
+    $title = (empty($title)) ? __('Back') : __($title);
+
+    if (wf_CheckGet(array('backurl'))) {
+        $decoded = base64_decode($_GET['backurl'], true);
+        if ($decoded !== false) {
+            $isAbsolute = filter_var($decoded, FILTER_VALIDATE_URL);
+            $isRelative = preg_match('#^(?:/|\.{1,2}/|\?)#', $decoded);
+            if ($isAbsolute or $isRelative) {
+                $url = $decoded;
+            }
+        }
+    }
+
+    $result = wf_Link($url, wf_img('skins/back.png') . ' ' . $title, $br, $class, $opts);
+    return ($result);
+}
+
+/**
+ * Generates valid backURL encoded substring for wf_BackLinkAuto
+ *
+ * @param string $url
+ * @return void
+ */
+function wf_GenBackUrl($url) {
+    $result = '&backurl=' . base64_encode($url);
     return ($result);
 }
 
@@ -4583,10 +4623,12 @@ function wf_AjaxSelectorSearchableAC($container, $params, $label, $selected = ''
  * @param string $content The content to be shown or hidden.
  * @param string $title The title to be displayed on the toggle element. Default is an empty string.
  * @param string $class Additional CSS class to be applied to the outer span. Default is an empty string.
+ * @param string $contentClass Additional CSS class to be applied to the inner content span. Default is an empty string.
+ * @param bool $initialState Initial state of the content rendered. Default is false.
  * 
  * @return string 
  */
-function wf_ShowHide($content, $title = '', $class = '') {
+function wf_ShowHide($content, $title = '', $class = '', $contentClass = '', $initialState = false) {
     $result = '';
     $inputId = 'showhide' . wf_InputId();
     $contentId = 'content' . wf_InputId();
@@ -4596,10 +4638,11 @@ function wf_ShowHide($content, $title = '', $class = '') {
 
     $result .= wf_tag('span', false, $class);
     $result .= wf_tag('span', false, '', 'id="' . $inputId . '"');
-    $result .= $labelShow;
+    $result .= $initialState ? $labelHide : $labelShow;
     $result .= wf_tag('span', true);
 
-    $result .= wf_tag('span', false, '', 'id="' . $contentId . '" style="display:none;"');
+    $contentStyle = $initialState ? '' : 'display:none;';
+    $result .= wf_tag('span', false, $contentClass, 'id="' . $contentId . '" style="' . $contentStyle . '"');
     $result .= $content;
     $result .= wf_tag('span', true);
     $result .= wf_tag('span', true);
@@ -4608,13 +4651,21 @@ function wf_ShowHide($content, $title = '', $class = '') {
     $result .= '
         $( "#' . $inputId . '" ).on( "click", function() {
                     $( "#' . $contentId . '" ).toggle( "fast", function() {
-                        $("#' . $inputId . '").html(\'' . $labelHide . '\');
+                        if ($("#' . $contentId . '").is(":visible")) {
+                            $("#' . $inputId . '").html(\'' . $labelHide . '\');
+                        } else {
+                            $("#' . $inputId . '").html(\'' . $labelShow . '\');
+                        }
                 });
             });
             
         $( "#' . $contentId . '" ).on( "click", function() {
                     $( "#' . $contentId . '" ).toggle( "fast", function() {
-                        $("#' . $inputId . '").html(\'' . $labelShow . '\');
+                        if ($("#' . $contentId . '").is(":visible")) {
+                            $("#' . $inputId . '").html(\'' . $labelHide . '\');
+                        } else {
+                            $("#' . $inputId . '").html(\'' . $labelShow . '\');
+                        }
                 });
             });            
             ';
