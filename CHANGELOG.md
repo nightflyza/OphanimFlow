@@ -2,7 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.0.6] - in development now
+## [0.0.7] - in development now
+- nothing happened
+
+## [0.0.6] - rev 132
 - alter.ini: new option UBILLING_URL that sets full URL of Ubilling >=1.5.2 for integration
 - alter.ini: new option UBILLING_API_KEY that sets Ubilling API key aka serial for integration
 - alter.ini: new option CHARTS_PREALLOC_TIMELINE implemented. It allows render more human familiar graph look.
