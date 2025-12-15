@@ -83,6 +83,7 @@ pkg install -y php85-zlib
 pkg install -y php85-pecl-memcached
 pkg install -y php85-pecl-redis
 pkg install -y git
+pkg install -y gmake
 
 
 #extracting fresh ports tree
