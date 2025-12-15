@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ "$(id -u)" -ne 0 ]; then
+    echo "Error: batchfreebsd script must be run only as root user."
+    exit 1
+fi
+
 DISTRO_URL="https://codeload.github.com/nightflyza/OphanimFlow/zip/refs/heads/main"
 DISTRO_NAME="main.zip"
 DISTRO_DIR="OphanimFlow-main"
