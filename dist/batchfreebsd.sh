@@ -29,15 +29,15 @@ requiredpackages="gmake bash sudo libtool m4 vim-tiny memcached redis
 mysql80-client mysql80-server apache24 php85 mod_php85 
 php85-bcmath php85-ctype php85-curl php85-dom php85-extensions 
 php85-filter php85-ftp php85-gd php85-iconv 
-php85-mbstring php85-mysqli php85-opcache 
+php85-mbstring php85-mysqli 
 php85-pdo php85-pdo_sqlite php85-phar php85-posix php85-session 
 php85-simplexml php85-snmp php85-soap php85-sockets php85-sqlite3 
 php85-tokenizer php85-xml php85-xmlreader php85-xmlwriter 
 php85-zip php85-zlib php85-pecl-memcached php85-pecl-redis 
 git pmacct"
 
-#bootstraping pkgng
-pkg info
+#botstrapping pkg ng
+ASSUME_ALWAYS_YES=yes pkg bootstrap -y
 
 #packages installing
 pkg install -y bash
@@ -83,13 +83,14 @@ pkg install -y php85-zlib
 pkg install -y php85-pecl-memcached
 pkg install -y php85-pecl-redis
 pkg install -y git
-pkg install -y portsnap
 
-#building specific software from ports
-portsnap fetch && portsnap extract && portsnap update
+
+#extracting fresh ports tree
+rm -fr /usr/ports
+git clone --depth=1 -b main https://git.freebsd.org/ports.git /usr/ports
 
 #fresh gmake
-cd /usr/ports/devel/gmake && make BATCH=yes install 
+#cd /usr/ports/devel/gmake && make BATCH=yes install 
 
 #installing pmacct with mysql support
 cd /usr/ports/net-mgmt/pmacct/ && make  WITH="MYSQL" BATCH=yes install
@@ -98,7 +99,6 @@ cd /usr/ports/net-mgmt/pmacct/ && make  WITH="MYSQL" BATCH=yes install
 #generating mysql password
 GEN_MYS_PASS=`dd if=/dev/urandom count=128 bs=1 2>&1 | md5 | cut -b-8`
 MYSQL_PASSWD="mys"${GEN_MYS_PASS}
-
 
 #
 # Preconfiguring software
