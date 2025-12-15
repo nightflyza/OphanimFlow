@@ -26,14 +26,14 @@ CRONTAB_PRESET="dist/crontab/crontab.preconf"
 set PATH=/usr/local/bin:/usr/local/sbin:$PATH
 
 requiredpackages="gmake bash sudo libtool m4 vim-tiny memcached redis 
-mysql80-client mysql80-server apache24 php84 mod_php84 
-php84-bcmath php84-ctype php84-curl php84-dom php84-extensions 
-php84-filter php84-ftp php84-gd php84-iconv 
-php84-mbstring php84-mysqli php84-opcache 
-php84-pdo php84-pdo_sqlite php84-phar php84-posix php84-session 
-php84-simplexml php84-snmp php84-soap php84-sockets php84-sqlite3 
-php84-tokenizer php84-xml php84-xmlreader php84-xmlwriter 
-php84-zip php84-zlib php84-pecl-memcached php84-pecl-redis 
+mysql80-client mysql80-server apache24 php85 mod_php85 
+php85-bcmath php85-ctype php85-curl php85-dom php85-extensions 
+php85-filter php85-ftp php85-gd php85-iconv 
+php85-mbstring php85-mysqli php85-opcache 
+php85-pdo php85-pdo_sqlite php85-phar php85-posix php85-session 
+php85-simplexml php85-snmp php85-soap php85-sockets php85-sqlite3 
+php85-tokenizer php85-xml php85-xmlreader php85-xmlwriter 
+php85-zip php85-zlib php85-pecl-memcached php85-pecl-redis 
 git pmacct"
 
 #bootstraping pkgng
@@ -50,38 +50,38 @@ pkg install -y redis
 pkg install -y mysql80-client
 pkg install -y mysql80-server
 pkg install -y apache24
-pkg install -y php84
-pkg install -y mod_php84
-pkg install -y php84-bcmath
-pkg install -y php84-ctype
-pkg install -y php84-curl
-pkg install -y php84-dom
-pkg install -y php84-extensions
-pkg install -y php84-filter
-pkg install -y php84-ftp
-pkg install -y php84-gd
-pkg install -y php84-iconv
-pkg install -y php84-mbstring
-pkg install -y php84-mysqli
-pkg install -y php84-opcache
-pkg install -y php84-pdo
-pkg install -y php84-pdo_sqlite
-pkg install -y php84-phar
-pkg install -y php84-posix
-pkg install -y php84-session
-pkg install -y php84-simplexml
-pkg install -y php84-snmp
-pkg install -y php84-soap
-pkg install -y php84-sockets
-pkg install -y php84-sqlite3
-pkg install -y php84-tokenizer
-pkg install -y php84-xml
-pkg install -y php84-xmlreader
-pkg install -y php84-xmlwriter
-pkg install -y php84-zip
-pkg install -y php84-zlib
-pkg install -y php84-pecl-memcached
-pkg install -y php84-pecl-redis
+pkg install -y php85
+pkg install -y mod_php85
+pkg install -y php85-bcmath
+pkg install -y php85-ctype
+pkg install -y php85-curl
+pkg install -y php85-dom
+pkg install -y php85-extensions
+pkg install -y php85-filter
+pkg install -y php85-ftp
+pkg install -y php85-gd
+pkg install -y php85-iconv
+pkg install -y php85-mbstring
+pkg install -y php85-mysqli
+pkg install -y php85-opcache
+pkg install -y php85-pdo
+pkg install -y php85-pdo_sqlite
+pkg install -y php85-phar
+pkg install -y php85-posix
+pkg install -y php85-session
+pkg install -y php85-simplexml
+pkg install -y php85-snmp
+pkg install -y php85-soap
+pkg install -y php85-sockets
+pkg install -y php85-sqlite3
+pkg install -y php85-tokenizer
+pkg install -y php85-xml
+pkg install -y php85-xmlreader
+pkg install -y php85-xmlwriter
+pkg install -y php85-zip
+pkg install -y php85-zlib
+pkg install -y php85-pecl-memcached
+pkg install -y php85-pecl-redis
 pkg install -y git
 pkg install -y portsnap
 
