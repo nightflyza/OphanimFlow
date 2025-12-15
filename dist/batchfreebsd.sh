@@ -89,17 +89,15 @@ pkg install -y php85-pecl-memcached
 pkg install -y php85-pecl-redis
 pkg install -y git
 pkg install -y gmake
-pkg install -y autoconf
-pkg install -y help2man
-
 
 
 #extracting fresh ports tree
 rm -fr /usr/ports
 git clone --depth=1 -b main https://git.freebsd.org/ports.git /usr/ports
 
-#fresh gettext
+#fresh gettext and autoconf
 cd /usr/ports/devel/gettext-runtime/ && make WITH="MYSQL" BATCH=yes reinstall
+cd /usr/ports/devel/autoconf/ && make WITH="MYSQL" BATCH=yes reinstall 
 
 #installing pmacct with mysql support
 cd /usr/ports/net-mgmt/pmacct/ && make WITH="MYSQL" BATCH=yes install
