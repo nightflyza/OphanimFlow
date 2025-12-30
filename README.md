@@ -50,7 +50,7 @@ Default sFlow collector UDP port is 6343 (standard sFlow port). The sFlow collec
 
 # REST API
 
-The REST API has several endpoints for getting preprocessed data as well as graphs. So you can use OphanimFlow data in your external apps, somethink like that:
+The REST API has several endpoints for getting preprocessed data as well as graphs. So you can use OphanimFlow data in your external apps, something like that:
 
 ![opharchabstract](https://github.com/nightflyza/OphanimFlow/assets/1496954/0115ecc1-7d6f-473c-885a-169d01f5f04e)
 
