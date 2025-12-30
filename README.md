@@ -1,7 +1,7 @@
 # OphanimFlow
-NetFlow aggregation and graph toolkit. 
+NetFlow, IPFIX and sFlow aggregation and graph toolkit. 
 
-Basic idea is replacement of bandwidthd and Stargazer cap_nf module in one solution, which performs NetFlow data collecting, classification, preprocessing and performing network bandwidth utilization graphs rendering per each host in your network and basic traffic accounting of it, somewhere on some dedicated host.
+Basic idea is replacement of bandwidthd and Stargazer cap_nf module in one solution, which performs NetFlow, IPFIX and sFlow data collecting, classification, preprocessing and performing network bandwidth utilization graphs rendering per each host in your network and basic traffic accounting of it, somewhere on some dedicated host.
 
 # FreeBSD 13.5/14.2/14.3/15.0 batch setup
 
@@ -31,13 +31,21 @@ Just run the script
 
 and stay tuned! ;)
 
-# NetFlow software sensor usage example
+# Flow collectors usage examples
+
+OphanimFlow supports both NetFlow/IPFIX and sFlow collectors simultaneously. Both collectors use the same network configuration, pretag map, and write data to the same database tables for unified processing.
+
+## NetFlow software sensor
 
 Default NetFlow collector UDP port is 42112 and default sampling rate is 100. Flows data dumps to database every 5 minutes, and preprocesses every 5 minutes for charts and every 10 minutes for summary traffic counters, so 
 
 ```
 # softflowd -i bridge0 -s 100 -t udp=60 -t tcp=60 -t icmp=60 -t general=60 -t maxlife=60 -t tcp.rst=60 -t tcp.fin=60 -n 192.168.0.220:42112
 ```
+
+## sFlow configuration
+
+Default sFlow collector UDP port is 6343 (standard sFlow port). The sFlow collector shares the same sampling rate configuration as NetFlow collector and writes to the same database tables. Configure your network devices to send sFlow data to the collector host on port 6343.
 
 
 # REST API
@@ -248,15 +256,17 @@ While the API endpoints is currently accessible without any authorization, you m
 ENDPOINTS_HOSTS="192.168.0.8,192.168.42.56"
 ```
 
-Also you may want to change NetFlow collector port or sampling rate, you also can do this in the same alter.ini config file using following options:
+Also you may want to change NetFlow or sFlow collector ports or sampling rate, you also can do this in the same alter.ini config file using following options:
 
 ```
 ;NetFlow collector default options
 COLLECTOR_PORT=42112
 SAMPLING_RATE=100
+;sFlow collector default options
+SFLOW_PORT=6343
 ```
 
-dont forget regenerate configuration and restart collector after this
+The sampling rate is shared between both collectors. Both collectors use the same network configuration and write to the same database tables. Don't forget to regenerate configuration and restart collectors after changing these options.
 
 Also OphanimFlow from release 0.0.5 automatically rotates and flushes old data to keep some storage space reserved and prevent it from exhausting. Its 10% of total storage size by default. This behaviour is controlled by following options:
 
