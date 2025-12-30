@@ -1,6 +1,13 @@
 if [ -s /etc/of.conf ]; then
-echo "running collector"
+echo "running netflow collector"
 /usr/local/sbin/nfacctd -f /etc/of.conf
 else
-echo "skipping collector startup with empty config"
+echo "skipping netflow collector startup with empty config"
+fi
+
+if [ -s /etc/sof.conf ]; then
+echo "running sflow collector"
+/usr/local/sbin/sfacctd -f /etc/sof.conf
+else
+echo "skipping sflow collector startup with empty config"
 fi

@@ -120,8 +120,9 @@ chmod -R 777 config content exports gdata
 #creating collector config and data storage placeholders
 mkdir /ofstorage
 touch /etc/of.conf
+touch /etc/sof.conf
 touch /etc/pretag.map
-chmod -R 777 /etc/of.conf /etc/pretag.map /ofstorage
+chmod -R 777 /etc/of.conf /etc/sof.conf /etc/pretag.map /ofstorage
 
 #setting landing page
 cp -R ${LANDING_PATH}* ${APACHE_DATA_PATH}

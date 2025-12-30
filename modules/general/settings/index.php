@@ -48,7 +48,7 @@ if (cfr('ROOT')) {
         ubRouting::nav($settings::URL_ME);
     }
 
-    show_window(__('Netflow / IPFIX collector'), $settings->renderCollectorControls());
+    show_window(__('NetFlow / IPFIX / sFlow collectors'), $settings->renderCollectorControls());
     show_window(__('Available networks'), $settings->renderNetworksList());
     show_window('', $settings->renderNetworkCreateForm());
 } else {

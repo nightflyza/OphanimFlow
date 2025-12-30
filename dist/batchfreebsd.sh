@@ -32,12 +32,12 @@ set PATH=/usr/local/bin:/usr/local/sbin:$PATH
 
 requiredpackages="gmake bash sudo libtool m4 vim-tiny memcached redis 
 mysql80-client mysql80-server apache24 php85 mod_php85 
-php85-bcmath php85-ctype php85-curl php85-dom php85-extensions 
+php85-bcmath php85-ctype php85-curl 
 php85-filter php85-ftp php85-gd php85-iconv 
 php85-mbstring php85-mysqli 
 php85-pdo php85-pdo_sqlite php85-phar php85-posix php85-session 
 php85-simplexml php85-snmp php85-soap php85-sockets php85-sqlite3 
-php85-tokenizer php85-xml php85-xmlreader php85-xmlwriter 
+php85-tokenizer php85-xml php85-xmlwriter 
 php85-zip php85-zlib php85-pecl-memcached php85-pecl-redis 
 git pmacct"
 
@@ -60,8 +60,6 @@ pkg install -y mod_php85
 pkg install -y php85-bcmath
 pkg install -y php85-ctype
 pkg install -y php85-curl
-pkg install -y php85-dom
-pkg install -y php85-extensions
 pkg install -y php85-filter
 pkg install -y php85-ftp
 pkg install -y php85-gd
@@ -81,7 +79,6 @@ pkg install -y php85-sockets
 pkg install -y php85-sqlite3
 pkg install -y php85-tokenizer
 pkg install -y php85-xml
-pkg install -y php85-xmlreader
 pkg install -y php85-xmlwriter
 pkg install -y php85-zip
 pkg install -y php85-zlib
@@ -138,8 +135,9 @@ chmod -R 777 config content exports gdata
 #creating collector config and data storage placeholders
 mkdir /ofstorage
 touch /etc/of.conf
+touch /etc/sof.conf
 touch /etc/pretag.map
-chmod -R 777 /etc/of.conf /etc/pretag.map /ofstorage
+chmod -R 777 /etc/of.conf /etc/sof.conf /etc/pretag.map /ofstorage
 
 #setting landing page
 cp -R ${LANDING_PATH} ${APACHE_DATA_PATH}

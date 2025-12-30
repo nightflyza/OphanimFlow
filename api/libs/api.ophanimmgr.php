@@ -55,6 +55,13 @@ class OphanimMgr {
     protected $port = 42112;
 
     /**
+     * Contains default sFlow collector port
+     * 
+     * @var int
+     */
+    protected $sflowPort = 6343;
+
+    /**
      * Contains networks table structure as field=>index
      *
      * @var array
@@ -65,9 +72,12 @@ class OphanimMgr {
     const DB_PATCHES_PATH = 'dist/dumps/patches/';
     const DB_PATCHES_EXT = '.sql';
     const CONF_PATH = '/etc/of.conf';
+    const SFLOW_CONF_PATH = '/etc/sof.conf';
     const PRETAG_PATH = '/etc/pretag.map';
     const TEMPLATE_PATH = 'dist/collector/of.template';
+    const SFLOW_TEMPLATE_PATH = 'dist/collector/sof.template';
     const PID_PATH = '/var/run/nfacctd.pid';
+    const SFLOW_PID_PATH = '/var/run/sfacctd.pid';
     const NFT_PATH = '/etc/netflow_templates';
     const TABLE_NETWORKS = 'networks';
 
@@ -119,6 +129,9 @@ class OphanimMgr {
         $this->altCfg = $ubillingConfig->getAlter();
         $this->port = $this->altCfg['COLLECTOR_PORT'];
         $this->samplingRate = $this->altCfg['SAMPLING_RATE'];
+        if (isset($this->altCfg['SFLOW_PORT'])) {
+            $this->sflowPort = $this->altCfg['SFLOW_PORT'];
+        }
     }
 
     /**
@@ -373,6 +386,42 @@ class OphanimMgr {
     }
 
     /**
+     * Generates sFlow collector config
+     *
+     * @return string
+     */
+    public function generateSflowConfig() {
+        $result = '';
+        if (!empty($this->allNetworks)) {
+            $dbConfig = rcms_parse_ini_file('config/mysql.ini');
+            $template = file_get_contents(self::SFLOW_TEMPLATE_PATH);
+            $result = $template;
+
+            if ($this->netsCount == 1) {
+                $srcRange = 1;
+                $dstRange = 2;
+            } else {
+                $srcLo = 1;
+                $srcHi = $this->netsCount;
+                $dstLo = $this->netsCount + 1;
+                $dstHi = $this->netsCount + $this->netsCount;
+                $srcRange = $srcLo . '-' . $srcHi;
+                $dstRange = $dstLo . '-' . $dstHi;
+            }
+
+            $result = str_replace('{PORT}', $this->sflowPort, $result);
+            $result = str_replace('{SAMPLING_RATE}', $this->samplingRate, $result);
+            $result = str_replace('{PRETAG_PATH}', self::PRETAG_PATH, $result);
+            $result = str_replace('{PID_PATH}', self::SFLOW_PID_PATH, $result);
+            $result = str_replace('{SRC_RANGE}', $srcRange, $result);
+            $result = str_replace('{DST_RANGE}', $dstRange, $result);
+            $result = str_replace('{MYSQLUSER}', $dbConfig['username'], $result);
+            $result = str_replace('{MYSQLPASSWORD}', $dbConfig['password'], $result);
+        }
+        return ($result);
+    }
+
+    /**
      * Checks for running collector process
      *
      * @return bool
@@ -386,24 +435,52 @@ class OphanimMgr {
     }
 
     /**
+     * Checks for running sFlow collector process
+     *
+     * @return bool
+     */
+    public function isSflowCollectorRunning() {
+        $result = false;
+        if (file_exists(self::SFLOW_PID_PATH)) {
+            $result = true;
+        }
+        return ($result);
+    }
+
+    /**
      * Renders collector process conrols depends on it state
      *
      * @return string
      */
     public function renderCollectorControls() {
         $result = '';
-        if ($this->isCollectorRunning()) {
+        $netflowRunning = $this->isCollectorRunning();
+        $sflowRunning = $this->isSflowCollectorRunning();
+        
+        if ($netflowRunning) {
             $collectorLabel = '';
             $collectorLabel .= __('Netflow collector is running at port') . ' ' . $this->port . ', ' . __('sampling rate') . ': ' . $this->samplingRate;
             $result .= $this->messages->getStyledMessage($collectorLabel, 'success');
-            $result .= wf_delimiter();
-            $result .= wf_Link(self::URL_ME . '&' . self::ROUTE_STOP . '=true', __('Stop collector'), false, 'btn cur-p btn-danger btn-color');
         } else {
             $result .= $this->messages->getStyledMessage(__('Netflow collector is stopped'), 'warning');
-            $result .= wf_delimiter();
+        }
+        
+        if ($sflowRunning) {
+            $sflowLabel = '';
+            $sflowLabel .= __('sFlow collector is running at port') . ' ' . $this->sflowPort . ', ' . __('sampling rate') . ': ' . $this->samplingRate;
+            $result .= $this->messages->getStyledMessage($sflowLabel, 'success');
+        } else {
+            $result .= $this->messages->getStyledMessage(__('sFlow collector is stopped'), 'warning');
+        }
+        
+        $result .= wf_delimiter();
+        
+        if ($netflowRunning or $sflowRunning) {
+            $result .= wf_Link(self::URL_ME . '&' . self::ROUTE_STOP . '=true', __('Stop collectors'), false, 'btn cur-p btn-danger btn-color');
+        } else {
             if (!empty($this->allNetworks)) {
                 $result .= wf_Link(self::URL_ME . '&' . self::ROUTE_RECONF . '=true', __('Rebuild configuration'), false, 'btn cur-p btn-dark btn-color') . ' ';
-                $result .= wf_Link(self::URL_ME . '&' . self::ROUTE_START . '=true', __('Start collector'), false, 'btn cur-p btn-success btn-color');
+                $result .= wf_Link(self::URL_ME . '&' . self::ROUTE_START . '=true', __('Start collectors'), false, 'btn cur-p btn-success btn-color');
             }
         }
         $result .= wf_delimiter();
@@ -418,14 +495,20 @@ class OphanimMgr {
      */
     public function rebuildConfigs() {
         $result = '';
-        if (!$this->isCollectorRunning()) {
+        if (!$this->isCollectorRunning() and !$this->isSflowCollectorRunning()) {
             if (file_exists(self::CONF_PATH) and file_exists(self::PRETAG_PATH)) {
                 if (is_writable(self::CONF_PATH) and is_writable(self::PRETAG_PATH)) {
                     if (!empty($this->allNetworks)) {
                         $pretagMap = $this->generatePretagMap();
                         $mainConf = $this->generateConfig();
+                        $sflowConf = $this->generateSflowConfig();
                         file_put_contents(self::PRETAG_PATH, $pretagMap);
                         file_put_contents(self::CONF_PATH, $mainConf);
+                        if (!file_exists(self::SFLOW_CONF_PATH) or is_writable(self::SFLOW_CONF_PATH)) {
+                            file_put_contents(self::SFLOW_CONF_PATH, $sflowConf);
+                        } else {
+                            $result .= self::SFLOW_CONF_PATH . ' ' . __('is not writable');
+                        }
                     } else {
                         $result .= __('Networks list is empty');
                     }
@@ -454,11 +537,25 @@ class OphanimMgr {
             shell_exec($command);
             sleep(3);
             if (!$this->isCollectorRunning()) {
-                $result .= __('Collector startup failed by unknown reason');
+                $result .= __('Netflow collector startup failed by unknown reason') . ' ';
             }
         } else {
-            $result .= __('Collector is running now');
+            $result .= __('Netflow collector is running now') . ' ';
         }
+        
+        if (isset($this->altCfg['SFLOW_COLLECTOR_PATH']) and !empty($this->altCfg['SFLOW_COLLECTOR_PATH'])) {
+            if (!$this->isSflowCollectorRunning()) {
+                $sflowCommand = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['SFLOW_COLLECTOR_PATH'] . ' -f ' . self::SFLOW_CONF_PATH;
+                shell_exec($sflowCommand);
+                sleep(3);
+                if (!$this->isSflowCollectorRunning()) {
+                    $result .= __('sFlow collector startup failed by unknown reason');
+                }
+            } else {
+                $result .= __('sFlow collector is running now');
+            }
+        }
+        
         return ($result);
     }
 
@@ -469,11 +566,17 @@ class OphanimMgr {
      */
     public function stopCollector() {
         if ($this->isCollectorRunning()) {
-            //shittiest way ever
             $command = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['KILLALL_PATH'] . ' -9  nfacctd';
             shell_exec($command);
             $pidRemove = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['RM_PATH'] . ' -fr ' . self::PID_PATH;
             shell_exec($pidRemove);
+        }
+        
+        if ($this->isSflowCollectorRunning()) {
+            $sflowCommand = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['KILLALL_PATH'] . ' -9  sfacctd';
+            shell_exec($sflowCommand);
+            $sflowPidRemove = $this->altCfg['SUDO_PATH'] . ' ' . $this->altCfg['RM_PATH'] . ' -fr ' . self::SFLOW_PID_PATH;
+            shell_exec($sflowPidRemove);
         }
     }
 

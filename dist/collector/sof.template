@@ -1,0 +1,38 @@
+daemonize: true
+pidfile: {PID_PATH}
+
+sfacctd_ip: 0.0.0.0
+sfacctd_port: {PORT}
+sfacctd_ext_sampling_rate: {SAMPLING_RATE}
+sfacctd_renormalize: true
+sfacctd_pro_rating: true
+maps_entries: 1000
+timestamps_since_epoch: true
+
+plugins: mysql[in], mysql[out], mysql[host_in], mysql[host_out]
+
+pre_tag_map: {PRETAG_PATH}
+aggregate[in]: src_host, dst_port, proto
+aggregate[out]: dst_host, src_port, proto
+aggregate[host_in]: src_host
+aggregate[host_out]: dst_host
+
+pre_tag_filter[in]: {SRC_RANGE}
+pre_tag_filter[out]: {DST_RANGE}
+pre_tag_filter[host_in]: {SRC_RANGE}
+pre_tag_filter[host_out]: {DST_RANGE}
+
+sql_user: {MYSQLUSER}
+sql_passwd: {MYSQLPASSWORD}
+sql_table_version: 666
+sql_optimize_clauses: true
+sql_db: ophanimflow
+sql_refresh_time: 300
+sql_history: 5m
+sql_table[in]: raw_in
+sql_table[out]: raw_out
+sql_table[host_in]: host_in
+sql_table[host_out]: host_out
+
+plugin_buffer_size: 15360
+plugin_pipe_size:   15360000

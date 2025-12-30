@@ -4,5 +4,6 @@
 SUDO_PATH="/usr/bin/sudo"
 KILLALL_PATH="/usr/bin/killall"
 COLLECTOR_PATH="/usr/sbin/nfacctd"
+SFLOW_COLLECTOR_PATH="/usr/sbin/sfacctd"
 RM_PATH="/usr/bin/rm"
 TAIL_PATH="/usr/bin/tail"
