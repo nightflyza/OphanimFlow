@@ -3,7 +3,7 @@ pidfile: {PID_PATH}
 
 sfacctd_ip: 0.0.0.0
 sfacctd_port: {PORT}
-sfacctd_ext_sampling_rate: {SAMPLING_RATE}
+#sfacctd_ext_sampling_rate: {SAMPLING_RATE}
 sfacctd_renormalize: true
 maps_entries: 1000
 timestamps_since_epoch: true

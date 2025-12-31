@@ -266,9 +266,9 @@ SAMPLING_RATE=100
 SFLOW_PORT=6343
 ```
 
-The sampling rate is shared between both collectors. Both collectors use the same network configuration and write to the same database tables. Don't forget to regenerate configuration and restart collectors after changing these options.
+Both collectors use the same network configuration and write to the same database tables. Don't forget to regenerate configuration and restart collectors after changing these options.
 
-Also OphanimFlow from release 0.0.5 automatically rotates and flushes old data to keep some storage space reserved and prevent it from exhausting. Its 10% of total storage size by default. This behaviour is controlled by following options:
+Also OphanimFlow since release 0.0.5 automatically rotates and flushes old data to keep some storage space reserved and prevent it from exhausting. Its 10% of total storage size by default. This behaviour is controlled by following options:
 
 ```
 ;Reserved storage free space percent

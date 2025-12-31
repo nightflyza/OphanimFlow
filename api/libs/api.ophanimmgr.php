@@ -467,7 +467,7 @@ class OphanimMgr {
         
         if ($sflowRunning) {
             $sflowLabel = '';
-            $sflowLabel .= __('sFlow collector is running at port') . ' ' . $this->sflowPort . ', ' . __('sampling rate') . ': ' . $this->samplingRate;
+            $sflowLabel .= __('sFlow collector is running at port') . ' ' . $this->sflowPort;
             $result .= $this->messages->getStyledMessage($sflowLabel, 'success');
         } else {
             $result .= $this->messages->getStyledMessage(__('sFlow collector is stopped'), 'warning');
