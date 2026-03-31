@@ -3,7 +3,7 @@ NetFlow, IPFIX and sFlow aggregation and graph toolkit.
 
 Basic idea is replacement of bandwidthd and Stargazer cap_nf module in one solution, which performs NetFlow, IPFIX and sFlow data collecting, classification, preprocessing and performing network bandwidth utilization graphs rendering per each host in your network and basic traffic accounting of it, somewhere on some dedicated host.
 
-# FreeBSD 13.5/14.2/14.3/15.0 batch setup
+# FreeBSD 13.5/14.3/14.4/15.0 batch setup
 
 ninja way
 
