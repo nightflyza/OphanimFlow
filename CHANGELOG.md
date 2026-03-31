@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - alter.ini: new options SFLOW_COLLECTOR_PATH and SFLOW_PORT 
 - sFlow collector implemented.
 - installer: FreeBSD 15.0 tested and works
+- installer: FreeBSD 14.4 tested and works
 
 ## [0.0.6] - rev 132
 - alter.ini: new option UBILLING_URL that sets full URL of Ubilling >=1.5.2 for integration
