@@ -87,6 +87,11 @@ pkg install -y php85-pecl-redis
 pkg install -y git
 pkg install -y gmake
 
+#FreeBSD 14.4 build issues
+pkg install -y p5-Locale-gettext
+pkg install -y p5-Locale-libintl
+pkg install -y p5-Text-Unidecode
+pkg install -y p5-Unicode-EastAsianWidth
 
 #extracting fresh ports tree
 rm -fr /usr/ports
