@@ -183,7 +183,7 @@ function generic_MapAddMarkDynamic($coords, $title = '', $contentUrl = '', $icon
 
     if (!empty($contentUrl)) {
         $js .= "
-        marker_$markerId.bindPopup('" . __('Loading') . "...');
+        marker_$markerId.bindPopup('" . __('Loading') . "...', {maxWidth: 320, minWidth: 50, maxHeight: 600, closeButton: true, closeOnEscapeKey: true});
         marker_$markerId._popupHtml = null;
 
         marker_$markerId.on('click', function (e) {
@@ -353,7 +353,7 @@ function generic_MapInit($center = '', $zoom = 15, $type = 'roadmap', $placemark
     // Tile layers
     var roadmap = L.tileLayer(\'' . $tileLayerOSM . '\', {
         maxZoom: 18,
-        attribution: \'\',
+        attribution: \'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors\',
         ' . $tileLayerCustoms . '
     });
 
@@ -367,8 +367,38 @@ function generic_MapInit($center = '', $zoom = 15, $type = 'roadmap', $placemark
         attribution: \'© Google\'
     });
 
-    // Default tile layer
-    ' . $type . '.addTo(map);
+    // Selecting default tile layer
+    var storageKey = "ubilling_lmaps_base_' . $container . '";
+    var savedLayerType = null;
+    try {
+        savedLayerType = window.localStorage ? localStorage.getItem(storageKey) : null;
+    } catch (err) {
+        savedLayerType = null;
+    }
+    var requestedLayerType = "' . $type . '";
+    var layerToUse = roadmap;
+    if (savedLayerType === "hybrid") {
+        layerToUse = hybrid;
+    } else {
+        if (savedLayerType === "satellite") {
+            layerToUse = satellite;
+        } else {
+            if (savedLayerType === "roadmap") {
+                layerToUse = roadmap;
+            } else {
+                if (requestedLayerType === "hybrid") {
+                    layerToUse = hybrid;
+                } else {
+                    if (requestedLayerType === "satellite") {
+                        layerToUse = satellite;
+                    } else {
+                        layerToUse = roadmap;
+                    }
+                }
+            }
+        }
+    }
+    layerToUse.addTo(map);
 
     // Base layers switcher
     var baseMaps = {
@@ -418,6 +448,23 @@ function generic_MapInit($center = '', $zoom = 15, $type = 'roadmap', $placemark
 
     var layerControl = L.control.layers(baseMaps, null, { collapsed: true });
     map.addControl(layerControl);
+
+    map.on("baselayerchange", function(e) {
+        // Persist internal base layer key
+        var v = "roadmap";
+        if (e && e.layer === hybrid) {
+            v = "hybrid";
+        } else {
+            if (e && e.layer === satellite) {
+                v = "satellite";
+            }
+        }
+        try {
+            localStorage.setItem(storageKey, v);
+        } catch (err) {
+            // ignore (private mode / disabled storage)
+        }
+    });
 
     ' . $placemarks . '
     ' . $editor . '
