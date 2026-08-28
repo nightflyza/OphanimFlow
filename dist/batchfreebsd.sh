@@ -39,7 +39,7 @@ php85-pdo php85-pdo_sqlite php85-phar php85-posix php85-session
 php85-simplexml php85-snmp php85-soap php85-sockets php85-sqlite3 
 php85-tokenizer php85-xml php85-xmlwriter 
 php85-zip php85-zlib php85-pecl-memcached php85-pecl-redis 
-git pmacct"
+git libpcap libcdada pmacct"
 
 #botstrapping pkg ng
 ASSUME_ALWAYS_YES=yes pkg bootstrap -y
@@ -86,6 +86,8 @@ pkg install -y php85-pecl-memcached
 pkg install -y php85-pecl-redis
 pkg install -y git
 pkg install -y gmake
+pkg install -y libpcap
+pkg install -y libcdada
 
 #FreeBSD 14.4 build issues
 pkg install -y p5-Locale-gettext
@@ -102,7 +104,7 @@ cd /usr/ports/devel/gettext-runtime/ && make WITH="MYSQL" BATCH=yes reinstall
 cd /usr/ports/devel/autoconf/ && make WITH="MYSQL" BATCH=yes reinstall 
 
 #installing pmacct with mysql support
-cd /usr/ports/net-mgmt/pmacct/ && make WITH="MYSQL" BATCH=yes install
+cd /usr/ports/net-mgmt/pmacct/ && make WITH="MYSQL" MAKE_JOBS_UNSAFE=yes BATCH=yes install
 
 
 #generating mysql password
