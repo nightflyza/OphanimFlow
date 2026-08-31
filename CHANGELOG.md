@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [0.0.7] - in development now
 - alter.ini: new options SFLOW_COLLECTOR_PATH and SFLOW_PORT 
 - sFlow collector implemented.
+- installer: FreeBSD 15.1 tested and now works, thanks to Kurt Jaeger <pi@freebsd.org>
 - installer: FreeBSD 15.0 tested and works
 - installer: FreeBSD 14.4 tested and works
 
